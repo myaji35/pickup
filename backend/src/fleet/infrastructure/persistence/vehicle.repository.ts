@@ -35,13 +35,20 @@ export class VehicleRepository implements IVehicleRepository {
   }
 
   /**
-   * T082: 기관 내 모든 차량 조회
+   * T082 & T311: 기관 내 모든 차량 조회 (search 지원)
    */
-  async findAll(institutionId: string): Promise<Vehicle[]> {
+  async findAll(institutionId: string, search?: string): Promise<Vehicle[]> {
+    const where: any = { institutionId };
+
+    // T311: Search by lastFourDigits
+    if (search) {
+      where.lastFourDigits = {
+        contains: search,
+      };
+    }
+
     const prismaVehicles = await this.prisma.vehicle.findMany({
-      where: {
-        institutionId,
-      },
+      where,
       orderBy: {
         createdAt: 'desc',
       },

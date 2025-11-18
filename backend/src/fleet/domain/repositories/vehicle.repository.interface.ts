@@ -13,8 +13,9 @@ export interface IVehicleRepository {
 
   /**
    * 기관 내 모든 차량 조회
+   * T311: search parameter 추가 (lastFourDigits로 검색)
    */
-  findAll(institutionId: string): Promise<Vehicle[]>;
+  findAll(institutionId: string, search?: string): Promise<Vehicle[]>;
 
   /**
    * ID로 차량 조회

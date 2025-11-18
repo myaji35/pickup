@@ -79,6 +79,15 @@ export class PassengerRepository implements IPassengerRepository {
       where.groupId = options.groupId;
     }
 
+    // T309: Assignment status filter
+    if (options?.assignmentStatus) {
+      if (options.assignmentStatus === 'assigned') {
+        where.groupId = { not: null };
+      } else if (options.assignmentStatus === 'unassigned') {
+        where.groupId = null;
+      }
+    }
+
     if (options?.search) {
       where.OR = [
         { name: { contains: options.search, mode: 'insensitive' } },

@@ -9,6 +9,7 @@ export interface PaginationOptions {
   shuttleType?: string;
   search?: string;
   groupId?: string;
+  assignmentStatus?: 'assigned' | 'unassigned'; // T309: Filter by group assignment status
 }
 
 /**

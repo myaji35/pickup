@@ -117,7 +117,7 @@ describe('VehicleService', () => {
 
       // Assert
       expect(result).toHaveLength(2);
-      expect(mockRepository.findAll).toHaveBeenCalledWith(institutionId);
+      expect(mockRepository.findAll).toHaveBeenCalledWith(institutionId, undefined);
     });
   });
 

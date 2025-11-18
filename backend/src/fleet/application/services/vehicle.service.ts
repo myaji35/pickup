@@ -55,10 +55,10 @@ export class VehicleService {
   }
 
   /**
-   * T076: 기관 내 모든 차량 조회
+   * T076 & T311: 기관 내 모든 차량 조회 (search 지원)
    */
-  async getVehicles(institutionId: string): Promise<Vehicle[]> {
-    return this.vehicleRepository.findAll(institutionId);
+  async getVehicles(institutionId: string, search?: string): Promise<Vehicle[]> {
+    return this.vehicleRepository.findAll(institutionId, search);
   }
 
   /**

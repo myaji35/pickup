@@ -111,6 +111,12 @@ export class PassengerController {
     description: '그룹 ID 필터',
     required: false,
   })
+  @ApiQuery({
+    name: 'assignmentStatus',
+    description: '그룹 할당 상태 필터 (T309)',
+    enum: ['assigned', 'unassigned'],
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: '승객 목록 조회 성공',
@@ -123,6 +129,7 @@ export class PassengerController {
     @Query('shuttleType') shuttleType?: string,
     @Query('search') search?: string,
     @Query('groupId') groupId?: string,
+    @Query('assignmentStatus') assignmentStatus?: 'assigned' | 'unassigned',
   ): Promise<PassengerResponseDto[]> {
     const passengers = await this.passengerService.getPassengers(institutionId, {
       page: page ? parseInt(page, 10) : 1,
@@ -130,6 +137,7 @@ export class PassengerController {
       shuttleType,
       search,
       groupId,
+      assignmentStatus,
     });
 
     return PassengerResponseDto.fromDomainArray(passengers);

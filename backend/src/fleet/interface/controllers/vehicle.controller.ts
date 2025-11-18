@@ -48,7 +48,7 @@ export class VehicleController {
   }
 
   /**
-   * T094: GET /vehicles - 차량 목록 조회
+   * T094 & T311: GET /vehicles - 차량 목록 조회 (search 지원)
    */
   @Get()
   @ApiOperation({ summary: '기관 내 차량 목록 조회' })
@@ -57,6 +57,11 @@ export class VehicleController {
     description: '기관 ID',
     required: true,
   })
+  @ApiQuery({
+    name: 'search',
+    description: '차량번호 뒤 4자리 검색',
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: '차량 목록',
@@ -64,8 +69,9 @@ export class VehicleController {
   })
   async findAll(
     @Query('institutionId') institutionId: string,
+    @Query('search') search?: string,
   ): Promise<VehicleResponseDto[]> {
-    const vehicles = await this.vehicleService.getVehicles(institutionId);
+    const vehicles = await this.vehicleService.getVehicles(institutionId, search);
     return vehicles.map((v) => VehicleResponseDto.fromDomain(v));
   }
 

@@ -94,7 +94,7 @@ describe('VehicleController', () => {
       expect(result).toHaveLength(2);
       expect(result[0].id).toBe('vehicle-1');
       expect(result[1].currentGroupId).toBe('group-uuid-1');
-      expect(mockService.getVehicles).toHaveBeenCalledWith(institutionId);
+      expect(mockService.getVehicles).toHaveBeenCalledWith(institutionId, undefined);
     });
   });
 
