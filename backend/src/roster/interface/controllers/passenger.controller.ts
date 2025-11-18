@@ -25,9 +25,13 @@ import { CreatePassengerDto } from '../dtos/create-passenger.dto';
 import { UpdatePassengerDto } from '../dtos/update-passenger.dto';
 import { PassengerResponseDto } from '../dtos/passenger-response.dto';
 import { BulkUploadResultDto } from '../dtos/bulk-upload-result.dto';
+import { PassengerScheduleDto } from '../dtos/passenger-schedule.dto';
+import { PassengerScheduleResponseDto } from '../dtos/passenger-schedule-response.dto';
 import { CreatePassengerCommand } from '../../application/commands/create-passenger.command';
 import { UpdatePassengerCommand } from '../../application/commands/update-passenger.command';
 import { BulkCreatePassengersCommand } from '../../application/commands/bulk-create-passengers.command';
+import { UpsertPassengerScheduleCommand } from '../../application/commands/upsert-passenger-schedule.command';
+import { DeletePassengerScheduleCommand } from '../../application/commands/delete-passenger-schedule.command';
 import { Readable } from 'stream';
 
 /**
@@ -315,6 +319,75 @@ export class PassengerController {
       })),
       totalProcessed: parseResult.validRows.length,
     };
+  }
+
+  /**
+   * T354: PUT /passengers/:id/schedule - 승객 스케줄 생성/수정
+   */
+  @Put(':id/schedule')
+  @ApiOperation({
+    summary: '승객 스케줄 생성/수정',
+    description: '승객의 탑승/하차 시간을 설정하고 자동으로 케어 시간을 계산합니다. 8시간 미만일 경우 경고가 반환됩니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '승객 ID',
+    example: 'passenger-uuid-123',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '스케줄 생성/수정 성공',
+    type: PassengerScheduleResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 시간 형식 또는 논리적 오류',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '승객을 찾을 수 없음',
+  })
+  async upsertSchedule(
+    @Param('id') passengerId: string,
+    @Body() dto: PassengerScheduleDto,
+  ): Promise<PassengerScheduleResponseDto> {
+    const command = new UpsertPassengerScheduleCommand(
+      passengerId,
+      dto.pickupTime,
+      dto.dropoffTime,
+    );
+
+    const result = await this.passengerService.upsertSchedule(command);
+
+    return PassengerScheduleResponseDto.fromDomain(result.schedule, result.warning);
+  }
+
+  /**
+   * T355: DELETE /passengers/:id/schedule - 승객 스케줄 삭제
+   */
+  @Delete(':id/schedule')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '승객 스케줄 삭제',
+    description: '승객의 스케줄 정보를 삭제합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '승객 ID',
+    example: 'passenger-uuid-123',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '스케줄 삭제 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '승객 또는 스케줄을 찾을 수 없음',
+  })
+  async deleteSchedule(@Param('id') passengerId: string): Promise<{ message: string }> {
+    const command = new DeletePassengerScheduleCommand(passengerId);
+    await this.passengerService.deleteSchedule(command);
+    return { message: 'Schedule deleted successfully' };
   }
 
   /**

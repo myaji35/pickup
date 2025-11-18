@@ -5,8 +5,10 @@ import { PassengerController } from './interface/controllers/passenger.controlle
 import { PassengerGroupService } from './application/services/passenger-group.service';
 import { PassengerService } from './application/services/passenger.service';
 import { CsvParserService } from './application/services/csv-parser.service';
+import { CareTimeValidatorService } from './application/services/care-time-validator.service';
 import { PassengerGroupRepository } from './infrastructure/persistence/passenger-group.repository';
 import { PassengerRepository } from './infrastructure/persistence/passenger.repository';
+import { PassengerScheduleRepository } from './infrastructure/persistence/passenger-schedule.repository';
 
 /**
  * Roster Context Module
@@ -33,6 +35,13 @@ import { PassengerRepository } from './infrastructure/persistence/passenger.repo
       useClass: PassengerRepository,
     },
     PassengerRepository,
+    // T358-T359: PassengerSchedule & CareTimeValidator
+    {
+      provide: 'IPassengerScheduleRepository',
+      useClass: PassengerScheduleRepository,
+    },
+    PassengerScheduleRepository,
+    CareTimeValidatorService,
     // CSV Parser
     CsvParserService,
   ],

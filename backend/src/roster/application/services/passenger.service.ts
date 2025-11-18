@@ -1,11 +1,16 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IPassengerRepository, PaginationOptions } from '../../domain/repositories/passenger.repository.interface';
+import { IPassengerScheduleRepository } from '../../domain/repositories/passenger-schedule.repository.interface';
 import { Passenger } from '../../domain/entities/passenger.entity';
+import { PassengerSchedule } from '../../domain/entities/passenger-schedule.entity';
 import { PhoneNumber } from '../../domain/value-objects/phone-number.vo';
 import { Address } from '../../domain/value-objects/address.vo';
 import { CreatePassengerCommand } from '../commands/create-passenger.command';
 import { UpdatePassengerCommand } from '../commands/update-passenger.command';
 import { BulkCreatePassengersCommand } from '../commands/bulk-create-passengers.command';
+import { UpsertPassengerScheduleCommand } from '../commands/upsert-passenger-schedule.command';
+import { DeletePassengerScheduleCommand } from '../commands/delete-passenger-schedule.command';
+import { CareTimeValidatorService } from './care-time-validator.service';
 import { randomUUID } from 'crypto';
 
 /**
@@ -23,6 +28,9 @@ export class PassengerService {
   constructor(
     @Inject('IPassengerRepository')
     private readonly passengerRepository: IPassengerRepository,
+    @Inject('IPassengerScheduleRepository')
+    private readonly passengerScheduleRepository: IPassengerScheduleRepository,
+    private readonly careTimeValidatorService: CareTimeValidatorService,
   ) {}
 
   /**
@@ -219,5 +227,79 @@ export class PassengerService {
     }
 
     return { created, skipped, errors };
+  }
+
+  /**
+   * T344: 승객 스케줄 생성/수정
+   * - 자동 케어 시간 계산 (T342)
+   * - 자동 부족 여부 플래그 설정 (T343)
+   */
+  async upsertSchedule(
+    command: UpsertPassengerScheduleCommand,
+  ): Promise<{ schedule: PassengerSchedule; warning?: string }> {
+    // 승객 존재 여부 확인
+    const passenger = await this.getPassengerById(command.passengerId);
+
+    // T346: 기관 유형 체크 (주간보호 시설인지 확인)
+    // TODO: Institution type check when Institution entity is implemented
+
+    // T341-T343: 케어 시간 검증 및 계산
+    const validation = this.careTimeValidatorService.validateAndCalculate(
+      command.pickupTime,
+      command.dropoffTime,
+    );
+
+    // 기존 스케줄 조회
+    const existingSchedule = await this.passengerScheduleRepository.findByPassengerId(passenger.id);
+
+    let schedule: PassengerSchedule;
+
+    if (existingSchedule) {
+      // 업데이트
+      existingSchedule.updateTimes(
+        command.pickupTime,
+        command.dropoffTime,
+        validation.careTimeHours,
+        validation.isCareTimeInsufficient,
+      );
+      schedule = await this.passengerScheduleRepository.upsert(existingSchedule);
+    } else {
+      // 생성
+      schedule = new PassengerSchedule({
+        id: randomUUID(),
+        passengerId: passenger.id,
+        pickupTime: command.pickupTime,
+        dropoffTime: command.dropoffTime,
+        careTimeHours: validation.careTimeHours,
+        isCareTimeInsufficient: validation.isCareTimeInsufficient,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      schedule = await this.passengerScheduleRepository.upsert(schedule);
+    }
+
+    return {
+      schedule,
+      warning: validation.warning,
+    };
+  }
+
+  /**
+   * T345: 승객 스케줄 삭제
+   */
+  async deleteSchedule(command: DeletePassengerScheduleCommand): Promise<void> {
+    // 승객 존재 여부 확인
+    await this.getPassengerById(command.passengerId);
+
+    // 스케줄 존재 여부 확인
+    const existingSchedule = await this.passengerScheduleRepository.findByPassengerId(
+      command.passengerId,
+    );
+
+    if (!existingSchedule) {
+      throw new NotFoundException('Schedule not found for this passenger');
+    }
+
+    await this.passengerScheduleRepository.delete(command.passengerId);
   }
 }

@@ -150,14 +150,14 @@ enum ShuttleType {
 }
 
 /// 승객 스케줄 (002번 기능: 8시간 케어 검증)
-/// 주간보호 시설 승객의 희망 탑승/하차 시간 관리
+/// 주간보호 시설 승객의 탑승/하차 시간 관리
 model PassengerSchedule {
   id                     String   @id @default(uuid())
   passengerId            String   @unique                // 1:1 관계
   passenger              Passenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
 
-  desiredPickupTime      String   @db.VarChar(5)         // HH:MM 형식 (예: "09:00")
-  desiredDropoffTime     String   @db.VarChar(5)         // HH:MM 형식 (예: "17:30")
+  pickupTime             String   @db.VarChar(5)         // HH:MM 형식 (예: "09:00")
+  dropoffTime            String   @db.VarChar(5)         // HH:MM 형식 (예: "17:30")
 
   // 계산 값 (캐싱)
   careTimeHours          Float                           // 케어 시간 간격 (시간 단위, 예: 8.5)
