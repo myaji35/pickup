@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module';
 import { InstitutionTypeController } from './interface/controllers/institution-type.controller';
+import { InstitutionController } from './interface/controllers/institution.controller';
 import { InstitutionTypeService } from './application/services/institution-type.service';
 import { InstitutionTypeRepository } from './infrastructure/persistence/institution-type.repository';
+import { InstitutionService } from './application/services/institution.service';
+import { InstitutionRepository } from './infrastructure/persistence/institution.repository';
 
 /**
  * T391-T393: Institution Context Module
@@ -12,7 +15,10 @@ import { InstitutionTypeRepository } from './infrastructure/persistence/institut
  */
 @Module({
   imports: [PrismaModule],
-  controllers: [InstitutionTypeController],
+  controllers: [
+    InstitutionTypeController,
+    InstitutionController, // T403-T405
+  ],
   providers: [
     // T392: InstitutionTypeService
     InstitutionTypeService,
@@ -22,7 +28,15 @@ import { InstitutionTypeRepository } from './infrastructure/persistence/institut
       useClass: InstitutionTypeRepository,
     },
     InstitutionTypeRepository,
+    // T397-T398: InstitutionService
+    InstitutionService,
+    // T399-T400: InstitutionRepository
+    {
+      provide: 'IInstitutionRepository',
+      useClass: InstitutionRepository,
+    },
+    InstitutionRepository,
   ],
-  exports: [InstitutionTypeService],
+  exports: [InstitutionTypeService, InstitutionService],
 })
 export class InstitutionModule {}
