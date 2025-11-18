@@ -1,4 +1,9 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '../prisma/prisma.module';
+import { PassengerGroupController } from './interface/controllers/passenger-group.controller';
+import { PassengerGroupService } from './application/services/passenger-group.service';
+import { PassengerGroupRepository } from './infrastructure/persistence/passenger-group.repository';
+import { IPassengerGroupRepository } from './domain/repositories/passenger-group.repository.interface';
 
 /**
  * Roster Context Module
@@ -8,8 +13,16 @@ import { Module } from '@nestjs/common';
  * - PassengerSchedule: 8시간 케어 시간 검증 (주간보호 시설)
  */
 @Module({
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [PrismaModule],
+  controllers: [PassengerGroupController],
+  providers: [
+    PassengerGroupService,
+    {
+      provide: 'IPassengerGroupRepository',
+      useClass: PassengerGroupRepository,
+    },
+    PassengerGroupRepository,
+  ],
+  exports: [PassengerGroupService],
 })
 export class RosterModule {}

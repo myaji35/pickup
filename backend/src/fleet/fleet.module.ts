@@ -18,11 +18,7 @@ import { IVehicleRepository } from './domain/repositories/vehicle.repository.int
       provide: 'IVehicleRepository',
       useClass: VehicleRepository,
     },
-    // Alias for dependency injection
-    {
-      provide: IVehicleRepository,
-      useClass: VehicleRepository,
-    },
+    VehicleRepository,
   ],
   exports: [VehicleService],
 })

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Vehicle } from '../../../domain/entities/vehicle.entity';
+import { Vehicle } from '../../domain/entities/vehicle.entity';
 
 /**
  * VehicleResponseDto
