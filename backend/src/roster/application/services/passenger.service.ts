@@ -5,6 +5,8 @@ import { PhoneNumber } from '../../domain/value-objects/phone-number.vo';
 import { Address } from '../../domain/value-objects/address.vo';
 import { CreatePassengerCommand } from '../commands/create-passenger.command';
 import { UpdatePassengerCommand } from '../commands/update-passenger.command';
+import { BulkCreatePassengersCommand } from '../commands/bulk-create-passengers.command';
+import { randomUUID } from 'crypto';
 
 /**
  * Passenger Application Service
@@ -133,5 +135,89 @@ export class PassengerService {
   async deletePassenger(id: string): Promise<void> {
     await this.getPassengerById(id); // 존재 여부 확인
     await this.passengerRepository.delete(id);
+  }
+
+  /**
+   * T279-T281: CSV 일괄 업로드
+   * 트랜잭션으로 여러 승객 동시 생성
+   */
+  async bulkCreatePassengers(command: BulkCreatePassengersCommand): Promise<{
+    created: number;
+    skipped: number;
+    errors: Array<{ phoneNumber: string; message: string }>;
+  }> {
+    let created = 0;
+    let skipped = 0;
+    const errors: Array<{ phoneNumber: string; message: string }> = [];
+
+    // T281: 에러 집계 - 각 행별로 처리하여 가능한 것만 생성
+    const passengersToCreate: Passenger[] = [];
+
+    for (const passengerData of command.passengers) {
+      try {
+        // 전화번호 중복 검사 (기존 DB)
+        const existingPassenger = await this.passengerRepository.findByPhoneNumber(
+          passengerData.institutionId,
+          passengerData.phoneNumber,
+        );
+
+        if (existingPassenger) {
+          if (command.skipDuplicates) {
+            skipped++;
+            continue; // Skip this passenger
+          } else {
+            errors.push({
+              phoneNumber: passengerData.phoneNumber,
+              message: 'Phone number already exists in database',
+            });
+            continue;
+          }
+        }
+
+        // Value Objects 생성
+        const phoneNumber = new PhoneNumber(passengerData.phoneNumber);
+        const pickupAddress = new Address(passengerData.pickupAddress);
+        const dropoffAddress = new Address(passengerData.dropoffAddress);
+
+        // 도메인 엔티티 생성
+        const passenger = new Passenger(
+          randomUUID(),
+          passengerData.institutionId,
+          passengerData.name,
+          phoneNumber,
+          pickupAddress,
+          dropoffAddress,
+          passengerData.shuttleType,
+          passengerData.groupId,
+          new Date(),
+          new Date(),
+        );
+
+        passengersToCreate.push(passenger);
+      } catch (error) {
+        errors.push({
+          phoneNumber: passengerData.phoneNumber,
+          message: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
+    }
+
+    // T280: 트랜잭션으로 일괄 생성
+    if (passengersToCreate.length > 0) {
+      try {
+        await this.passengerRepository.createMany(passengersToCreate);
+        created = passengersToCreate.length;
+      } catch (error) {
+        // 트랜잭션 실패 시 모든 승객 에러 처리
+        passengersToCreate.forEach((p) => {
+          errors.push({
+            phoneNumber: p.phoneNumber.value,
+            message: 'Bulk creation transaction failed',
+          });
+        });
+      }
+    }
+
+    return { created, skipped, errors };
   }
 }

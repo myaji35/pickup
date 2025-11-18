@@ -9,14 +9,26 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  Res,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { Response } from 'express';
 import { PassengerService } from '../../application/services/passenger.service';
+import { CsvParserService } from '../../application/services/csv-parser.service';
 import { CreatePassengerDto } from '../dtos/create-passenger.dto';
 import { UpdatePassengerDto } from '../dtos/update-passenger.dto';
 import { PassengerResponseDto } from '../dtos/passenger-response.dto';
+import { BulkUploadResultDto } from '../dtos/bulk-upload-result.dto';
 import { CreatePassengerCommand } from '../../application/commands/create-passenger.command';
 import { UpdatePassengerCommand } from '../../application/commands/update-passenger.command';
+import { BulkCreatePassengersCommand } from '../../application/commands/bulk-create-passengers.command';
+import { Readable } from 'stream';
 
 /**
  * Passenger REST API Controller
@@ -25,7 +37,10 @@ import { UpdatePassengerCommand } from '../../application/commands/update-passen
 @ApiTags('Passengers')
 @Controller('passengers')
 export class PassengerController {
-  constructor(private readonly passengerService: PassengerService) {}
+  constructor(
+    private readonly passengerService: PassengerService,
+    private readonly csvParserService: CsvParserService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -200,5 +215,125 @@ export class PassengerController {
   async deletePassenger(@Param('id') id: string): Promise<{ message: string }> {
     await this.passengerService.deletePassenger(id);
     return { message: 'Passenger deleted successfully' };
+  }
+
+  /**
+   * T288-T292: CSV 일괄 업로드
+   */
+  @Post('bulk-upload')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({
+    summary: 'CSV 파일 일괄 업로드',
+    description: 'CSV 파일로 승객을 일괄 등록합니다. 최대 1000행, 5MB 제한.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        institutionId: {
+          type: 'string',
+        },
+        skipDuplicates: {
+          type: 'boolean',
+          default: true,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'CSV 업로드 완료',
+    type: BulkUploadResultDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '잘못된 파일 형식 또는 크기 초과',
+  })
+  async bulkUpload(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // T290: 5MB max
+          new FileTypeValidator({ fileType: 'text/csv' }), // T291: CSV only
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body('institutionId') institutionId: string,
+    @Body('skipDuplicates') skipDuplicates?: boolean,
+  ): Promise<BulkUploadResultDto> {
+    // CSV 파일 파싱
+    const fileStream = Readable.from(file.buffer);
+    const parseResult = await this.csvParserService.parsePassengerFile(fileStream, institutionId);
+
+    // T292: 최대 1000행 검증
+    if (parseResult.validRows.length > 1000) {
+      throw new Error('Maximum 1000 rows allowed');
+    }
+
+    // T281: 파싱 에러가 있으면 즉시 반환 (일괄 업로드 중지)
+    if (parseResult.errors.length > 0) {
+      return {
+        created: 0,
+        skipped: 0,
+        errors: parseResult.errors,
+        totalProcessed: parseResult.validRows.length + parseResult.errors.length,
+      };
+    }
+
+    // 일괄 생성
+    const command = new BulkCreatePassengersCommand(
+      institutionId,
+      parseResult.validRows,
+      skipDuplicates !== false, // Default true
+    );
+
+    const result = await this.passengerService.bulkCreatePassengers(command);
+
+    return {
+      created: result.created,
+      skipped: result.skipped,
+      errors: result.errors.map((e) => ({
+        row: 0, // Row number not available from service
+        field: 'phoneNumber',
+        message: e.message,
+        value: e.phoneNumber,
+      })),
+      totalProcessed: parseResult.validRows.length,
+    };
+  }
+
+  /**
+   * T289: CSV 템플릿 다운로드
+   */
+  @Get('template/csv')
+  @ApiOperation({
+    summary: 'CSV 템플릿 다운로드',
+    description: '승객 일괄 업로드용 CSV 템플릿 파일을 다운로드합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'CSV 템플릿 파일',
+    content: {
+      'text/csv': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async downloadTemplate(@Res() res: Response): Promise<void> {
+    const template = this.csvParserService.generateTemplate();
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="passenger-template.csv"');
+    res.send('\uFEFF' + template); // Add BOM for Excel UTF-8 support
   }
 }

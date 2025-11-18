@@ -4,6 +4,7 @@ import { PassengerGroupController } from './interface/controllers/passenger-grou
 import { PassengerController } from './interface/controllers/passenger.controller';
 import { PassengerGroupService } from './application/services/passenger-group.service';
 import { PassengerService } from './application/services/passenger.service';
+import { CsvParserService } from './application/services/csv-parser.service';
 import { PassengerGroupRepository } from './infrastructure/persistence/passenger-group.repository';
 import { PassengerRepository } from './infrastructure/persistence/passenger.repository';
 
@@ -32,6 +33,8 @@ import { PassengerRepository } from './infrastructure/persistence/passenger.repo
       useClass: PassengerRepository,
     },
     PassengerRepository,
+    // CSV Parser
+    CsvParserService,
   ],
   exports: [PassengerGroupService, PassengerService],
 })
