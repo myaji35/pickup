@@ -30,6 +30,11 @@ export interface IVehicleRepository {
   ): Promise<Vehicle | null>;
 
   /**
+   * T254: 그룹 ID로 차량 조회 (그룹에 할당된 차량 찾기)
+   */
+  findByGroupId(groupId: string): Promise<Vehicle | null>;
+
+  /**
    * 차량 정보 업데이트
    */
   update(vehicle: Vehicle): Promise<Vehicle>;

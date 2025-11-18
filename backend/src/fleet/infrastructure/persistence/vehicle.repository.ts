@@ -81,6 +81,20 @@ export class VehicleRepository implements IVehicleRepository {
   }
 
   /**
+   * T254: 그룹 ID로 차량 조회
+   * 특정 그룹에 할당된 차량 찾기
+   */
+  async findByGroupId(groupId: string): Promise<Vehicle | null> {
+    const prismaVehicle = await this.prisma.vehicle.findFirst({
+      where: {
+        currentGroupId: groupId,
+      },
+    });
+
+    return prismaVehicle ? this.toDomain(prismaVehicle) : null;
+  }
+
+  /**
    * T084: 차량 정보 업데이트
    */
   async update(vehicle: Vehicle): Promise<Vehicle> {

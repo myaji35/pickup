@@ -6,13 +6,16 @@ interface VehicleTableProps {
   vehicles: Vehicle[];
   onEdit: (vehicle: Vehicle) => void;
   onDelete: (vehicle: Vehicle) => void;
+  onConnectGroup?: (vehicle: Vehicle) => void;
+  onDisconnectGroup?: (vehicle: Vehicle) => void;
 }
 
 /**
  * VehicleTable Component
  * 차량 목록 테이블
+ * T261-T263: 그룹 연결/해제 기능 추가
  */
-export function VehicleTable({ vehicles, onEdit, onDelete }: VehicleTableProps) {
+export function VehicleTable({ vehicles, onEdit, onDelete, onConnectGroup, onDisconnectGroup }: VehicleTableProps) {
   if (vehicles.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -69,10 +72,35 @@ export function VehicleTable({ vehicles, onEdit, onDelete }: VehicleTableProps) 
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {new Date(vehicle.createdAt).toLocaleDateString('ko-KR')}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                {vehicle.currentGroupId ? (
+                  <>
+                    {onDisconnectGroup && (
+                      <button
+                        onClick={() => onDisconnectGroup(vehicle)}
+                        className="text-orange-600 hover:text-orange-900"
+                        title="그룹 연결 해제"
+                      >
+                        연결 해제
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {onConnectGroup && (
+                      <button
+                        onClick={() => onConnectGroup(vehicle)}
+                        className="text-green-600 hover:text-green-900"
+                        title="그룹에 연결"
+                      >
+                        그룹 연결
+                      </button>
+                    )}
+                  </>
+                )}
                 <button
                   onClick={() => onEdit(vehicle)}
-                  className="text-indigo-600 hover:text-indigo-900 mr-4"
+                  className="text-indigo-600 hover:text-indigo-900"
                 >
                   수정
                 </button>

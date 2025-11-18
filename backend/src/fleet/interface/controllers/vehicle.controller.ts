@@ -15,6 +15,9 @@ import { VehicleService } from '../../application/services/vehicle.service';
 import { CreateVehicleDto } from '../dtos/create-vehicle.dto';
 import { UpdateVehicleDto } from '../dtos/update-vehicle.dto';
 import { VehicleResponseDto } from '../dtos/vehicle-response.dto';
+import { ConnectVehicleToGroupDto } from '../dtos/connect-vehicle-to-group.dto';
+import { ConnectVehicleToGroupCommand } from '../../application/commands/connect-vehicle-to-group.command';
+import { DisconnectVehicleFromGroupCommand } from '../../application/commands/disconnect-vehicle-from-group.command';
 
 /**
  * VehicleController
@@ -126,5 +129,60 @@ export class VehicleController {
   })
   async remove(@Param('id') id: string): Promise<void> {
     await this.vehicleService.deleteVehicle(id);
+  }
+
+  /**
+   * T256: POST /vehicles/:id/connect-group - 차량을 그룹에 연결
+   */
+  @Post(':id/connect-group')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '차량을 승객 그룹에 연결',
+    description: '차량 정원이 그룹 승객 수보다 크거나 같아야 합니다',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '차량이 그룹에 성공적으로 연결되었습니다',
+    type: VehicleResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: '차량 정원이 그룹 승객 수보다 작습니다 (T258: 용량 검증 에러)',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '차량 또는 그룹을 찾을 수 없습니다',
+  })
+  async connectToGroup(
+    @Param('id') vehicleId: string,
+    @Body() dto: ConnectVehicleToGroupDto,
+  ): Promise<VehicleResponseDto> {
+    const command = new ConnectVehicleToGroupCommand(vehicleId, dto.groupId);
+    const vehicle = await this.vehicleService.connectToGroup(command);
+    return VehicleResponseDto.fromDomain(vehicle);
+  }
+
+  /**
+   * T257: POST /vehicles/:id/disconnect-group - 차량의 그룹 연결 해제
+   */
+  @Post(':id/disconnect-group')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '차량의 그룹 연결 해제',
+    description: '그룹과 승객은 유지되며 차량만 해제됩니다',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '차량의 그룹 연결이 해제되었습니다',
+    type: VehicleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: '차량을 찾을 수 없습니다',
+  })
+  async disconnectFromGroup(@Param('id') vehicleId: string): Promise<VehicleResponseDto> {
+    const command = new DisconnectVehicleFromGroupCommand(vehicleId);
+    const vehicle = await this.vehicleService.disconnectFromGroup(command);
+    return VehicleResponseDto.fromDomain(vehicle);
   }
 }
