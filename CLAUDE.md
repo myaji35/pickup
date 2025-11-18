@@ -156,3 +156,10 @@ The routing challenge is modeled as a Capacitated Vehicle Routing Problem with P
 - This is a greenfield project - no code exists yet
 - Focus on microservices boundaries from day one to avoid monolith technical debt
 - Prioritize B2B value metrics (cost transparency, safety, compliance) over consumer features
+
+## Active Technologies
+- TypeScript 5.x (Node.js 20.x LTS) (001-fleet-roster-management)
+- PostgreSQL 15+ (관계형 데이터, 트랜잭션 지원 필수) (001-fleet-roster-management)
+
+## Recent Changes
+- 001-fleet-roster-management: Added TypeScript 5.x (Node.js 20.x LTS)
