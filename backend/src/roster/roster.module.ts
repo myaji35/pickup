@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PassengerGroupController } from './interface/controllers/passenger-group.controller';
+import { PassengerController } from './interface/controllers/passenger.controller';
 import { PassengerGroupService } from './application/services/passenger-group.service';
+import { PassengerService } from './application/services/passenger.service';
 import { PassengerGroupRepository } from './infrastructure/persistence/passenger-group.repository';
-import { IPassengerGroupRepository } from './domain/repositories/passenger-group.repository.interface';
+import { PassengerRepository } from './infrastructure/persistence/passenger.repository';
 
 /**
  * Roster Context Module
@@ -14,15 +16,23 @@ import { IPassengerGroupRepository } from './domain/repositories/passenger-group
  */
 @Module({
   imports: [PrismaModule],
-  controllers: [PassengerGroupController],
+  controllers: [PassengerGroupController, PassengerController],
   providers: [
+    // PassengerGroup
     PassengerGroupService,
     {
       provide: 'IPassengerGroupRepository',
       useClass: PassengerGroupRepository,
     },
     PassengerGroupRepository,
+    // Passenger
+    PassengerService,
+    {
+      provide: 'IPassengerRepository',
+      useClass: PassengerRepository,
+    },
+    PassengerRepository,
   ],
-  exports: [PassengerGroupService],
+  exports: [PassengerGroupService, PassengerService],
 })
 export class RosterModule {}
