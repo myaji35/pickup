@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { VehicleController } from './interface/controllers/vehicle.controller';
+import { VehicleService } from './application/services/vehicle.service';
+import { VehicleRepository } from './infrastructure/persistence/vehicle.repository';
+import { IVehicleRepository } from './domain/repositories/vehicle.repository.interface';
 
 /**
  * Fleet Context Module
@@ -7,8 +11,19 @@ import { Module } from '@nestjs/common';
  * - currentGroup: 차량-그룹 연결 관리
  */
 @Module({
-  controllers: [],
-  providers: [],
-  exports: [],
+  controllers: [VehicleController],
+  providers: [
+    VehicleService,
+    {
+      provide: 'IVehicleRepository',
+      useClass: VehicleRepository,
+    },
+    // Alias for dependency injection
+    {
+      provide: IVehicleRepository,
+      useClass: VehicleRepository,
+    },
+  ],
+  exports: [VehicleService],
 })
 export class FleetModule {}

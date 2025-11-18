@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, Inject } from '@nestjs/common';
 import { IVehicleRepository } from '../../domain/repositories/vehicle.repository.interface';
 import { Vehicle } from '../../domain/entities/vehicle.entity';
 import { LicensePlateLastFour } from '../../domain/value-objects/license-plate-last-four.vo';
@@ -13,7 +13,10 @@ import { randomUUID } from 'crypto';
  */
 @Injectable()
 export class VehicleService {
-  constructor(private readonly vehicleRepository: IVehicleRepository) {}
+  constructor(
+    @Inject('IVehicleRepository')
+    private readonly vehicleRepository: IVehicleRepository,
+  ) {}
 
   /**
    * T075: 새 차량 생성
