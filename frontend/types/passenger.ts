@@ -1,3 +1,5 @@
+import { PassengerSchedule } from './passenger-schedule';
+
 /**
  * Passenger Type
  * 승객 타입 정의
@@ -11,6 +13,7 @@ export interface Passenger {
   dropoffAddress: string;
   shuttleType: 'MORNING' | 'EVENING' | 'TEMPORARY';
   groupId: string | null;
+  schedule?: PassengerSchedule | null; // T372: 스케줄 정보 (Optional)
   createdAt: string;
   updatedAt: string;
 }

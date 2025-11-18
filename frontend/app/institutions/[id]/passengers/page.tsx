@@ -11,7 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { CsvUploadDialog } from '@/components/dialogs/csv-upload-dialog';
-import { Loader2, Plus, Upload, Search, X, Filter } from 'lucide-react';
+import { ScheduleEditDialog } from '@/components/dialogs/schedule-edit-dialog';
+import { Loader2, Plus, Upload, Search, X, Filter, Clock, AlertTriangle } from 'lucide-react';
 
 /**
  * Passengers Page
@@ -30,6 +31,9 @@ export default function PassengersPage() {
   const [shuttleTypeFilter, setShuttleTypeFilter] = useState<string | undefined>();
   const [assignmentStatusFilter, setAssignmentStatusFilter] = useState<'assigned' | 'unassigned' | undefined>();
   const [isCsvUploadOpen, setIsCsvUploadOpen] = useState(false);
+
+  // T367-T372: Schedule edit dialog state
+  const [scheduleEditPassenger, setScheduleEditPassenger] = useState<{ id: string; name: string; schedule?: any } | null>(null);
 
   // T318: Debounce search input (300ms)
   useEffect(() => {
@@ -208,8 +212,23 @@ export default function PassengersPage() {
             className="p-4 border rounded-lg hover:bg-muted/50 transition"
           >
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{passenger.name}</h3>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold">{passenger.name}</h3>
+                  {/* T371: 케어 시간 배지 (빨간색 if 부족) */}
+                  {passenger.schedule && (
+                    <Badge
+                      variant={passenger.schedule.isCareTimeInsufficient ? 'destructive' : 'secondary'}
+                      className="text-xs"
+                    >
+                      <Clock className="h-3 w-3 mr-1" />
+                      {passenger.schedule.careTimeHours.toFixed(1)}h
+                      {passenger.schedule.isCareTimeInsufficient && (
+                        <AlertTriangle className="h-3 w-3 ml-1" />
+                      )}
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground">
                   {passenger.phoneNumber} • {passenger.shuttleType}
                 </p>
@@ -219,8 +238,28 @@ export default function PassengersPage() {
                 <p className="text-sm text-muted-foreground">
                   Dropoff: {passenger.dropoffAddress}
                 </p>
+
+                {/* T372: 스케줄 정보 표시 */}
+                {passenger.schedule && (
+                  <div className="mt-2 text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3 inline mr-1" />
+                    Schedule: {passenger.schedule.pickupTime} → {passenger.schedule.dropoffTime}
+                  </div>
+                )}
               </div>
               <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setScheduleEditPassenger({
+                    id: passenger.id,
+                    name: passenger.name,
+                    schedule: passenger.schedule,
+                  })}
+                >
+                  <Clock className="h-4 w-4 mr-1" />
+                  Schedule
+                </Button>
                 <Button variant="outline" size="sm">
                   Edit
                 </Button>
@@ -248,6 +287,17 @@ export default function PassengersPage() {
         onClose={() => setIsCsvUploadOpen(false)}
         institutionId={institutionId}
       />
+
+      {/* T367-T372: Schedule Edit Dialog */}
+      {scheduleEditPassenger && (
+        <ScheduleEditDialog
+          isOpen={true}
+          onClose={() => setScheduleEditPassenger(null)}
+          passengerId={scheduleEditPassenger.id}
+          passengerName={scheduleEditPassenger.name}
+          existingSchedule={scheduleEditPassenger.schedule}
+        />
+      )}
     </div>
   );
 }
