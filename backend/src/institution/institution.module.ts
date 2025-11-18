@@ -1,14 +1,28 @@
 import { Module } from '@nestjs/common';
+import { PrismaModule } from '../prisma/prisma.module';
+import { InstitutionTypeController } from './interface/controllers/institution-type.controller';
+import { InstitutionTypeService } from './application/services/institution-type.service';
+import { InstitutionTypeRepository } from './infrastructure/persistence/institution-type.repository';
 
 /**
- * Institution Context Module
+ * T391-T393: Institution Context Module
  * 기관 및 기관 유형 관리
- * - InstitutionType: 주간보호/일반 시설 구분
- * - Institution: 사업자등록번호 기반 기관 정보
+ * - InstitutionType: 기관 유형 (주간보호, 일반 등)
+ * - Institution: 기관 정보 (B2B 고객)
  */
 @Module({
-  controllers: [],
-  providers: [],
-  exports: [],
+  imports: [PrismaModule],
+  controllers: [InstitutionTypeController],
+  providers: [
+    // T392: InstitutionTypeService
+    InstitutionTypeService,
+    // T393: InstitutionTypeRepository
+    {
+      provide: 'IInstitutionTypeRepository',
+      useClass: InstitutionTypeRepository,
+    },
+    InstitutionTypeRepository,
+  ],
+  exports: [InstitutionTypeService],
 })
 export class InstitutionModule {}
