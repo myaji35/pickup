@@ -7,7 +7,8 @@ import { useCreatePassenger } from '@/hooks/mutations/use-create-passenger';
 import { useUpdatePassenger } from '@/hooks/mutations/use-update-passenger';
 import { useDeletePassenger } from '@/hooks/mutations/use-delete-passenger';
 import { Button } from '@/components/ui/button';
-import { Loader2, Plus } from 'lucide-react';
+import { CsvUploadDialog } from '@/components/dialogs/csv-upload-dialog';
+import { Loader2, Plus, Upload } from 'lucide-react';
 
 /**
  * Passengers Page
@@ -19,6 +20,7 @@ export default function PassengersPage() {
 
   const [shuttleTypeFilter, setShuttleTypeFilter] = useState<string | undefined>();
   const [search, setSearch] = useState<string | undefined>();
+  const [isCsvUploadOpen, setIsCsvUploadOpen] = useState(false);
 
   const { data: passengers = [], isLoading } = usePassengers(institutionId, {
     shuttleType: shuttleTypeFilter,
@@ -46,10 +48,20 @@ export default function PassengersPage() {
             Manage passengers for your institution
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Passenger
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => setIsCsvUploadOpen(true)}
+            variant="outline"
+            className="border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            CSV 업로드
+          </Button>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            New Passenger
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4">
@@ -92,6 +104,13 @@ export default function PassengersPage() {
           </div>
         ))}
       </div>
+
+      {/* T303: CSV Upload Dialog */}
+      <CsvUploadDialog
+        isOpen={isCsvUploadOpen}
+        onClose={() => setIsCsvUploadOpen(false)}
+        institutionId={institutionId}
+      />
     </div>
   );
 }
