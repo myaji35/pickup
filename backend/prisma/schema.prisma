@@ -1,0 +1,172 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Institution Context
+// ============================================================================
+
+/// 기관 유형 (주간보호 시설, 일반 시설 등)
+/// 002번 기능: 주간보호 시설은 8시간 케어 검증 필수
+model InstitutionType {
+  id                    String   @id @default(uuid())
+  typeCode              String   @unique @db.VarChar(20)  // DAYCARE, GENERAL
+  typeName              String   @db.VarChar(50)          // 주간보호, 일반
+  minimumCareTimeHours  Int?                             // 주간보호: 8, 일반: null
+
+  // Relations
+  institutions          Institution[]
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("institution_types")
+}
+
+/// 기관 (재가장기요양기관 등)
+/// B2B 서비스의 핵심 엔티티 - 사업자등록번호로 식별
+model Institution {
+  id                    String   @id @default(uuid())
+  businessRegistrationNo String  @unique @db.VarChar(10)  // 사업자등록번호 (10자리, 하이픈 제거)
+  name                  String   @db.VarChar(100)
+
+  // 002번 기능: 기관 유형 연결
+  institutionTypeId     String?
+  institutionType       InstitutionType? @relation(fields: [institutionTypeId], references: [id], onDelete: Restrict)
+
+  // Relations
+  vehicles              Vehicle[]
+  passengerGroups       PassengerGroup[]
+  passengers            Passenger[]
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([businessRegistrationNo])
+  @@index([institutionTypeId])
+  @@map("institutions")
+}
+
+// ============================================================================
+// Fleet Context
+// ============================================================================
+
+/// 차량 (5-15인승)
+/// 차량번호 뒤 4자리로 식별 (기관 내 고유)
+model Vehicle {
+  id                String   @id @default(uuid())
+  lastFourDigits    String   @db.VarChar(4)              // 차량번호 뒤 4자리 (예: "1234")
+  passengerCapacity Int                                  // 승객 정원 (5-15)
+
+  // Institution 관계
+  institutionId     String
+  institution       Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  // 현재 연결된 승객 그룹 (차량 교체 시 변경됨)
+  currentGroupId    String?
+  currentGroup      PassengerGroup? @relation(fields: [currentGroupId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([institutionId, lastFourDigits])  // 기관 내에서 차량번호 뒤 4자리 고유
+  @@index([institutionId, currentGroupId])   // 기관별 차량-그룹 조회 최적화
+  @@index([lastFourDigits])                  // 차량번호 검색
+  @@map("vehicles")
+}
+
+// ============================================================================
+// Roster Context
+// ============================================================================
+
+/// 승객 그룹 (차량 교체 시 지속성 보장)
+/// FR-024~031: 그룹 코드로 승객들을 묶어 관리
+model PassengerGroup {
+  id                   String   @id @default(uuid())
+  institutionId        String
+  institution          Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  groupCode            String   @db.VarChar(20)         // 그룹 코드 (예: "GRP-001")
+  name                 String   @db.VarChar(100)        // 그룹명 (예: "오전 A조")
+  totalPassengerCount  Int      @default(0)             // 총 승객 수 (캐싱 값)
+
+  // Relations
+  passengers           Passenger[]
+  vehicles             Vehicle[]                        // 이 그룹에 연결된 차량들
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([institutionId, groupCode])  // 기관 내에서 그룹 코드 고유
+  @@index([institutionId, groupCode])   // 기관 내 그룹 검색
+  @@map("passenger_groups")
+}
+
+/// 승객 (셔틀 서비스 이용자)
+/// 연락처를 고유 식별자로 사용 (기관 내 중복 불가)
+model Passenger {
+  id              String   @id @default(uuid())
+  name            String   @db.VarChar(50)
+  phoneNumber     String   @db.VarChar(15)              // 하이픈 제거된 전화번호 (01012345678)
+  pickupAddress   String   @db.VarChar(200)             // 탑승지 주소
+  dropoffAddress  String   @db.VarChar(200)             // 하차지 주소
+  shuttleType     ShuttleType                           // 셔틀 유형 (MORNING, EVENING, TEMPORARY)
+
+  // Institution 관계
+  institutionId   String
+  institution     Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  // PassengerGroup 관계 (Optional)
+  groupId         String?
+  group           PassengerGroup? @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  // 002번 기능: 케어 시간 정보 (1:1 관계, Optional)
+  schedule        PassengerSchedule?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([institutionId, phoneNumber])   // 기관 내에서 연락처 고유
+  @@index([institutionId, shuttleType])    // 기관별 셔틀 유형 필터링
+  @@index([institutionId, name])           // 기관 내 이름 검색
+  @@index([groupId])                       // 그룹별 승객 조회
+  @@map("passengers")
+}
+
+/// 셔틀 유형 Enum
+enum ShuttleType {
+  MORNING    // 오전 셔틀 (여러 탑승지 → 기관)
+  EVENING    // 오후 셔틀 (기관 → 여러 하차지)
+  TEMPORARY  // 임시 셔틀 (동적 요청)
+
+  @@map("shuttle_type")
+}
+
+/// 승객 스케줄 (002번 기능: 8시간 케어 검증)
+/// 주간보호 시설 승객의 희망 탑승/하차 시간 관리
+model PassengerSchedule {
+  id                     String   @id @default(uuid())
+  passengerId            String   @unique                // 1:1 관계
+  passenger              Passenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+
+  desiredPickupTime      String   @db.VarChar(5)         // HH:MM 형식 (예: "09:00")
+  desiredDropoffTime     String   @db.VarChar(5)         // HH:MM 형식 (예: "17:30")
+
+  // 계산 값 (캐싱)
+  careTimeHours          Float                           // 케어 시간 간격 (시간 단위, 예: 8.5)
+  isCareTimeInsufficient Boolean  @default(false)        // 8시간 미만 여부 (경고 플래그)
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([isCareTimeInsufficient])  // 케어 시간 부족 승객 필터링
+  @@index([passengerId])             // 1:1이지만 조회 최적화
+  @@map("passenger_schedules")
+}
