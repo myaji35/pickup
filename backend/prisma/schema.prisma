@@ -37,6 +37,9 @@ model User {
   institutionId String?
   institution   Institution? @relation(fields: [institutionId], references: [id], onDelete: Cascade)
 
+  // Phase 12: Driver trips
+  trips Trip[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -103,6 +106,7 @@ model Institution {
   users           User[]
   subscriptions   Subscription[]
   routes          Route[] // Q1: 경로 최적화
+  trips           Trip[] // Phase 12: 운행 관리
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,6 +138,8 @@ model Vehicle {
 
   // Q1: 경로 최적화
   routes Route[]
+  // Phase 12: 운행 관리
+  trips  Trip[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -197,6 +203,8 @@ model Passenger {
 
   // 002번 기능: 케어 시간 정보 (1:1 관계, Optional)
   schedule PassengerSchedule?
+  // Phase 12: 체크인 기록
+  checkIns CheckIn[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -215,6 +223,95 @@ enum ShuttleType {
   TEMPORARY // 임시 셔틀 (동적 요청)
 
   @@map("shuttle_type")
+}
+
+// ============================================================================
+// Trip Context (Phase 12: Driver Mobile App)
+// ============================================================================
+
+/// 운행 타입 (Phase 12)
+enum TripType {
+  MORNING // 오전 운행
+  EVENING // 오후 운행
+  TEMPORARY // 임시 운행
+
+  @@map("trip_type")
+}
+
+/// 운행 상태 (Phase 12)
+enum TripStatus {
+  SCHEDULED // 예정됨
+  IN_PROGRESS // 운행 중
+  COMPLETED // 완료
+  CANCELLED // 취소됨
+
+  @@map("trip_status")
+}
+
+/// 운행 (Phase 12)
+/// 기사의 일일 운행 관리 - 운행 시작/종료, GPS 추적
+model Trip {
+  id            String     @id @default(uuid())
+  institutionId String
+  institution   Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  vehicleId String
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  driverId String
+  driver   User @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  routeId String?
+  route   Route? @relation(fields: [routeId], references: [id], onDelete: SetNull)
+
+  type   TripType   // MORNING, EVENING, TEMPORARY
+  status TripStatus @default(SCHEDULED) // SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+
+  scheduledStart DateTime // 예정된 출발 시간
+  actualStart    DateTime? // 실제 출발 시간
+  actualEnd      DateTime? // 실제 도착 시간
+
+  startLocation Json? // { lat, lng } - 운행 시작 GPS 위치
+  endLocation   Json? // { lat, lng } - 운행 종료 GPS 위치
+
+  // Relations
+  checkIns CheckIn[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionId, status])
+  @@index([vehicleId, scheduledStart])
+  @@index([driverId, scheduledStart])
+  @@index([status, scheduledStart])
+  @@map("trips")
+}
+
+/// 체크인 타입 (Phase 12)
+enum CheckInType {
+  BOARDING // 탑승
+  ALIGHTING // 하차
+
+  @@map("checkin_type")
+}
+
+/// 체크인 (Phase 12)
+/// 승객의 탑승/하차 기록
+model CheckIn {
+  id          String      @id @default(uuid())
+  tripId      String
+  trip        Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  passengerId String
+  passenger   Passenger   @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  type        CheckInType // BOARDING, ALIGHTING
+  timestamp   DateTime // 체크인 시각
+  location    Json // { lat, lng } - 체크인 GPS 위치
+
+  createdAt DateTime @default(now())
+
+  @@index([tripId, type])
+  @@index([passengerId, timestamp])
+  @@map("checkins")
 }
 
 /// 승객 스케줄 (002번 기능: 8시간 케어 검증)
@@ -335,6 +432,9 @@ model Route {
   // 최적화 메타데이터
   optimizationTime Int?    @db.Integer // ms (알고리즘 실행 시간)
   solverVersion    String? @db.VarChar(20) // "OR-Tools 9.7"
+
+  // Phase 12: 운행 관리
+  trips Trip[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
