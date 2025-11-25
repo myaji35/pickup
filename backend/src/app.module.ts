@@ -7,6 +7,7 @@ import { InstitutionModule } from './institution/institution.module';
 import { FleetModule } from './fleet/fleet.module';
 import { RosterModule } from './roster/roster.module';
 import { UserModule } from './user/user.module';
+import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
     FleetModule,
     RosterModule,
     UserModule, // Phase 11: User & Auth
+    SubscriptionModule, // Phase 11: Subscription & Plan
   ],
   controllers: [AppController],
   providers: [AppService],

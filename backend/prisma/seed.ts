@@ -1,5 +1,6 @@
 import { PrismaClient, ShuttleType } from '@prisma/client';
 import { faker } from '@faker-js/faker/locale/ko'; // 한국어 faker
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,94 @@ async function main() {
 
   console.log('✅ InstitutionTypes created:', institutionTypes.length);
 
+  // ========================================
+  // Phase 11: Plan Seed (T450)
+  // ========================================
+  console.log('Seeding Plans...');
+
+  const starterPlan = await prisma.plan.upsert({
+    where: { code: 'STARTER' },
+    update: {},
+    create: {
+      name: '스타터',
+      code: 'STARTER',
+      maxVehicles: 3,
+      maxPassengers: 30,
+      monthlyPrice: 50000,
+      features: {
+        csvUpload: true,
+        analytics: false,
+        aiOptimization: false,
+        apiAccess: false,
+        prioritySupport: false,
+      },
+      isActive: true,
+    },
+  });
+
+  const proPlan = await prisma.plan.upsert({
+    where: { code: 'PRO' },
+    update: {},
+    create: {
+      name: '프로',
+      code: 'PRO',
+      maxVehicles: 10,
+      maxPassengers: 100,
+      monthlyPrice: 150000,
+      features: {
+        csvUpload: true,
+        analytics: true,
+        aiOptimization: false,
+        apiAccess: true,
+        prioritySupport: false,
+      },
+      isActive: true,
+    },
+  });
+
+  const enterprisePlan = await prisma.plan.upsert({
+    where: { code: 'ENTERPRISE' },
+    update: {},
+    create: {
+      name: '엔터프라이즈',
+      code: 'ENTERPRISE',
+      maxVehicles: null, // unlimited
+      maxPassengers: null, // unlimited
+      monthlyPrice: 500000,
+      features: {
+        csvUpload: true,
+        analytics: true,
+        aiOptimization: true,
+        apiAccess: true,
+        prioritySupport: true,
+      },
+      isActive: true,
+    },
+  });
+
+  console.log('✅ Plans created');
+
+  // ========================================
+  // Phase 11: SUPER_ADMIN User Seed
+  // ========================================
+  console.log('Seeding SUPER_ADMIN user...');
+
+  const hashedPassword = await bcrypt.hash('admin123!@#', 10);
+
+  const superAdmin = await prisma.user.upsert({
+    where: { email: 'admin@pickup.com' },
+    update: {},
+    create: {
+      email: 'admin@pickup.com',
+      password: hashedPassword,
+      role: 'SUPER_ADMIN',
+      name: '시스템 관리자',
+      isActive: true,
+    },
+  });
+
+  console.log('✅ SUPER_ADMIN created:', superAdmin.email);
+
   // 2. Institution 생성
   const institutions = await Promise.all([
     prisma.institution.upsert({
@@ -39,6 +128,9 @@ async function main() {
         businessRegistrationNo: '1234567890',
         name: '서울 주간보호센터',
         institutionTypeId: institutionTypes[0].id, // DAYCARE
+        status: 'ACTIVE',
+        approvedAt: new Date(),
+        approvedBy: superAdmin.id,
       },
     }),
     prisma.institution.upsert({
@@ -62,6 +154,50 @@ async function main() {
   ]);
 
   console.log('✅ Institutions created:', institutions.length);
+
+  // ========================================
+  // Phase 11: Subscription for Active Institution
+  // ========================================
+  console.log('Creating subscriptions...');
+
+  await prisma.subscription.upsert({
+    where: { id: 'seed-subscription-1' },
+    update: {},
+    create: {
+      id: 'seed-subscription-1',
+      institutionId: institutions[0].id,
+      planId: starterPlan.id,
+      status: 'ACTIVE',
+      startDate: new Date(),
+      endDate: null,
+      trialEndsAt: null,
+      autoRenew: true,
+    },
+  });
+
+  console.log('✅ Subscriptions created');
+
+  // ========================================
+  // Phase 11: INSTITUTION_ADMIN User
+  // ========================================
+  console.log('Creating institution admin users...');
+
+  const institutionAdminPassword = await bcrypt.hash('test1234', 10);
+
+  await prisma.user.upsert({
+    where: { email: 'admin@seoul.com' },
+    update: {},
+    create: {
+      email: 'admin@seoul.com',
+      password: institutionAdminPassword,
+      role: 'INSTITUTION_ADMIN',
+      name: '김관리',
+      institutionId: institutions[0].id,
+      isActive: true,
+    },
+  });
+
+  console.log('✅ Institution admin users created');
 
   // 3. PassengerGroup 생성
   const groups: any[] = [];
@@ -200,6 +336,11 @@ async function main() {
   }
 
   console.log('🎉 Seed completed successfully!');
+  console.log('==========================================');
+  console.log('SUPER_ADMIN: admin@pickup.com / admin123!@#');
+  console.log('INSTITUTION_ADMIN: admin@seoul.com / test1234');
+  console.log('Plans: STARTER (50,000원), PRO (150,000원), ENTERPRISE (500,000원)');
+  console.log('==========================================');
 }
 
 main()
