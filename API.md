@@ -1,6 +1,7 @@
 # Pickup MaaS API Documentation
 
 Phase 11 - Admin Portal & Multi-tenant Foundation
+Phase 12 - Driver Mobile App
 
 Base URL: `http://localhost:3012/backend/api/v1`
 
@@ -14,8 +15,9 @@ Base URL: `http://localhost:3012/backend/api/v1`
 4. [Admin - Plan Management](#admin---plan-management)
 5. [Admin - Statistics](#admin---statistics)
 6. [Institution Self-Service](#institution-self-service)
-7. [Common Response Format](#common-response-format)
-8. [Error Codes](#error-codes)
+7. [Driver APIs (Phase 12)](#driver-apis-phase-12)
+8. [Common Response Format](#common-response-format)
+9. [Error Codes](#error-codes)
 
 ---
 
@@ -1309,6 +1311,397 @@ Authorization: Bearer {access_token}
       "nextBillingDate": "2025-12-20T00:00:00.000Z"
     }
   }
+}
+```
+
+---
+
+## Driver APIs (Phase 12)
+
+**Note:** 모든 엔드포인트는 DRIVER 권한 필요
+
+### POST /driver/trips/:id/start
+
+운행 시작
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Path Parameters:**
+- `id`: Trip ID (UUID)
+
+**Request Body:**
+```json
+{
+  "startLocation": {
+    "lat": 37.123456,
+    "lng": 127.123456
+  }
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "trip-uuid",
+    "status": "IN_PROGRESS",
+    "actualStart": "2025-11-25T07:00:00.000Z",
+    "startLocation": {
+      "lat": 37.123456,
+      "lng": 127.123456
+    }
+  },
+  "message": "Trip started successfully"
+}
+```
+
+**Error Response (400 Bad Request):**
+```json
+{
+  "success": false,
+  "message": "Cannot start trip in IN_PROGRESS status. Trip must be SCHEDULED.",
+  "error": "Bad Request"
+}
+```
+
+**Error Response (403 Forbidden):**
+```json
+{
+  "success": false,
+  "message": "You are not authorized to start this trip",
+  "error": "Forbidden"
+}
+```
+
+---
+
+### POST /driver/trips/:id/end
+
+운행 종료
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Path Parameters:**
+- `id`: Trip ID (UUID)
+
+**Request Body:**
+```json
+{
+  "endLocation": {
+    "lat": 37.234567,
+    "lng": 127.234567
+  }
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "trip-uuid",
+    "status": "COMPLETED",
+    "actualEnd": "2025-11-25T08:30:00.000Z",
+    "endLocation": {
+      "lat": 37.234567,
+      "lng": 127.234567
+    },
+    "durationMinutes": 90
+  },
+  "message": "Trip ended successfully"
+}
+```
+
+**Error Response (400 Bad Request):**
+```json
+{
+  "success": false,
+  "message": "Cannot end trip in SCHEDULED status. Trip must be IN_PROGRESS.",
+  "error": "Bad Request"
+}
+```
+
+---
+
+### GET /driver/trips/today
+
+오늘의 운행 목록 조회
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "trip-uuid-1",
+      "type": "MORNING",
+      "status": "COMPLETED",
+      "scheduledStart": "2025-11-25T07:00:00.000Z",
+      "actualStart": "2025-11-25T07:00:00.000Z",
+      "actualEnd": "2025-11-25T08:30:00.000Z",
+      "vehicleId": "vehicle-uuid",
+      "routeId": "route-uuid"
+    },
+    {
+      "id": "trip-uuid-2",
+      "type": "EVENING",
+      "status": "SCHEDULED",
+      "scheduledStart": "2025-11-25T17:00:00.000Z",
+      "actualStart": null,
+      "actualEnd": null,
+      "vehicleId": "vehicle-uuid",
+      "routeId": "route-uuid"
+    }
+  ]
+}
+```
+
+---
+
+### GET /driver/trips/:id
+
+운행 상세 조회 (체크인 정보 포함)
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Path Parameters:**
+- `id`: Trip ID (UUID)
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "trip": {
+      "id": "trip-uuid",
+      "type": "MORNING",
+      "status": "IN_PROGRESS",
+      "scheduledStart": "2025-11-25T07:00:00.000Z",
+      "actualStart": "2025-11-25T07:00:00.000Z",
+      "actualEnd": null,
+      "startLocation": {
+        "lat": 37.123456,
+        "lng": 127.123456
+      },
+      "endLocation": null,
+      "vehicleId": "vehicle-uuid",
+      "routeId": "route-uuid",
+      "durationMinutes": null
+    },
+    "checkIns": [
+      {
+        "id": "checkin-uuid-1",
+        "passengerId": "passenger-uuid-1",
+        "type": "BOARDING",
+        "timestamp": "2025-11-25T07:10:00.000Z",
+        "location": {
+          "lat": 37.123456,
+          "lng": 127.123456
+        }
+      },
+      {
+        "id": "checkin-uuid-2",
+        "passengerId": "passenger-uuid-2",
+        "type": "BOARDING",
+        "timestamp": "2025-11-25T07:20:00.000Z",
+        "location": {
+          "lat": 37.124567,
+          "lng": 127.124567
+        }
+      }
+    ],
+    "stats": {
+      "totalCheckIns": 2,
+      "boardingCount": 2,
+      "alightingCount": 0
+    }
+  }
+}
+```
+
+---
+
+### POST /driver/checkin
+
+체크인 생성 (탑승/하차)
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Request Body:**
+```json
+{
+  "tripId": "trip-uuid",
+  "passengerId": "passenger-uuid",
+  "type": "BOARDING",
+  "timestamp": "2025-11-25T07:10:00.000Z",
+  "location": {
+    "lat": 37.123456,
+    "lng": 127.123456
+  }
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "checkin-uuid",
+    "tripId": "trip-uuid",
+    "passengerId": "passenger-uuid",
+    "type": "BOARDING",
+    "timestamp": "2025-11-25T07:10:00.000Z",
+    "location": {
+      "lat": 37.123456,
+      "lng": 127.123456
+    }
+  },
+  "message": "Passenger checked in successfully (BOARDING)"
+}
+```
+
+**Error Response (400 Bad Request - 중복 체크인):**
+```json
+{
+  "success": false,
+  "message": "Passenger has already checked in as BOARDING for this trip",
+  "error": "Bad Request"
+}
+```
+
+**Error Response (400 Bad Request - 운행 상태 오류):**
+```json
+{
+  "success": false,
+  "message": "Cannot check in passengers. Trip status is SCHEDULED. Trip must be IN_PROGRESS.",
+  "error": "Bad Request"
+}
+```
+
+**CheckIn Type Values:**
+- `BOARDING`: 탑승
+- `ALIGHTING`: 하차
+
+---
+
+### GET /driver/trips/:id/checkins
+
+운행의 체크인 목록 조회
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Path Parameters:**
+- `id`: Trip ID (UUID)
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "checkIns": [
+      {
+        "id": "checkin-uuid-1",
+        "passengerId": "passenger-uuid-1",
+        "type": "BOARDING",
+        "timestamp": "2025-11-25T07:10:00.000Z",
+        "location": {
+          "lat": 37.123456,
+          "lng": 127.123456
+        }
+      },
+      {
+        "id": "checkin-uuid-2",
+        "passengerId": "passenger-uuid-2",
+        "type": "BOARDING",
+        "timestamp": "2025-11-25T07:20:00.000Z",
+        "location": {
+          "lat": 37.124567,
+          "lng": 127.124567
+        }
+      }
+    ],
+    "stats": {
+      "totalCheckIns": 2,
+      "boardingCount": 2,
+      "alightingCount": 0
+    }
+  }
+}
+```
+
+---
+
+### GET /driver/trips/in-progress
+
+현재 진행 중인 운행 조회
+
+**Headers:**
+```
+Authorization: Bearer {access_token}
+```
+
+**Response (200 OK - 진행 중인 운행 있음):**
+```json
+{
+  "success": true,
+  "data": {
+    "trip": {
+      "id": "trip-uuid",
+      "type": "MORNING",
+      "status": "IN_PROGRESS",
+      "scheduledStart": "2025-11-25T07:00:00.000Z",
+      "actualStart": "2025-11-25T07:00:00.000Z",
+      "startLocation": {
+        "lat": 37.123456,
+        "lng": 127.123456
+      },
+      "vehicleId": "vehicle-uuid",
+      "routeId": "route-uuid"
+    },
+    "checkIns": [
+      {
+        "id": "checkin-uuid-1",
+        "passengerId": "passenger-uuid-1",
+        "type": "BOARDING",
+        "timestamp": "2025-11-25T07:10:00.000Z"
+      }
+    ],
+    "stats": {
+      "totalCheckIns": 1,
+      "boardingCount": 1,
+      "alightingCount": 0
+    }
+  }
+}
+```
+
+**Response (200 OK - 진행 중인 운행 없음):**
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "No trip in progress"
 }
 ```
 
