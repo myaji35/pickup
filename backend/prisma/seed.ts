@@ -120,6 +120,7 @@ async function main() {
   console.log('✅ SUPER_ADMIN created:', superAdmin.email);
 
   // 2. Institution 생성
+  // T497: 테스트 회원사 (ACTIVE 1개, PENDING 1개)
   const institutions = await Promise.all([
     prisma.institution.upsert({
       where: { businessRegistrationNo: '1234567890' },
@@ -140,15 +141,7 @@ async function main() {
         businessRegistrationNo: '2345678901',
         name: '부산 재가요양센터',
         institutionTypeId: institutionTypes[0].id, // DAYCARE
-      },
-    }),
-    prisma.institution.upsert({
-      where: { businessRegistrationNo: '3456789012' },
-      update: {},
-      create: {
-        businessRegistrationNo: '3456789012',
-        name: '대전 요양원',
-        institutionTypeId: institutionTypes[1].id, // GENERAL
+        status: 'PENDING', // T497: 승인 대기 중인 테스트 회원사
       },
     }),
   ]);
@@ -308,8 +301,8 @@ async function main() {
           await prisma.passengerSchedule.create({
             data: {
               passengerId: passenger.id,
-              desiredPickupTime: pickupTime,
-              desiredDropoffTime: dropoffTime,
+              pickupTime: pickupTime,
+              dropoffTime: dropoffTime,
               careTimeHours,
               isCareTimeInsufficient,
             },
