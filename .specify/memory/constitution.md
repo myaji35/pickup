@@ -1,11 +1,18 @@
 <!--
 Sync Impact Report:
-- Version: Initial → 1.0.0
-- Modified Principles: N/A (Initial creation)
-- Added Sections: 모든 핵심 원칙, 아키텍처 제약사항, 개발 워크플로우, 거버넌스
+- Version: 1.0.0 → 1.1.0
+- Modified Principles: N/A
+- Added Sections:
+  - "VI. 단계별 가치 전달 우선순위 (Incremental Value Delivery)" - 새로운 원칙 추가
+  - "Post-MVP Roadmap (Stage 2-3)" - 상세 로드맵 추가
 - Removed Sections: N/A
-- Templates Requiring Updates: ✅ 모든 템플릿은 초기 상태 유지
-- Follow-up TODOs: 없음
+- Templates Requiring Updates:
+  - ✅ plan-template.md - Stage 2/3 계획 반영 필요
+  - ✅ spec-template.md - 새로운 원칙 VI 반영 확인
+  - ✅ tasks-template.md - 단계별 태스크 분류 반영
+- Follow-up TODOs:
+  - Plan.md에 Stage 2 상세 계획 추가
+  - Tasks.md에 Phase 12-15 태스크 분해
 -->
 
 # Pickup MaaS 플랫폼 헌장 (Constitution)
@@ -72,6 +79,18 @@ GPS 트래킹, 차량 텔레메트리, 승객 알림은 실시간으로 처리�
 
 - **근거**: B2B 고객은 비용 투명성, 안전성, 규정 준수를 중시하며, 데이터 기반 의사결정을 요구한다.
 
+### VI. 단계별 가치 전달 우선순위 (Incremental Value Delivery)
+
+각 개발 단계는 독립적으로 배포 가능한 비즈니스 가치를 제공해야 하며, 이전 단계의 안정성을 전제로 진행한다.
+
+- **필수 요구사항**:
+  - MVP 완료 후 Stage 2 진행: AI VRP 엔진 구현 전 인증/인가 시스템 완성 필수
+  - 각 Stage는 최소 1개의 완전한 사용자 여정(User Journey)을 제공
+  - 새로운 Stage 시작 전 이전 Stage의 테스트 커버리지 90% 이상 달성
+  - 기술 부채(Technical Debt) 정리 후 다음 Stage 진행
+
+- **근거**: 초기 품질 확보 없이 복잡도를 추가하면 기술 부채가 누적되어 전체 프로젝트가 위험해진다.
+
 ## 아키텍처 제약사항 (Architecture Constraints)
 
 ### 기술 스택 표준
@@ -107,22 +126,83 @@ GPS 트래킹, 차량 텔레메트리, 승객 알림은 실시간으로 처리�
 
 ### 단계별 출시 전략 (Phased Rollout)
 
-**Stage 1 (MVP - 핵심 서비스)**:
-- 고정 경로 (AI 최적화 없음)
-- 수동 승객 명단 관리
-- 기본 GPS 차량 모니터링
-- 운전자 앱: 운행 시작/종료, 수동 승객 체크
-- 승객 앱: 실시간 위치 추적
+**MVP (Phase 1-11) - 완료됨**:
+- ✅ Fleet Management: Vehicle CRUD, PassengerGroup 관리, Vehicle-Group 연결
+- ✅ Roster Management: Passenger CRUD, CSV 업로드, 템플릿 다운로드
+- ✅ Care Time Validation: 8시간 케어 시간 자동 계산 및 검증
+- ✅ Institution Type Management: 기관 유형별 규칙 설정
+- 🚧 User Authentication: JWT 기반 인증 (진행중 - Phase 11)
 
-**Stage 2 (확장 및 최적화)**:
-- AI VRP 엔진 도입 (자동 탑승 순서 생성)
-- 기본 BI 대시보드 (관리자 포털)
-- QR/NFC 승객 체크인
+**Stage 2 (확장 및 최적화) - 다음 목표**:
+
+*Phase 12: SaaS Admin Portal 완성*
+- Admin 대시보드 UI (회원사 승인/관리)
+- 회원사 상태 관리 (PENDING → ACTIVE → SUSPENDED)
+- 요금제 및 구독 관리
+- 시스템 사용자 관리 (SUPER_ADMIN 전용)
+
+*Phase 13: Institution Self-Service*
+- 회원사 가입 신청 페이지
+- 회원사별 통계 대시보드
+- 회원사 설정 페이지 (자사 정보 수정)
+
+*Phase 14: 운전자 모바일 앱 MVP*
+- 운행 시작/종료 기능
+- 일일 승객 명단 조회
+- 수동 승객 체크인/체크아웃
+- 네비게이션 연동 (Tmap, Kakao Navi)
+
+*Phase 15: 승객/보호자 모바일 앱 MVP*
+- 스케줄 및 ETA 조회
+- 실시간 셔틀 위치 추적 (지도)
+- Push 알림 (운행 시작, 접근 중, 탑승/하차 확인)
+
+*Phase 16: AI VRP 엔진 통합*
+- Google OR-Tools VRP 솔버 구현
+- Roster → Route 자동 변환
+- 탑승 순서 최적화 알고리즘
+- 관리자 포털 "최적화" 버튼 추가
+- 최적화 결과 시각화 (지도 + 순서)
+
+*Phase 17: 기본 BI 대시보드*
+- 정시 도착률 분석
+- 차량별 운행 통계
+- 연료 비용 집계
+- 운전자 안전 점수 (기본 GPS 데이터 기반)
 
 **Stage 3 (고급 MaaS - 차별화)**:
-- OBD-II/CAN Bus 통합 (운전 행동 분석, 예측 정비)
-- BLE 비콘 자동 체크인 + 안전 알림
-- 수요 응답형 임시 셔틀 시스템
+
+*Phase 18: OBD-II/CAN Bus 통합*
+- 텔레메트리 디바이스 연동 (MQTT)
+- 실시간 차량 상태 수집 (연료, RPM, 속도, 오도미터)
+- 운전 행동 분석 (급가속/급제동, 과속, 공회전)
+- 예측 정비 알림
+
+*Phase 19: 고급 BI 대시보드*
+- 연료 효율 분석
+- 운전자 안전 점수 (상세 CAN Bus 데이터)
+- 차량 고장 예측 모델
+- 비용 투명성 리포트 (B2B 고객용)
+
+*Phase 20: QR/NFC 승객 체크인*
+- QR 코드 생성 및 스캔 (운전자 앱)
+- NFC 태그 인식 (선택 사항)
+- 자동 탑승/하차 기록
+
+*Phase 21: BLE 비콘 자동 체크인*
+- BLE 비콘 + LTE 단말기 통합
+- 지오펜스 기반 자동 탑승/하차 감지
+- 보호자 안전 알림 (어린이/노인 대상)
+
+*Phase 22: 수요 응답형 임시 셔틀*
+- 임시 셔틀 요청 UI (승객 앱)
+- 동적 경로 재계산 (VRP 재실행)
+- 운전자 요청 수락/거부 (운전자 앱)
+
+*Phase 23: OCR 영수증 처리*
+- 운전자 앱 영수증 업로드 (연료, 정비)
+- NAVER CLOVA OCR 또는 Kakao i OCR 통합
+- 자동 비용 기록 및 청구
 
 ### 코드 리뷰 및 품질 게이트
 
@@ -133,11 +213,12 @@ GPS 트래킹, 차량 텔레메트리, 승객 알림은 실시간으로 처리�
 
 ### 우선순위 결정 기준
 
-1. **AI 경로 최적화**: 가장 복잡한 기술 과제이므로 조기 검증 필수
-2. **텔레메트리 품질**: OBD-II 지원 하드웨어를 초기부터 선택하여 향후 BI 차별화 준비
-3. **데이터 파이프라인 신뢰성**: Kafka 스트리밍과 실시간 GPS는 서비스 품질의 핵심
-4. **OCR 통합**: 연료/정비 영수증 자동화로 운영 효율 향상
-5. **지오펜싱**: 승객 도착 알림으로 보호자 안심 제공
+1. **사용자 인증/인가 완성 (Phase 11 완료)**: SaaS 플랫폼의 기반이므로 최우선
+2. **Admin Portal & Self-Service (Phase 12-13)**: 회원사 관리 워크플로우 완성
+3. **모바일 앱 MVP (Phase 14-15)**: 운전자/승객 핵심 여정 구현
+4. **AI VRP 엔진 (Phase 16)**: 가장 복잡한 기술 과제, 조기 검증 필수
+5. **BI 대시보드 (Phase 17)**: B2B 가치 제공 (비용 투명성)
+6. **텔레메트리 & 고급 기능 (Phase 18-23)**: 차별화 요소, 단계별 추가
 
 ## 거버넌스 (Governance)
 
@@ -166,4 +247,4 @@ GPS 트래킹, 차량 텔레메트리, 승객 알림은 실시간으로 처리�
 - "단순성 우선" 원칙: YAGNI (You Aren't Gonna Need It) 적용
 - 과도한 엔지니어링(Over-engineering)은 명시적으로 거부
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-18 | **Last Amended**: 2025-11-18
+**Version**: 1.1.0 | **Ratified**: 2025-11-18 | **Last Amended**: 2025-11-19

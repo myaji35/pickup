@@ -150,16 +150,124 @@ The routing challenge is modeled as a Capacitated Vehicle Routing Problem with P
 - **Transparent cost management**: OCR receipt processing, detailed mileage logs
 - **Service Level Agreement (SLA) monitoring**: on-time performance tracking
 
+## Current Implementation Status
+
+### Phase 11: SaaS Admin Portal & Multi-tenant Foundation (✅ COMPLETE - 2025-11-25)
+
+**Completed Features:**
+
+**Backend (100%)**:
+- ✅ User Context: JWT authentication, refresh tokens, password encryption (bcrypt)
+- ✅ Role-Based Access Control: SUPER_ADMIN, INSTITUTION_ADMIN, DRIVER roles
+- ✅ Institution Management: Approve, reject, suspend, reactivate workflows
+- ✅ Subscription System: Plan management (Starter/Pro/Enterprise), monthly billing structure
+- ✅ Admin APIs: 30+ endpoints for institution, user, plan, and statistics management
+- ✅ Institution Self-Service APIs: Institution-scoped data access for admins
+- ✅ Database Schema: 11 core entities with Prisma ORM
+- ✅ Comprehensive Testing: Unit tests (Vitest), Integration tests, E2E tests (Supertest)
+- ✅ Seed Data: Test institutions (ACTIVE, PENDING), plans, SUPER_ADMIN account
+
+**Frontend (40% - Core Features)**:
+- ✅ Authentication System: React Context, JWT token management, protected routes
+- ✅ Admin Layout: Responsive sidebar, topbar, role-based navigation
+- ✅ Dashboard: 6 KPI cards (institutions, vehicles, passengers, revenue)
+- ✅ Institution Approval Management: Pending list, approve/reject dialogs with reasons
+- ✅ Institution List: Filtering by status, search by name/business number
+- ✅ Institution Detail: View details, suspend/reactivate with reason tracking
+- ⏸️ User Management UI (deferred)
+- ⏸️ Plan Management UI (deferred)
+- ⏸️ Statistics Charts (deferred)
+
+**Tech Stack Implemented:**
+- Backend: NestJS 10, Prisma ORM, PostgreSQL 15+, Passport.js, Vitest
+- Frontend: Next.js 14 (App Router), React 18, Tailwind CSS, shadcn/ui, TypeScript
+- Architecture: Domain-Driven Design, Command Pattern, Repository Pattern
+- Testing: Vitest for backend, manual testing guide for frontend
+
+**Key Files:**
+- Backend: `src/user/*`, `src/institution/*`, `src/subscription/*`, `prisma/schema.prisma`
+- Frontend: `app/(admin)/*`, `components/admin/*`, `contexts/auth-context.tsx`
+- Documentation: `README.md`, `TESTING_GUIDE.md`, `ARCHITECTURE.md`
+
+### Next Phases (Planned)
+
+- **Phase 12**: Driver Mobile App (React Native)
+- **Phase 13**: Passenger/Guardian Mobile App (React Native)
+- **Q1 2025**: AI Route Optimization (Google OR-Tools VRP), Real-time Notifications (FCM), IoT Telematics Integration
+
 ## Notes
 
 - The PRD is written in Korean and contains detailed architecture references to SOCAR FMS, Hyundai S4 MaaS platform, and Uber/Lyft fleet management
-- This is a greenfield project - no code exists yet
-- Focus on microservices boundaries from day one to avoid monolith technical debt
+- ~~This is a greenfield project - no code exists yet~~ **Phase 11 MVP is complete and ready for testing**
+- Follow Domain-Driven Design patterns established in Phase 11 (Entity → Service → Repository → Controller)
+- Use established testing patterns: Vitest for backend, comprehensive test coverage required
+- Frontend uses Next.js 14 App Router with React Context for state management
+- All APIs follow consistent response format: `{ success: boolean, data: T, message?: string, error?: any }`
+- JWT tokens: Access token (15min), Refresh token (7d), stored in localStorage
+- Multi-tenancy enforced at repository level with institution-scoped queries
 - Prioritize B2B value metrics (cost transparency, safety, compliance) over consumer features
 
 ## Active Technologies
-- TypeScript 5.x (Node.js 20.x LTS) (001-fleet-roster-management)
-- PostgreSQL 15+ (관계형 데이터, 트랜잭션 지원 필수) (001-fleet-roster-management)
+
+**Phase 11 Stack:**
+- **Backend Framework**: NestJS 10.x (TypeScript 5.x, Node.js 20.x LTS)
+- **Database**: PostgreSQL 15+ with Prisma ORM 5.x
+- **Authentication**: JWT (jsonwebtoken), Passport.js, bcrypt
+- **Testing**: Vitest, Supertest for E2E
+- **Frontend Framework**: Next.js 14 (App Router), React 18
+- **UI Library**: shadcn/ui, Tailwind CSS 3.x, Radix UI primitives
+- **State Management**: React Context API
+- **Validation**: class-validator, class-transformer
+
+**Future Integrations (Q1 2025):**
+- Google OR-Tools (VRP optimization)
+- Kakao Maps API (geocoding, distance calculation)
+- Firebase Cloud Messaging (push notifications)
+- Redis (caching, pub/sub)
 
 ## Recent Changes
-- 001-fleet-roster-management: Added TypeScript 5.x (Node.js 20.x LTS)
+
+**Phase 11 Implementation (2025-11-25):**
+1. **User Context (003-admin-portal/T373-T430)**:
+   - Implemented JWT authentication with access/refresh tokens
+   - Created User entity with role-based properties (SUPER_ADMIN, INSTITUTION_ADMIN, DRIVER)
+   - Built AuthService with password encryption and token generation
+   - Added JwtAuthGuard and RolesGuard for API protection
+
+2. **Institution Status Management (T431-T445)**:
+   - Implemented approve, reject, suspend, reactivate workflows
+   - Created Command Pattern classes for business operations
+   - Added institution status tracking (PENDING, ACTIVE, SUSPENDED, INACTIVE)
+   - Built AdminInstitutionController with 8 endpoints
+
+3. **Subscription & Plan Management (T446-T465)**:
+   - Created Plan entity (Starter 50K, Pro 150K, Enterprise 500K)
+   - Implemented Subscription entity linking institutions to plans
+   - Built Plan CRUD APIs with soft delete (isActive flag)
+   - Added subscription assignment/termination workflows
+
+4. **Admin & Institution APIs (T466-T495)**:
+   - Built 15+ admin APIs: user management, statistics, institution management
+   - Created institution self-service APIs for INSTITUTION_ADMIN role
+   - Implemented overview statistics (institution counts, revenue, vehicles, passengers)
+   - Added revenue statistics with monthly/yearly aggregation
+
+5. **Database & Testing (T496-T500)**:
+   - Updated seed script with test data (2 institutions: ACTIVE, PENDING)
+   - Created comprehensive unit tests (AuthService, InstitutionService, SubscriptionService)
+   - Built integration tests (AdminController)
+   - Implemented E2E tests for complete approval workflow
+
+6. **Frontend Core (T516-T585)**:
+   - Built authentication system with React Context and protected routes
+   - Created responsive admin layout (sidebar, topbar)
+   - Implemented dashboard with 6 KPI cards and quick actions
+   - Built institution approval management (pending list, approve/reject dialogs)
+   - Created institution list with filtering and search
+   - Developed institution detail page with suspend/reactivate actions
+
+7. **Documentation (T636-T640)**:
+   - Created comprehensive README.md (8,500+ lines)
+   - Built TESTING_GUIDE.md with 18 test cases
+   - Updated .env.example files for backend and frontend
+   - Updated CLAUDE.md with Phase 11 summary
