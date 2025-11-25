@@ -22,7 +22,7 @@ export interface IInstitutionRepository {
   create(institution: Institution): Promise<Institution>;
 
   /**
-   * 기관 업데이트 (유형 변경 포함)
+   * 기관 업데이트 (유형 변경 포함, Phase 11: 상태 관리 포함)
    */
   update(institution: Institution): Promise<Institution>;
 
@@ -30,4 +30,26 @@ export interface IInstitutionRepository {
    * 기관 삭제
    */
   delete(id: string): Promise<void>;
+
+  /**
+   * T441: 상태별 기관 조회
+   * Phase 11: PENDING, ACTIVE, SUSPENDED, INACTIVE 필터링
+   */
+  findByStatus(status: string): Promise<Institution[]>;
+
+  /**
+   * T442: 승인 대기 회원사 조회
+   * Phase 11: PENDING 상태의 회원사만 반환
+   */
+  findPendingInstitutions(): Promise<Institution[]>;
+
+  /**
+   * Phase 11: 모든 기관 조회 (페이지네이션 지원)
+   */
+  findAll(options?: { skip?: number; take?: number; status?: string }): Promise<Institution[]>;
+
+  /**
+   * Phase 11: 기관 수 카운트 (상태별 필터 지원)
+   */
+  count(status?: string): Promise<number>;
 }

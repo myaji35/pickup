@@ -133,6 +133,22 @@ export class InstitutionRepository implements IInstitutionRepository {
   }
 
   /**
+   * T442: 승인 대기 회원사 조회
+   */
+  async findPendingInstitutions(): Promise<Institution[]> {
+    return this.findByStatus('PENDING');
+  }
+
+  /**
+   * Phase 11: 기관 수 카운트 (상태별 필터 지원)
+   */
+  async count(status?: string): Promise<number> {
+    return this.prisma.institution.count({
+      where: status ? { status: status as any } : undefined,
+    });
+  }
+
+  /**
    * Prisma to Domain 매핑
    * Prisma 모델 → Domain Entity 변환
    */

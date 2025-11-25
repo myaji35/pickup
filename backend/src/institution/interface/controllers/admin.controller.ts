@@ -16,6 +16,11 @@ import { Roles } from '../../../user/application/decorators/roles.decorator';
 import { CurrentUser } from '../../../user/application/decorators/current-user.decorator';
 import { User } from '../../../user/domain/entities/user.entity';
 import { InstitutionRepository } from '../../infrastructure/persistence/institution.repository';
+import { InstitutionService } from '../../application/services/institution.service';
+import { ApproveInstitutionCommand } from '../../application/commands/approve-institution.command';
+import { RejectInstitutionCommand } from '../../application/commands/reject-institution.command';
+import { SuspendInstitutionCommand } from '../../application/commands/suspend-institution.command';
+import { ReactivateInstitutionCommand } from '../../application/commands/reactivate-institution.command';
 
 /**
  * Phase 11: Admin API Controller
@@ -27,7 +32,10 @@ import { InstitutionRepository } from '../../infrastructure/persistence/institut
 @Roles('SUPER_ADMIN')
 @ApiBearerAuth()
 export class AdminController {
-  constructor(private readonly institutionRepository: InstitutionRepository) {}
+  constructor(
+    private readonly institutionRepository: InstitutionRepository,
+    private readonly institutionService: InstitutionService,
+  ) {}
 
   /**
    * 모든 회원사 조회 (상태별 필터링 지원)
@@ -106,18 +114,9 @@ export class AdminController {
     description: '회원사를 찾을 수 없음',
   })
   async approveInstitution(@Param('id') id: string, @CurrentUser() user: User) {
-    const institution = await this.institutionRepository.findById(id);
-
-    if (!institution) {
-      return {
-        statusCode: 404,
-        message: 'Institution not found',
-      };
-    }
-
     try {
-      institution.approve(user.id);
-      await this.institutionRepository.update(institution);
+      const command = new ApproveInstitutionCommand(id, user.id);
+      const institution = await this.institutionService.approveInstitution(command);
 
       return {
         statusCode: 200,
@@ -126,7 +125,7 @@ export class AdminController {
       };
     } catch (error: any) {
       return {
-        statusCode: 400,
+        statusCode: error.message.includes('not found') ? 404 : 400,
         message: error.message,
       };
     }
@@ -150,18 +149,9 @@ export class AdminController {
     description: 'PENDING 상태가 아니거나 거부 사유가 없는 경우',
   })
   async rejectInstitution(@Param('id') id: string, @Body('reason') reason: string) {
-    const institution = await this.institutionRepository.findById(id);
-
-    if (!institution) {
-      return {
-        statusCode: 404,
-        message: 'Institution not found',
-      };
-    }
-
     try {
-      institution.reject(reason);
-      await this.institutionRepository.update(institution);
+      const command = new RejectInstitutionCommand(id, reason);
+      const institution = await this.institutionService.rejectInstitution(command);
 
       return {
         statusCode: 200,
@@ -170,7 +160,7 @@ export class AdminController {
       };
     } catch (error: any) {
       return {
-        statusCode: 400,
+        statusCode: error.message.includes('not found') ? 404 : 400,
         message: error.message,
       };
     }
@@ -194,18 +184,9 @@ export class AdminController {
     description: 'ACTIVE 상태가 아니거나 정지 사유가 없는 경우',
   })
   async suspendInstitution(@Param('id') id: string, @Body('reason') reason: string) {
-    const institution = await this.institutionRepository.findById(id);
-
-    if (!institution) {
-      return {
-        statusCode: 404,
-        message: 'Institution not found',
-      };
-    }
-
     try {
-      institution.suspend(reason);
-      await this.institutionRepository.update(institution);
+      const command = new SuspendInstitutionCommand(id, reason);
+      const institution = await this.institutionService.suspendInstitution(command);
 
       return {
         statusCode: 200,
@@ -214,7 +195,7 @@ export class AdminController {
       };
     } catch (error: any) {
       return {
-        statusCode: 400,
+        statusCode: error.message.includes('not found') ? 404 : 400,
         message: error.message,
       };
     }
@@ -238,18 +219,9 @@ export class AdminController {
     description: 'SUSPENDED 상태가 아닌 경우',
   })
   async reactivateInstitution(@Param('id') id: string) {
-    const institution = await this.institutionRepository.findById(id);
-
-    if (!institution) {
-      return {
-        statusCode: 404,
-        message: 'Institution not found',
-      };
-    }
-
     try {
-      institution.reactivate();
-      await this.institutionRepository.update(institution);
+      const command = new ReactivateInstitutionCommand(id);
+      const institution = await this.institutionService.reactivateInstitution(command);
 
       return {
         statusCode: 200,
@@ -258,7 +230,7 @@ export class AdminController {
       };
     } catch (error: any) {
       return {
-        statusCode: 400,
+        statusCode: error.message.includes('not found') ? 404 : 400,
         message: error.message,
       };
     }
