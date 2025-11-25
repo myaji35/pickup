@@ -63,7 +63,7 @@ export class InstitutionRepository implements IInstitutionRepository {
   }
 
   /**
-   * 기관 업데이트 (유형 변경 포함)
+   * 기관 업데이트 (유형 변경 포함, Phase 11: 상태 관리 포함)
    */
   async update(institution: Institution): Promise<Institution> {
     const prismaInstitution = await this.prisma.institution.update({
@@ -71,6 +71,12 @@ export class InstitutionRepository implements IInstitutionRepository {
       data: {
         name: institution.name,
         institutionTypeId: institution.institutionTypeId,
+        status: institution.status,
+        rejectionReason: institution.rejectionReason,
+        approvedAt: institution.approvedAt,
+        approvedBy: institution.approvedBy,
+        suspendedAt: institution.suspendedAt,
+        suspensionReason: institution.suspensionReason,
         updatedAt: institution.updatedAt,
       },
       include: {
@@ -79,6 +85,42 @@ export class InstitutionRepository implements IInstitutionRepository {
     });
 
     return this.toDomain(prismaInstitution);
+  }
+
+  /**
+   * Phase 11: 상태별 기관 조회
+   */
+  async findByStatus(status: string): Promise<Institution[]> {
+    const institutions = await this.prisma.institution.findMany({
+      where: { status: status as any },
+      include: {
+        institutionType: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return institutions.map((inst) => this.toDomain(inst));
+  }
+
+  /**
+   * Phase 11: 모든 기관 조회 (페이지네이션 지원)
+   */
+  async findAll(options?: { skip?: number; take?: number; status?: string }): Promise<Institution[]> {
+    const institutions = await this.prisma.institution.findMany({
+      where: options?.status ? { status: options.status as any } : undefined,
+      skip: options?.skip,
+      take: options?.take,
+      include: {
+        institutionType: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return institutions.map((inst) => this.toDomain(inst));
   }
 
   /**
@@ -100,6 +142,12 @@ export class InstitutionRepository implements IInstitutionRepository {
       businessRegistrationNo: prismaInstitution.businessRegistrationNo,
       name: prismaInstitution.name,
       institutionTypeId: prismaInstitution.institutionTypeId,
+      status: prismaInstitution.status as any,
+      rejectionReason: prismaInstitution.rejectionReason,
+      approvedAt: prismaInstitution.approvedAt,
+      approvedBy: prismaInstitution.approvedBy,
+      suspendedAt: prismaInstitution.suspendedAt,
+      suspensionReason: prismaInstitution.suspensionReason,
       createdAt: prismaInstitution.createdAt,
       updatedAt: prismaInstitution.updatedAt,
     });
