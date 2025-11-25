@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Param,
   Body,
   UseGuards,
@@ -21,6 +22,7 @@ import { ApproveInstitutionCommand } from '../../application/commands/approve-in
 import { RejectInstitutionCommand } from '../../application/commands/reject-institution.command';
 import { SuspendInstitutionCommand } from '../../application/commands/suspend-institution.command';
 import { ReactivateInstitutionCommand } from '../../application/commands/reactivate-institution.command';
+import { UpdateInstitutionCommand } from '../../application/commands/update-institution.command';
 
 /**
  * Phase 11: Admin API Controller
@@ -267,5 +269,42 @@ export class AdminController {
       message: 'Success',
       data: institution,
     };
+  }
+
+  /**
+   * T473: 회원사 정보 수정
+   */
+  @Patch(':id')
+  @ApiOperation({
+    summary: '회원사 정보 수정',
+    description: 'SUPER_ADMIN이 회원사 정보를 수정합니다.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '회원사 정보 수정 성공',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '회원사를 찾을 수 없음',
+  })
+  async updateInstitution(
+    @Param('id') id: string,
+    @Body() body: { name?: string; institutionTypeId?: string },
+  ) {
+    try {
+      const command = new UpdateInstitutionCommand(id, body.name, body.institutionTypeId);
+      const institution = await this.institutionService.updateInstitution(command);
+
+      return {
+        statusCode: 200,
+        message: 'Institution updated successfully',
+        data: institution,
+      };
+    } catch (error: any) {
+      return {
+        statusCode: error.message.includes('not found') ? 404 : 400,
+        message: error.message,
+      };
+    }
   }
 }

@@ -16,6 +16,7 @@ import { RolesGuard } from './application/guards/roles.guard';
 
 // Interface
 import { AuthController } from './interface/controllers/auth.controller';
+import { AdminUserController } from './interface/controllers/admin-user.controller';
 
 /**
  * User Module (Phase 11)
@@ -40,7 +41,7 @@ import { AuthController } from './interface/controllers/auth.controller';
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AdminUserController],
   providers: [
     // Repository
     UserRepository,

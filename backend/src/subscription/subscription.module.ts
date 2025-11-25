@@ -3,6 +3,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { InstitutionModule } from '../institution/institution.module';
 import { PlanController } from './interface/controllers/plan.controller';
 import { SubscriptionController } from './interface/controllers/subscription.controller';
+import { AdminPlanController } from './interface/controllers/admin-plan.controller';
 import { PlanService } from './application/services/plan.service';
 import { SubscriptionService } from './application/services/subscription.service';
 import { PlanRepository } from './infrastructure/persistence/plan.repository';
@@ -15,7 +16,7 @@ import { SubscriptionRepository } from './infrastructure/persistence/subscriptio
  */
 @Module({
   imports: [PrismaModule, InstitutionModule],
-  controllers: [PlanController, SubscriptionController],
+  controllers: [PlanController, SubscriptionController, AdminPlanController],
   providers: [
     // Services
     PlanService,
