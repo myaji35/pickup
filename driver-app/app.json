@@ -13,7 +13,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "운행 시작/종료 및 승객 체크인 시 GPS 위치를 기록하기 위해 위치 권한이 필요합니다."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +24,22 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "운행 시작/종료 및 승객 체크인 시 GPS 위치를 기록하기 위해 위치 권한이 필요합니다."
+        }
+      ]
+    ]
   }
 }

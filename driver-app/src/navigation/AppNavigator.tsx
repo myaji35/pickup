@@ -1,8 +1,9 @@
 /**
- * App Navigator (Phase 12.3)
+ * App Navigator (Phase 12.4)
  *
  * 앱 내비게이션 설정
  * - 인증 상태에 따라 로그인/홈 화면 전환
+ * - 운행 상세, 체크인 화면
  */
 
 import React from 'react';
@@ -11,6 +12,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../contexts/AuthContext';
 import { LoginScreen } from '../screens/LoginScreen';
 import { HomeScreen } from '../screens/HomeScreen';
+import { TripDetailScreen } from '../screens/TripDetailScreen';
+import { CheckInScreen } from '../screens/CheckInScreen';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -41,7 +44,8 @@ export const AppNavigator: React.FC = () => {
           // 로그인한 경우
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
-            {/* TODO: TripDetail, CheckIn 화면 추가 */}
+            <Stack.Screen name="TripDetail" component={TripDetailScreen} />
+            <Stack.Screen name="CheckIn" component={CheckInScreen} />
           </>
         )}
       </Stack.Navigator>

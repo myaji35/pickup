@@ -1,22 +1,35 @@
-# Driver Mobile App (Phase 12.3)
+# Driver Mobile App (Phase 12.4) ✅ 완성
 
 기사용 모바일 앱 - React Native (Expo)
 
 ## 기능
 
-### 완료된 기능
+### ✅ 완료된 기능
 - ✅ 로그인/로그아웃
 - ✅ 오늘의 운행 목록 조회
 - ✅ 진행 중인 운행 표시
+- ✅ **운행 상세 화면 (TripDetailScreen)**
+  - 운행 정보 표시
+  - 체크인 목록 및 통계
+  - Pull-to-refresh
+- ✅ **운행 시작/종료**
+  - GPS 위치 자동 수집
+  - 실시간 상태 업데이트
+- ✅ **승객 체크인/하차 화면 (CheckInScreen)**
+  - 탑승/하차 선택
+  - 승객 ID 입력
+  - GPS 위치 자동 기록
+- ✅ **GPS 위치 수집 (expo-location)**
+  - 위치 권한 요청
+  - 현재 위치 가져오기
 - ✅ 인증 토큰 보안 저장 (expo-secure-store)
 - ✅ API 클라이언트 (Axios)
 
-### TODO (다음 단계)
-- ⏸️ 운행 상세 화면 (TripDetail)
-- ⏸️ 운행 시작/종료
-- ⏸️ 승객 체크인/하차 화면
-- ⏸️ GPS 위치 수집
-- ⏸️ QR 코드 스캔 (optional)
+### TODO (추가 개선)
+- ⏸️ QR 코드 스캔 (expo-barcode-scanner)
+- ⏸️ 승객 목록 API 연동
+- ⏸️ 실시간 위치 추적 (Background Location)
+- ⏸️ 푸시 알림 (expo-notifications)
 
 ## 기술 스택
 
@@ -26,6 +39,7 @@
 - **React Navigation**: Native Stack
 - **Axios**: HTTP 클라이언트
 - **expo-secure-store**: 토큰 보안 저장
+- **expo-location**: GPS 위치 수집
 
 ## 프로젝트 구조
 
@@ -41,9 +55,13 @@ driver-app/
 │   │   └── AuthContext.tsx
 │   ├── screens/          # 화면 컴포넌트
 │   │   ├── LoginScreen.tsx
-│   │   └── HomeScreen.tsx
+│   │   ├── HomeScreen.tsx
+│   │   ├── TripDetailScreen.tsx  # 운행 상세
+│   │   └── CheckInScreen.tsx     # 승객 체크인
 │   ├── navigation/       # React Navigation
 │   │   └── AppNavigator.tsx
+│   ├── utils/            # 유틸리티
+│   │   └── location.ts   # GPS 위치 수집
 │   └── types/            # TypeScript 타입
 │       └── index.ts
 ├── App.tsx               # 메인 앱 컴포넌트
@@ -122,6 +140,22 @@ const API_BASE_URL = __DEV__
 - 오늘의 운행 목록
 - Pull-to-refresh
 - 로그아웃 버튼
+
+### 3. 운행 상세 화면 (TripDetailScreen) ✨ NEW
+- 운행 정보 (타입, 상태, 출발/도착 시간)
+- 체크인 통계 (전체/탑승/하차)
+- 체크인 목록 (시간순 정렬)
+- **운행 시작 버튼** (SCHEDULED 상태)
+- **승객 체크인 버튼** (IN_PROGRESS 상태)
+- **운행 종료 버튼** (IN_PROGRESS 상태)
+- Pull-to-refresh
+
+### 4. 승객 체크인 화면 (CheckInScreen) ✨ NEW
+- 체크인 유형 선택 (탑승/하차)
+- 승객 ID 입력
+- QR 코드 스캔 버튼 (준비됨)
+- 체크인 안내 메시지
+- GPS 위치 자동 기록
 
 ## 인증 관리
 
