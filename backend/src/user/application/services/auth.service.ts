@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../../infrastructure/persistence/user.repository';
 import { User, UserRole } from '../../domain/entities/user.entity';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 export interface JwtPayload {
   sub: string; // user id
@@ -35,6 +36,7 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {}
 
   /**
@@ -192,5 +194,81 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException('Invalid access token');
     }
+  }
+
+  /**
+   * 기관 회원가입
+   * - 기관 생성 (PENDING 상태)
+   * - 관리자 사용자 생성 (INSTITUTION_ADMIN 역할)
+   * - 트랜잭션으로 처리
+   */
+  async registerInstitution(dto: {
+    businessRegistrationNumber: string;
+    institutionName: string;
+    adminEmail: string;
+    adminPassword: string;
+    adminName: string;
+  }): Promise<{ institution: any; user: User }> {
+    // 이메일 중복 확인
+    const existingUser = await this.userRepository.findByEmail(dto.adminEmail);
+    if (existingUser) {
+      throw new ConflictException('Email already exists');
+    }
+
+    // 사업자등록번호 중복 확인
+    const existingInstitution = await this.prisma.institution.findUnique({
+      where: { businessRegistrationNo: dto.businessRegistrationNumber },
+    });
+    if (existingInstitution) {
+      throw new ConflictException('Business registration number already exists');
+    }
+
+    // 비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(dto.adminPassword, 10);
+
+    // 트랜잭션으로 기관 + 사용자 생성
+    const result = await this.prisma.$transaction(async (tx) => {
+      // 1. 기관 생성 (PENDING 상태)
+      const institution = await tx.institution.create({
+        data: {
+          businessRegistrationNo: dto.businessRegistrationNumber,
+          name: dto.institutionName,
+          status: 'PENDING',
+        },
+      });
+
+      // 2. 관리자 사용자 생성
+      const user = await tx.user.create({
+        data: {
+          email: dto.adminEmail,
+          password: hashedPassword,
+          name: dto.adminName,
+          role: 'INSTITUTION_ADMIN',
+          institutionId: institution.id,
+          isActive: true,
+        },
+      });
+
+      return { institution, user };
+    });
+
+    // User 엔티티로 변환
+    const userEntity = new User(
+      result.user.id,
+      result.user.email,
+      result.user.password,
+      result.user.role as UserRole,
+      result.user.name,
+      result.user.isActive,
+      result.user.institutionId,
+      result.user.lastLoginAt,
+      result.user.createdAt,
+      result.user.updatedAt,
+    );
+
+    return {
+      institution: result.institution,
+      user: userEntity,
+    };
   }
 }

@@ -9,6 +9,8 @@ import { RosterModule } from './roster/roster.module';
 import { UserModule } from './user/user.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { TripModule } from './trip/trip.module';
+import { RouteModule } from './route/route.module';
+import { StatsController } from './common/interfaces/stats.controller';
 
 @Module({
   imports: [
@@ -22,8 +24,9 @@ import { TripModule } from './trip/trip.module';
     UserModule, // Phase 11: User & Auth
     SubscriptionModule, // Phase 11: Subscription & Plan
     TripModule, // Phase 12: Trip & CheckIn
+    RouteModule, // Route Optimization Engine
   ],
-  controllers: [AppController],
+  controllers: [AppController, StatsController],
   providers: [AppService],
 })
 export class AppModule {}

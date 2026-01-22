@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Building2, Truck, BarChart3 } from 'lucide-react';
+import { Settings, Building2, Truck, BarChart3, Route, Package, CreditCard } from 'lucide-react';
 import { apiClient, User } from '@/lib/api';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
@@ -81,14 +81,26 @@ export default function AdminDashboard() {
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-not-allowed opacity-50">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/institutions')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-purple-600" />
                   기관 관리
                 </CardTitle>
                 <CardDescription>
-                  기관 목록 및 승인 관리 (준비 중)
+                  기관 승인/거부/정지 관리
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/routes')}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Route className="w-5 h-5 text-indigo-600" />
+                  경로 최적화
+                </CardTitle>
+                <CardDescription>
+                  AI 기반 VRP 경로 최적화
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -96,7 +108,7 @@ export default function AdminDashboard() {
             <Card className="hover:shadow-lg transition-shadow cursor-not-allowed opacity-50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-indigo-600" />
+                  <Truck className="w-5 h-5 text-emerald-600" />
                   차량 모니터링
                 </CardTitle>
                 <CardDescription>
@@ -105,14 +117,38 @@ export default function AdminDashboard() {
               </CardHeader>
             </Card>
 
-            <Card className="hover:shadow-lg transition-shadow cursor-not-allowed opacity-50">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/plans')}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-orange-600" />
+                  요금제 관리
+                </CardTitle>
+                <CardDescription>
+                  구독 플랜 생성/수정/삭제
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/subscriptions')}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-teal-600" />
+                  구독 관리
+                </CardTitle>
+                <CardDescription>
+                  기관별 구독 현황 및 관리
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin/statistics')}>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="w-5 h-5 text-pink-600" />
                   통계 대시보드
                 </CardTitle>
                 <CardDescription>
-                  운영 통계 및 리포트 (준비 중)
+                  실시간 운영 통계 및 리포트
                 </CardDescription>
               </CardHeader>
             </Card>

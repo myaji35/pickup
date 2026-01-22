@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, LogOut } from 'lucide-react';
 import { apiClient, User } from '@/lib/api';
+import { NotificationBell } from './notification-bell';
 
 interface AdminHeaderProps {
   title: string;
@@ -54,6 +55,7 @@ export function AdminHeader({ title, subtitle, user, showBackButton, backHref = 
                 <p className="text-sm font-medium">{user.name}</p>
                 <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
+              <NotificationBell />
               <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
                 <LogOut className="w-4 h-4" />
                 로그아웃

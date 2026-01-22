@@ -45,6 +45,11 @@ import { InstitutionRepository } from './infrastructure/persistence/institution.
     },
     InstitutionRepository,
   ],
-  exports: [InstitutionTypeService, InstitutionService],
+  exports: [
+    InstitutionTypeService,
+    InstitutionService,
+    'IInstitutionRepository',
+    InstitutionRepository,
+  ],
 })
 export class InstitutionModule {}

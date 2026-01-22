@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>픽업 MaaS - AI 경로 최적화</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1392ec",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101a22",
+              "neutral-100": "#ffffff",
+              "neutral-200": "#e7eef3",
+              "neutral-300": "#b0c1d1",
+              "neutral-700": "#4c799a",
+              "neutral-900": "#0d161b",
+              "accent-green": "#36B37E",
+              "accent-yellow": "#FFAB00",
+              "accent-red": "#DE350B",
+              "accent-teal": "#00C7E6",
+              "accent-purple": "#8A42E5",
+              "accent-orange": "#FF7A00"
+            },
+            fontFamily: {
+              "display": ["Noto Sans KR", "Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;}
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-neutral-900 dark:text-neutral-100">
+<div class="flex flex-col h-screen">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-neutral-200 dark:border-neutral-700/50 px-6 py-3 bg-neutral-100 dark:bg-background-dark/80 backdrop-blur-sm z-20 shrink-0">
+<div class="flex items-center gap-4 text-neutral-900 dark:text-neutral-100">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M39.5563 34.1455V13.8546C39.5563 15.708 36.8773 17.3437 32.7927 18.3189C30.2914 18.916 27.263 19.2655 24 19.2655C20.737 19.2655 17.7086 18.916 15.2073 18.3189C11.1227 17.3437 8.44365 15.708 8.44365 13.8546V34.1455C8.44365 35.9988 11.1227 37.6346 15.2073 38.6098C17.7086 39.2069 20.737 39.5564 24 39.5564C27.263 39.5564 30.2914 39.2069 32.7927 38.6098C36.8773 37.6346 39.5563 35.9988 39.5563 34.1455Z"></path>
+<path clip-rule="evenodd" d="M10.4485 13.8519C10.4749 13.9271 10.6203 14.246 11.379 14.7361C12.298 15.3298 13.7492 15.9145 15.6717 16.3735C18.0007 16.9296 20.8712 17.2655 24 17.2655C27.1288 17.2655 29.9993 16.9296 32.3283 16.3735C34.2508 15.9145 35.702 15.3298 36.621 14.7361C37.3796 14.246 37.5251 13.9271 37.5515 13.8519C37.5287 13.7876 37.4333 13.5973 37.0635 13.2931C36.5266 12.8516 35.6288 12.3647 34.343 11.9175C31.79 11.0295 28.1333 10.4437 24 10.4437C19.8667 10.4437 16.2099 11.0295 13.657 11.9175C12.3712 12.3647 11.4734 12.8516 10.9365 13.2931C10.5667 13.5973 10.4713 13.7876 10.4485 13.8519ZM37.5563 18.7877C36.3176 19.3925 34.8502 19.8839 33.2571 20.2642C30.5836 20.9025 27.3973 21.2655 24 21.2655C20.6027 21.2655 17.4164 20.9025 14.7429 20.2642C13.1498 19.8839 11.6824 19.3925 10.4436 18.7877V34.1275C10.4515 34.1545 10.5427 34.4867 11.379 35.027C12.298 35.6207 13.7492 36.2054 15.6717 36.6644C18.0007 37.2205 20.8712 37.5564 24 37.5564C27.1288 37.5564 29.9993 37.2205 32.3283 36.6644C34.2508 36.2054 35.702 35.6207 36.621 35.027C37.4573 34.4867 37.5485 34.1546 37.5563 34.1275V18.7877ZM41.5563 13.8546V34.1455C41.5563 36.1078 40.158 37.5042 38.7915 38.3869C37.3498 39.3182 35.4192 40.0389 33.2571 40.5551C30.5836 41.1934 27.3973 41.5564 24 41.5564C20.6027 41.5564 17.4164 41.1934 14.7429 40.5551C12.5808 40.0389 10.6502 39.3182 9.20848 38.3869C7.84205 37.5042 6.44365 36.1078 6.44365 34.1455L6.44365 13.8546C6.44365 12.2684 7.37223 11.0454 8.39581 10.2036C9.43325 9.3505 10.8137 8.67141 12.343 8.13948C15.4203 7.06909 19.5418 6.44366 24 6.44366C28.4582 6.44366 32.5797 7.06909 35.657 8.13948C37.1863 8.67141 38.5667 9.3505 39.6042 10.2036C40.6278 11.0454 41.5563 12.2684 41.5563 13.8546Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-neutral-900 dark:text-neutral-100 text-lg font-bold leading-tight tracking-[-0.015em]">픽업 MaaS</h2>
+</div>
+<div class="flex flex-1 justify-end gap-2">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-neutral-100 text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">경로 저장</span>
+</button>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-neutral-200 dark:bg-neutral-100/10 text-neutral-900 dark:text-neutral-100 text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">내보내기</span>
+</button>
+<div class="flex items-center gap-2 border-l border-neutral-200 dark:border-neutral-700/50 pl-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-neutral-900 dark:text-neutral-100 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-neutral-900 dark:text-neutral-100 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar with an abstract pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAiVdfgwgxIgTTIEjnifH1MaEJcCogVqm0u6Cqmpt_gJpiCv-iLvBSJlXPelsONYxKHq71kCrvYwm4kwlNoYjZCFRUszY086572DVKsLPZd-78XpJ8-_KvFEVuIl_OWcFLkZzmjNAtyLLYJHtSsOPoW6cK6ZYSojsL-3aa0fTFZqwqsYezmLD9v5bVVBBavtEnZP-1DPjmRGglE8Adf05Icajj4Y0Je7UBxOI9jTouCFadhwi2mqjGouoyQaeLvw543TxJ8yYFYMCo");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 grid grid-cols-12 gap-6 p-6 overflow-hidden">
+<aside class="col-span-3 flex flex-col gap-6 bg-neutral-100 dark:bg-background-dark/80 rounded-xl p-6 overflow-y-auto">
+<h1 class="text-neutral-900 dark:text-neutral-100 text-xl font-bold leading-normal">최적화 설정</h1>
+<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-2">
+<label class="text-neutral-700 dark:text-neutral-300 text-sm font-medium" for="passenger-lists">승객 명단 선택</label>
+<div class="relative">
+<select class="form-multiselect w-full rounded-lg border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/50 focus:border-primary focus:ring-primary/50 text-sm" id="passenger-lists" multiple="">
+<option selected="">오전 출근 - 북부</option>
+<option>정오 병원 운행</option>
+<option selected="">저녁 교대 - 남부</option>
+<option>주말 쇼핑객</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-neutral-700 dark:text-neutral-300 text-sm font-medium" for="vehicles">차량 선택</label>
+<div class="relative">
+<select class="form-multiselect w-full rounded-lg border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/50 focus:border-primary focus:ring-primary/50 text-sm" id="vehicles" multiple="">
+<option selected="">밴-01 (정원: 8)</option>
+<option selected="">버스-A (정원: 20)</option>
+<option>밴-02 (정원: 8)</option>
+<option selected="">세단-C (정원: 4)</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-neutral-700 dark:text-neutral-300 text-sm font-medium">제약 조건 설정 (선택 사항)</label>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-sm text-neutral-900 dark:text-neutral-100" for="max-travel-time">최대 이동 시간 (분)</label>
+<input class="form-input w-24 text-sm rounded-md border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900/50 focus:border-primary focus:ring-primary/50" id="max-travel-time" placeholder="예: 90" type="number"/>
+</div>
+<div class="relative flex items-start">
+<div class="flex h-6 items-center">
+<input checked="" class="h-4 w-4 rounded border-neutral-300 text-primary focus:ring-primary" id="capacity-constraint" name="capacity-constraint" type="checkbox"/>
+</div>
+<div class="ml-3 text-sm leading-6">
+<label class="font-medium text-neutral-900 dark:text-neutral-100" for="capacity-constraint">차량 정원 준수</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-neutral-200 dark:border-neutral-700/50">
+<button class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary h-12 px-6 text-neutral-100 text-base font-bold transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
+<span class="material-symbols-outlined" style="font-size: 24px;">auto_awesome</span>
+                    AI 최적화 실행
+                </button>
+</div>
+</aside>
+<div class="col-span-5 flex flex-col gap-4 overflow-hidden">
+<div class="flex flex-col">
+<div class="flex flex-wrap gap-2">
+<a class="text-neutral-700 dark:text-neutral-300 text-base font-medium leading-normal" href="#">대시보드</a>
+<span class="text-neutral-700 dark:text-neutral-300 text-base font-medium leading-normal">/</span>
+<a class="text-neutral-700 dark:text-neutral-300 text-base font-medium leading-normal" href="#">운행 관리</a>
+<span class="text-neutral-700 dark:text-neutral-300 text-base font-medium leading-normal">/</span>
+<span class="text-neutral-900 dark:text-neutral-100 text-base font-medium leading-normal">AI 경로 최적화</span>
+</div>
+<div class="flex min-w-72 flex-col gap-1 mt-2">
+<p class="text-neutral-900 dark:text-neutral-100 text-4xl font-black leading-tight tracking-[-0.033em]">AI 경로 최적화</p>
+<p class="text-neutral-700 dark:text-neutral-300 text-base font-normal leading-normal">AI 엔진을 사용하여 선택된 승객 명단과 차량에 대한 최적화된 경로를 생성합니다.</p>
+</div>
+</div>
+<div class="@container flex flex-col h-full flex-1">
+<div class="flex flex-1 flex-col">
+<div class="bg-cover bg-center flex min-h-[320px] flex-1 flex-col justify-between p-4 rounded-xl" data-alt="A stylized map of a city showing several colored lines representing optimized vehicle routes connecting various pins." data-location="City with routes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA4OufnatnKP2vTD669IyL5uevgxpXgykZnUjlhOOj-zu1Q2vfu7yPU-64GMJOQl8gxwjG2PAZx2Zpe17YEfibbpxR3k0VHrs9n-7kter_H32x_T2AcKBAfiPoDj1-0cNVtcr7PjKJPlgr_bkuL5omkYyVHPPt9L41Dyz9UnVJibiTw7zoftWhBPlWMAH0Jh7jp1OuxcyLTTDwwVpXG60xIqQOxU-92S_VC-J1leY5vFBp6tpwHjGS27R8g-VegAJsA9RYW4utWSfo");'>
+<label class="flex flex-col min-w-40 h-12">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full shadow-md">
+<div class="text-neutral-700 dark:text-neutral-300 flex border-none bg-neutral-100 dark:bg-background-dark items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-neutral-900 dark:text-neutral-100 focus:outline-0 focus:ring-0 border-none bg-neutral-100 dark:bg-background-dark focus:border-none h-full placeholder:text-neutral-700 dark:placeholder:text-neutral-300 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="주소 또는 장소 검색" value=""/>
+</div>
+</label>
+<div class="flex flex-col items-end gap-3">
+<div class="flex flex-col gap-0.5">
+<button class="flex size-10 items-center justify-center rounded-t-lg bg-neutral-100 dark:bg-background-dark shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+<span class="material-symbols-outlined text-neutral-900 dark:text-neutral-100">add</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-b-lg bg-neutral-100 dark:bg-background-dark shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+<span class="material-symbols-outlined text-neutral-900 dark:text-neutral-100">remove</span>
+</button>
+</div>
+<button class="flex size-10 items-center justify-center rounded-lg bg-neutral-100 dark:bg-background-dark shadow-[0_2px_4px_rgba(0,0,0,0.1)]">
+<span class="material-symbols-outlined text-neutral-900 dark:text-neutral-100">my_location</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<aside class="col-span-4 flex flex-col gap-4 bg-neutral-100 dark:bg-background-dark/80 rounded-xl p-6 overflow-hidden">
+<div class="flex flex-col">
+<h2 class="text-xl font-bold text-neutral-900 dark:text-neutral-100">최적화된 경로</h2>
+<p class="text-sm text-neutral-700 dark:text-neutral-300">차량 3대, 승객 18명, 총 소요 시간 2시간 15분</p>
+</div>
+<div class="border border-accent-yellow/50 bg-accent-yellow/10 rounded-lg p-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-accent-yellow" style="font-size: 24px;">warning</span>
+<div>
+<h3 class="font-bold text-neutral-900 dark:text-neutral-100">미배정 승객 2명</h3>
+<p class="text-sm text-neutral-700 dark:text-neutral-300">제약 조건으로 인해 배정할 수 없습니다. 검토해 주세요.</p>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-4 overflow-y-auto pr-2 -mr-2">
+<div class="flex flex-col gap-3 rounded-lg border border-neutral-200 dark:border-neutral-700/50 p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-accent-teal" style="font-size: 28px;">directions_bus</span>
+<div>
+<h3 class="font-bold text-neutral-900 dark:text-neutral-100">경로 1: 버스-A</h3>
+<p class="text-sm text-neutral-700 dark:text-neutral-300">승객 12명 • 45분 • 12.5 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-neutral-700 dark:text-neutral-300">expand_more</span>
+</div>
+<div class="flex flex-col gap-2 pl-2 border-l-2 border-accent-teal">
+<div class="flex items-center justify-between pl-3 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-100/10 rounded-md cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-neutral-700 dark:text-neutral-300">drag_indicator</span>
+<div>
+<p class="font-medium text-sm text-neutral-900 dark:text-neutral-100">픽업: 올리비아 첸</p>
+<p class="text-xs text-neutral-700 dark:text-neutral-300">노스우드, 메이플 스트리트 123</p>
+</div>
+</div>
+<span class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">08:15</span>
+</div>
+<div class="flex items-center justify-between pl-3 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-100/10 rounded-md cursor-grab active:cursor-grabbing">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-neutral-700 dark:text-neutral-300">drag_indicator</span>
+<div>
+<p class="font-medium text-sm text-neutral-900 dark:text-neutral-100">픽업: 벤자민 카터</p>
+<p class="text-xs text-neutral-700 dark:text-neutral-300">노스우드, 오크 애비뉴 456</p>
+</div>
+</div>
+<span class="text-sm font-semibold text-neutral-900 dark:text-neutral-100">08:22</span>
+</div>
+<div class="pl-4 text-sm text-neutral-700 dark:text-neutral-300">... 10개 정류장 추가</div>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-lg border border-neutral-200 dark:border-neutral-700/50 p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-accent-purple" style="font-size: 28px;">directions_car</span>
+<div>
+<h3 class="font-bold text-neutral-900 dark:text-neutral-100">경로 2: 밴-01</h3>
+<p class="text-sm text-neutral-700 dark:text-neutral-300">승객 4명 • 32분 • 8.1 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-neutral-700 dark:text-neutral-300">expand_less</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 rounded-lg border border-neutral-200 dark:border-neutral-700/50 p-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-accent-orange" style="font-size: 28px;">local_taxi</span>
+<div>
+<h3 class="font-bold text-neutral-900 dark:text-neutral-100">경로 3: 세단-C</h3>
+<p class="text-sm text-neutral-700 dark:text-neutral-300">승객 2명 • 25분 • 6.4 km</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-neutral-700 dark:text-neutral-300">expand_less</span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

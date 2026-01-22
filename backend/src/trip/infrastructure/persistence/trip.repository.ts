@@ -100,6 +100,47 @@ export class TripRepository implements ITripRepository {
     return trips.map((trip) => this.toDomain(trip));
   }
 
+  async findByPassenger(passengerId: string): Promise<Trip[]> {
+    // TODO: 실제로는 Route의 optimizedSequence에서 passengerId를 검색해야 함
+    // 현재는 간단하게 모든 trips를 반환 (MVP용)
+    // 추후 개선: JOIN Route and search in optimizedSequence JSON
+    const trips = await this.prisma.trip.findMany({
+      orderBy: {
+        scheduledStart: 'desc',
+      },
+      take: 50, // Limit to recent 50 trips
+    });
+
+    return trips.map((trip) => this.toDomain(trip));
+  }
+
+  async findByPassengerAndDate(
+    passengerId: string,
+    date: Date,
+  ): Promise<Trip[]> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // TODO: 실제로는 Route의 optimizedSequence에서 passengerId를 검색해야 함
+    // 현재는 간단하게 날짜로만 필터링 (MVP용)
+    const trips = await this.prisma.trip.findMany({
+      where: {
+        scheduledStart: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      orderBy: {
+        scheduledStart: 'asc',
+      },
+    });
+
+    return trips.map((trip) => this.toDomain(trip));
+  }
+
   async findByInstitutionAndDate(
     institutionId: string,
     date: Date,

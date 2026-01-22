@@ -56,6 +56,31 @@ export class TripService {
   }
 
   /**
+   * 승객의 운행 목록 조회
+   */
+  async getTripsByPassenger(passengerId: string): Promise<Trip[]> {
+    return await this.tripRepository.findByPassenger(passengerId);
+  }
+
+  /**
+   * 승객의 오늘 운행 목록 조회
+   */
+  async getTodayTripsByPassenger(passengerId: string): Promise<Trip[]> {
+    const today = new Date();
+    return await this.tripRepository.findByPassengerAndDate(passengerId, today);
+  }
+
+  /**
+   * 승객의 특정 날짜 운행 목록 조회
+   */
+  async getTripsByPassengerAndDate(
+    passengerId: string,
+    date: Date,
+  ): Promise<Trip[]> {
+    return await this.tripRepository.findByPassengerAndDate(passengerId, date);
+  }
+
+  /**
    * 운행 시작
    */
   async startTrip(command: StartTripCommand): Promise<Trip> {

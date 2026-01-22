@@ -19,8 +19,9 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import { Trip, TripStatus, TripType, CheckIn, CheckInType } from '../types';
+import { Trip, TripStatus, TripType, CheckIn, CheckInType, Passenger } from '../types';
 import * as tripApi from '../api/tripApi';
+import * as checkinApi from '../api/checkinApi';
 import { getCurrentLocation } from '../utils/location';
 
 export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
@@ -30,6 +31,7 @@ export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
   const { tripId } = route.params;
 
   const [trip, setTrip] = useState<Trip | null>(null);
+  const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
   const [stats, setStats] = useState({
     totalCheckIns: 0,
@@ -51,6 +53,7 @@ export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
 
       if (response.success && response.data) {
         setTrip(response.data.trip);
+        setPassengers(response.data.passengers || []);
         setCheckIns(response.data.checkIns);
         setStats(response.data.stats);
       }
@@ -146,6 +149,52 @@ export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
         },
       },
     ]);
+  };
+
+  const handleQuickCheckIn = async (
+    passengerId: string,
+    passengerName: string,
+    type: CheckInType
+  ) => {
+    const typeLabel = type === CheckInType.BOARDING ? '탑승' : '하차';
+    Alert.alert(
+      `${typeLabel} 체크인`,
+      `${passengerName} 승객을 ${typeLabel} 처리하시겠습니까?`,
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '확인',
+          onPress: async () => {
+            try {
+              // GPS 위치 가져오기
+              const location = await getCurrentLocation();
+              if (!location) {
+                Alert.alert('위치 오류', '위치 정보를 가져올 수 없습니다.');
+                return;
+              }
+
+              // 체크인 생성 API 호출
+              const response = await checkinApi.createCheckIn(
+                tripId,
+                passengerId,
+                type,
+                location
+              );
+
+              if (response.success) {
+                Alert.alert('체크인 완료', `${passengerName} 승객의 ${typeLabel} 체크인이 완료되었습니다.`);
+                // 데이터 새로고침
+                await loadTripDetail();
+              }
+            } catch (error: any) {
+              const errorMessage =
+                error.response?.data?.message || '체크인에 실패했습니다.';
+              Alert.alert('체크인 실패', errorMessage);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const getTripTypeLabel = (type: TripType): string => {
@@ -322,6 +371,97 @@ export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
             </View>
           </View>
         </View>
+
+        {/* 승객 목록 (운행 중일 때만 표시) */}
+        {isInProgress && passengers.length > 0 && (
+          <View style={styles.passengersSection}>
+            <Text style={styles.sectionTitle}>승객 목록</Text>
+            <Text style={styles.sectionSubtitle}>
+              탑승 순서대로 표시됩니다. 버튼을 클릭하여 체크인하세요.
+            </Text>
+            {passengers.map((passenger) => {
+              // 해당 승객의 체크인 상태 확인
+              const boardingCheckIn = checkIns.find(
+                (c) => c.passengerId === passenger.id && c.type === CheckInType.BOARDING
+              );
+              const alightingCheckIn = checkIns.find(
+                (c) => c.passengerId === passenger.id && c.type === CheckInType.ALIGHTING
+              );
+
+              return (
+                <View key={passenger.id} style={styles.passengerCard}>
+                  <View style={styles.passengerInfo}>
+                    <View style={styles.passengerHeader}>
+                      <View style={styles.passengerSequence}>
+                        <Text style={styles.passengerSequenceText}>
+                          {passenger.sequence}
+                        </Text>
+                      </View>
+                      <View style={styles.passengerDetails}>
+                        <Text style={styles.passengerName}>{passenger.name}</Text>
+                        <Text style={styles.passengerAddress} numberOfLines={1}>
+                          {passenger.address}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.passengerActions}>
+                      <TouchableOpacity
+                        style={[
+                          styles.checkInActionButton,
+                          styles.boardingButton,
+                          boardingCheckIn && styles.checkInActionButtonDisabled,
+                        ]}
+                        onPress={() =>
+                          handleQuickCheckIn(
+                            passenger.id,
+                            passenger.name,
+                            CheckInType.BOARDING
+                          )
+                        }
+                        disabled={!!boardingCheckIn}
+                      >
+                        <Text
+                          style={[
+                            styles.checkInActionButtonText,
+                            boardingCheckIn && styles.checkInActionButtonTextDisabled,
+                          ]}
+                        >
+                          {boardingCheckIn ? '✓ 탑승' : '탑승'}
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.checkInActionButton,
+                          styles.alightingButton,
+                          (!boardingCheckIn || alightingCheckIn) &&
+                            styles.checkInActionButtonDisabled,
+                        ]}
+                        onPress={() =>
+                          handleQuickCheckIn(
+                            passenger.id,
+                            passenger.name,
+                            CheckInType.ALIGHTING
+                          )
+                        }
+                        disabled={!boardingCheckIn || !!alightingCheckIn}
+                      >
+                        <Text
+                          style={[
+                            styles.checkInActionButtonText,
+                            (!boardingCheckIn || alightingCheckIn) &&
+                              styles.checkInActionButtonTextDisabled,
+                          ]}
+                        >
+                          {alightingCheckIn ? '✓ 하차' : '하차'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        )}
 
         {/* 체크인 목록 */}
         <View style={styles.checkInsSection}>
@@ -543,6 +683,91 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 12,
+  },
+  sectionSubtitle: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 16,
+  },
+  passengersSection: {
+    marginBottom: 24,
+  },
+  passengerCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  passengerInfo: {
+    flex: 1,
+  },
+  passengerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  passengerSequence: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  passengerSequenceText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  passengerDetails: {
+    flex: 1,
+  },
+  passengerName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  passengerAddress: {
+    fontSize: 12,
+    color: '#666',
+  },
+  passengerActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  checkInActionButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 2,
+  },
+  boardingButton: {
+    backgroundColor: '#34C759',
+    borderColor: '#34C759',
+  },
+  alightingButton: {
+    backgroundColor: '#FF9500',
+    borderColor: '#FF9500',
+  },
+  checkInActionButtonDisabled: {
+    backgroundColor: '#f0f0f0',
+    borderColor: '#ddd',
+  },
+  checkInActionButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  checkInActionButtonTextDisabled: {
+    color: '#999',
   },
   checkInItem: {
     backgroundColor: '#fff',

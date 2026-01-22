@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '../../application/guards/jwt-auth.guard';
 import { Public } from '../../application/decorators/public.decorator';
 import { CurrentUser } from '../../application/decorators/current-user.decorator';
 import { RegisterDto } from '../dtos/register.dto';
+import { RegisterInstitutionDto } from '../dtos/register-institution.dto';
 import { LoginDto } from '../dtos/login.dto';
 import { AuthTokensResponseDto, UserResponseDto } from '../dtos/auth-response.dto';
 import { User } from '../../domain/entities/user.entity';
@@ -48,6 +49,45 @@ export class AuthController {
   async register(@Body() dto: RegisterDto): Promise<UserResponseDto> {
     const user = await this.authService.register(dto);
     return UserResponseDto.fromDomain(user);
+  }
+
+  /**
+   * 기관 회원가입
+   */
+  @Public()
+  @Post('register-institution')
+  @ApiOperation({
+    summary: '기관 회원가입',
+    description: '새로운 기관과 관리자 계정을 생성합니다. 기관은 PENDING 상태로 생성되며 SUPER_ADMIN의 승인이 필요합니다.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: '기관 회원가입 성공',
+  })
+  @ApiResponse({
+    status: 409,
+    description: '이메일 또는 사업자등록번호 중복',
+  })
+  async registerInstitution(@Body() dto: RegisterInstitutionDto) {
+    const result = await this.authService.registerInstitution({
+      businessRegistrationNumber: dto.businessRegistrationNumber,
+      institutionName: dto.institutionName,
+      adminEmail: dto.adminEmail,
+      adminPassword: dto.adminPassword,
+      adminName: dto.adminName,
+    });
+
+    return {
+      statusCode: 201,
+      message: 'Institution registration successful. Please wait for admin approval.',
+      data: {
+        institutionId: result.institution.id,
+        institutionName: result.institution.name,
+        status: result.institution.status,
+        adminEmail: result.user.email,
+        adminName: result.user.name,
+      },
+    };
   }
 
   /**

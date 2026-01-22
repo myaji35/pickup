@@ -176,4 +176,22 @@ export class SubscriptionService {
 
     return expiredSubscriptions.length;
   }
+
+  /**
+   * 전체 구독 목록 조회 (Admin용)
+   */
+  async getAllSubscriptions(status?: string): Promise<Subscription[]> {
+    return this.subscriptionRepository.findAll(status);
+  }
+
+  /**
+   * 구독 ID로 조회 (Admin용)
+   */
+  async getSubscriptionById(id: string): Promise<Subscription> {
+    const subscription = await this.subscriptionRepository.findById(id);
+    if (!subscription) {
+      throw new NotFoundException('Subscription not found');
+    }
+    return subscription;
+  }
 }

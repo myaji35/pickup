@@ -11,12 +11,13 @@ import { CheckInRepository } from './infrastructure/persistence/checkin.reposito
 import { TripService } from './application/services/trip.service';
 import { CheckInService } from './application/services/checkin.service';
 import { DriverController } from './interface/controllers/driver.controller';
+import { PassengerController } from './interface/controllers/passenger.controller';
 import { TRIP_REPOSITORY } from './domain/repositories/trip.repository.interface';
 import { CHECKIN_REPOSITORY } from './domain/repositories/checkin.repository.interface';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [DriverController],
+  controllers: [DriverController, PassengerController],
   providers: [
     // Services
     TripService,

@@ -37,6 +37,19 @@ export interface ITripRepository {
   ): Promise<Trip[]>;
 
   /**
+   * 승객의 운행 목록 조회
+   */
+  findByPassenger(passengerId: string): Promise<Trip[]>;
+
+  /**
+   * 승객의 특정 날짜 운행 목록 조회
+   */
+  findByPassengerAndDate(
+    passengerId: string,
+    date: Date,
+  ): Promise<Trip[]>;
+
+  /**
    * 회원사의 특정 날짜 운행 목록 조회
    */
   findByInstitutionAndDate(

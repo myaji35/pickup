@@ -63,6 +63,16 @@ export interface Trip {
   updatedAt: string;
 }
 
+// Passenger Types
+export interface Passenger {
+  id: string;
+  name: string;
+  sequence: number;
+  address: string;
+  lat: number;
+  lng: number;
+}
+
 // CheckIn Types
 export enum CheckInType {
   BOARDING = 'BOARDING',
@@ -88,6 +98,7 @@ export interface ApiResponse<T> {
 
 export interface TripDetailResponse {
   trip: Trip;
+  passengers: Passenger[]; // 승객 목록 추가
   checkIns: CheckIn[];
   stats: {
     totalCheckIns: number;

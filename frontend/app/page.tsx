@@ -25,12 +25,14 @@ export default function Home() {
             혁신과 차량 운영, 새로 변화하여 제공하세요.
           </p>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 h-auto text-base">
-              무료 상담 신청
-            </Button>
+            <Link href="/register">
+              <Button className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 h-auto text-base">
+                무료 회원가입
+              </Button>
+            </Link>
             <Link href="/admin/login">
               <Button variant="outline" className="bg-white text-slate-900 hover:bg-gray-100 px-6 py-3 h-auto text-base">
-                데모 보기
+                로그인
               </Button>
             </Link>
           </div>
@@ -149,10 +151,14 @@ export default function Home() {
             <Button variant="outline" className="text-sm">서비스소개</Button>
             <Button variant="outline" className="text-sm">기능</Button>
             <Button variant="outline" className="text-sm">도입 효과</Button>
-            <Button className="bg-orange-600 hover:bg-orange-700 text-white text-sm">
-              문의하기
-            </Button>
-            <Button variant="outline" className="text-sm">로그인</Button>
+            <Link href="/register">
+              <Button className="bg-orange-600 hover:bg-orange-700 text-white text-sm">
+                회원가입
+              </Button>
+            </Link>
+            <Link href="/admin/login">
+              <Button variant="outline" className="text-sm">로그인</Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -166,9 +172,11 @@ export default function Home() {
           <p className="text-gray-300 mb-8">
             간단한 정보 입력만으로 Pickup MaaS가 제공하는 맞춤형 솔루션과 제안을 받아보실 수 있습니다.
           </p>
-          <Button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 h-auto text-base">
-            무료 상담 받기
-          </Button>
+          <Link href="/register">
+            <Button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 h-auto text-base">
+              지금 시작하기
+            </Button>
+          </Link>
         </div>
       </section>
 
