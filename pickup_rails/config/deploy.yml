@@ -49,9 +49,6 @@ env:
 volumes:
   - "pickup_api_storage:/rails/storage"
 
-# ── 에셋 경로 ─────────────────────────────
-asset_path: /rails/public/assets
-
 # ── 빌더 (Mac amd64 크로스컴파일) ──────────
 builder:
   arch: amd64
