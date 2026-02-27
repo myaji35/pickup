@@ -97,7 +97,8 @@ module Api
             pickup_lng: passenger.pickup_lng,
             dropoff_address: passenger.dropoff_address,
             guardian_phone: passenger.guardian_phone,
-            is_active: passenger.is_active
+            is_active: passenger.is_active,
+            invite_code: passenger.invite_code   # 보호자 앱 초대 코드
           }
         end
       end

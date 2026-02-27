@@ -1,38 +1,24 @@
 /**
- * Trip API
- * 운행 관련 API 함수들
+ * Trip API — Epic 8 (Guardian)
+ * Rails API /api/v1/guardian/trips 연동
  */
 
 import { apiClient } from './client';
-import { Trip } from '../types';
+import { ApiResponse, Trip, ActiveTrip } from '../types';
 
-/**
- * 나의 운행 스케줄 조회 (Passenger)
- */
+// 이번 주 + 다음 주 운행 목록
 export const getMyTrips = async (): Promise<Trip[]> => {
-  const response = await apiClient.get<Trip[]>('/passenger/trips');
-  return response.data;
+  const res = await apiClient.get<ApiResponse<Trip[]>>('/api/v1/guardian/trips');
+  return res.data.data;
 };
 
-/**
- * 운행 상세 조회
- */
-export const getTripDetail = async (tripId: string): Promise<Trip> => {
-  const response = await apiClient.get<Trip>(`/passenger/trips/${tripId}`);
-  return response.data;
+// 현재 운행 중인 trip (실시간 추적용 폴링)
+export const getActiveTrip = async (): Promise<ActiveTrip | null> => {
+  const res = await apiClient.get<ApiResponse<ActiveTrip | null>>('/api/v1/guardian/trips/active');
+  return res.data.data;
 };
 
-/**
- * 진행 중인 운행 조회 (차량 추적용)
- */
-export const getInProgressTrip = async (): Promise<Trip | null> => {
-  try {
-    const response = await apiClient.get<{ success: boolean; data: Trip | null }>(
-      '/passenger/trips/in-progress/current'
-    );
-    return response.data.data;
-  } catch (error) {
-    console.error('Failed to get in-progress trip:', error);
-    return null;
-  }
+// 당일 탑승 취소
+export const cancelTrip = async (tripId: number, reason?: string): Promise<void> => {
+  await apiClient.post(`/api/v1/guardian/trips/${tripId}/cancel`, { reason });
 };

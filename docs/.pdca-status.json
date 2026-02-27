@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-27T18:22:58.383Z",
+  "lastUpdated": "2026-02-27T18:44:11.478Z",
   "activeFeatures": [
     "migrate",
     "pickup_rails",
@@ -23,7 +23,9 @@
     "screens",
     "obd2",
     "navigation",
-    "safety_score_service.rb"
+    "safety_score_service.rb",
+    "guardian",
+    "passenger-app"
   ],
   "primaryFeature": "migrate",
   "features": {
@@ -36,9 +38,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:08.083Z",
-        "lastUpdated": "2026-02-27T18:21:44.138Z"
+        "lastUpdated": "2026-02-27T18:39:58.212Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260228020001_add_idling_seconds_to_driving_events.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260228030001_backfill_passenger_invite_codes.rb"
     },
     "pickup_rails": {
       "phase": "do",
@@ -49,9 +51,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:37.392Z",
-        "lastUpdated": "2026-02-27T18:22:58.383Z"
+        "lastUpdated": "2026-02-27T18:39:53.598Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/trip.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/passenger.rb"
     },
     "initializers": {
       "phase": "do",
@@ -114,9 +116,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:34.844Z",
-        "lastUpdated": "2026-02-27T18:22:46.711Z"
+        "lastUpdated": "2026-02-27T18:40:26.285Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/safety_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/passengers_controller.rb"
     },
     "driver": {
       "phase": "do",
@@ -140,7 +142,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:36:12.046Z",
-        "lastUpdated": "2026-02-27T18:22:53.019Z"
+        "lastUpdated": "2026-02-27T18:40:11.617Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/routes.rb"
     },
@@ -244,9 +246,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:57:06.089Z",
-        "lastUpdated": "2026-02-27T18:10:54.162Z"
+        "lastUpdated": "2026-02-27T18:41:28.294Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/api/tripApi.ts"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/api/tripApi.ts"
     },
     "contexts": {
       "phase": "do",
@@ -257,9 +259,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:57:32.191Z",
-        "lastUpdated": "2026-02-27T18:10:03.446Z"
+        "lastUpdated": "2026-02-27T18:41:39.837Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/contexts/ObdContext.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/contexts/AuthContext.tsx"
     },
     "screens": {
       "phase": "do",
@@ -270,9 +272,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:58:08.287Z",
-        "lastUpdated": "2026-02-27T18:12:10.042Z"
+        "lastUpdated": "2026-02-27T18:43:53.956Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/screens/TripDetailScreen.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/screens/ProfileScreen.tsx"
     },
     "obd2": {
       "phase": "do",
@@ -296,9 +298,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:12:15.806Z",
-        "lastUpdated": "2026-02-27T18:12:20.135Z"
+        "lastUpdated": "2026-02-27T18:44:11.478Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/navigation/AppNavigator.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/navigation/AppNavigator.tsx"
     },
     "safety_score_service.rb": {
       "phase": "do",
@@ -312,6 +314,32 @@
         "lastUpdated": "2026-02-27T18:22:30.310Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/safety_score_service.rb"
+    },
+    "guardian": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:39:23.543Z",
+        "lastUpdated": "2026-02-27T18:39:48.346Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/guardian/profile_controller.rb"
+    },
+    "passenger-app": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:41:00.446Z",
+        "lastUpdated": "2026-02-27T18:41:00.446Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/types/index.ts"
     }
   },
   "pipeline": {
@@ -322,7 +350,7 @@
   "session": {
     "startedAt": "2026-02-27T17:24:38.804Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-27T18:22:58.383Z"
+    "lastActivity": "2026-02-27T18:44:11.478Z"
   },
   "history": [
     {
@@ -934,6 +962,156 @@
     {
       "timestamp": "2026-02-27T18:22:58.383Z",
       "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:38:44.074Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:38:51.790Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:38:54.510Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:02.378Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:05.549Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:09.430Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:23.543Z",
+      "feature": "guardian",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:42.962Z",
+      "feature": "guardian",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:48.346Z",
+      "feature": "guardian",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:53.598Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:39:58.212Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:40:11.617Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:40:26.285Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:41:00.446Z",
+      "feature": "passenger-app",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:41:10.015Z",
+      "feature": "api",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:41:16.707Z",
+      "feature": "api",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:41:28.294Z",
+      "feature": "api",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:41:39.837Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:41:59.674Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:42:14.496Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:42:51.190Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:43:16.318Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:43:34.471Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:43:53.956Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:44:11.478Z",
+      "feature": "navigation",
       "phase": "do",
       "action": "updated"
     }

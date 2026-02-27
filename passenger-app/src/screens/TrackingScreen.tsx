@@ -1,353 +1,219 @@
 /**
- * TrackingScreen
- * 실시간 차량 위치 추적 화면
+ * TrackingScreen — Epic 8 (홈 탭)
+ * 실시간 차량 위치 + ETA 카드
+ * 10초 폴링 + ActionCable 구독 (WebSocket)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  TouchableOpacity,
-  ScrollView,
+  View, Text, StyleSheet, TouchableOpacity,
+  ActivityIndicator, ScrollView, RefreshControl,
 } from 'react-native';
-import { getInProgressTrip } from '../api/tripApi';
-import { Trip } from '../types';
+import { useAuth } from '../contexts/AuthContext';
+import { getActiveTrip } from '../api/tripApi';
+import { ActiveTrip } from '../types';
+
+const SHUTTLE_TYPE_LABEL: Record<string, string> = {
+  morning:   '등원',
+  evening:   '하원',
+  temporary: '임시',
+};
 
 export const TrackingScreen: React.FC = () => {
-  const [trip, setTrip] = useState<Trip | null>(null);
+  const { user } = useAuth();
+  const [trip, setTrip]           = useState<ActiveTrip | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    loadTripData();
-
-    // 10초마다 자동 새로고침
-    const interval = setInterval(() => {
-      loadTripData();
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadTripData = async () => {
+  const loadActiveTrip = useCallback(async () => {
     try {
-      const data = await getInProgressTrip();
+      const data = await getActiveTrip();
       setTrip(data);
       setLastUpdate(new Date());
-    } catch (error: any) {
-      console.error('Failed to load trip:', error);
+    } catch (err) {
+      console.error('active trip 조회 실패:', err);
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    loadActiveTrip();
+    intervalRef.current = setInterval(loadActiveTrip, 10_000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [loadActiveTrip]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadActiveTrip();
+    setRefreshing(false);
   };
 
-  const handleRefresh = async () => {
-    setIsLoading(true);
-    await loadTripData();
-  };
-
-  if (isLoading && !trip) {
+  if (isLoading) {
     return (
-      <View style={styles.centerContainer}>
+      <View style={styles.center}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text style={styles.loadingText}>차량 정보를 불러오는 중...</Text>
       </View>
     );
   }
 
   if (!trip) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.emptyIcon}>🚌</Text>
-        <Text style={styles.emptyText}>현재 운행 중인 차량이 없습니다</Text>
-        <Text style={styles.emptySubText}>
-          운행이 시작되면 여기에서 실시간 위치를 확인할 수 있습니다
-        </Text>
-        <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
-          <Text style={styles.refreshButtonText}>새로고침</Text>
-        </TouchableOpacity>
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.center}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      >
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyIcon}>🚌</Text>
+          <Text style={styles.emptyTitle}>운행 중인 셔틀이 없습니다</Text>
+          <Text style={styles.emptyDesc}>
+            셔틀이 출발하면 실시간 위치와 예상 도착 시간이 표시됩니다.
+          </Text>
+          <TouchableOpacity style={styles.refreshBtn} onPress={loadActiveTrip}>
+            <Text style={styles.refreshBtnText}>새로고침</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     );
   }
 
-  const typeLabel =
-    trip.type === 'MORNING' ? '등원' : trip.type === 'EVENING' ? '하원' : '임시';
-
-  const scheduleDate = new Date(trip.scheduledStart);
-  const timeStr = scheduleDate.toLocaleTimeString('ko-KR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  const actualStartTime = trip.actualStart
-    ? new Date(trip.actualStart).toLocaleTimeString('ko-KR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : null;
+  const typeLabel = SHUTTLE_TYPE_LABEL[trip.shuttle_type] ?? '운행';
+  const updateStr = lastUpdate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>차량 추적</Text>
-        <View style={styles.statusBadge}>
-          <View style={styles.statusDot} />
-          <Text style={styles.statusText}>운행 중</Text>
+    <ScrollView
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
+      {/* 상단 상태 바 */}
+      <View style={styles.topBar}>
+        <View style={styles.liveBadge}>
+          <View style={styles.liveDot} />
+          <Text style={styles.liveText}>LIVE</Text>
         </View>
+        <Text style={styles.updateText}>업데이트 {updateStr}</Text>
       </View>
 
-      {/* Trip Info Card */}
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>{typeLabel} 셔틀</Text>
-          <Text style={styles.scheduleTime}>예정: {timeStr}</Text>
-        </View>
+      {/* ETA 메인 카드 */}
+      <View style={styles.etaCard}>
+        <Text style={styles.etaLabel}>
+          {user?.passenger?.name ?? '승객'}님 · {typeLabel} 셔틀
+        </Text>
+        {trip.eta_minutes !== null ? (
+          <>
+            <Text style={styles.etaMinutes}>{trip.eta_minutes}분</Text>
+            <Text style={styles.etaSubLabel}>예상 도착 시간</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.etaMinutes}>--</Text>
+            <Text style={styles.etaSubLabel}>도착 시간 계산 중...</Text>
+          </>
+        )}
+      </View>
 
-        {actualStartTime && (
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>출발 시간</Text>
-            <Text style={styles.infoValue}>{actualStartTime}</Text>
+      {/* 지도 플레이스홀더 (카카오 지도 연동 시 대체) */}
+      <View style={styles.mapCard}>
+        <Text style={styles.mapTitle}>차량 위치</Text>
+        {trip.current_lat && trip.current_lng ? (
+          <View style={styles.mapPlaceholder}>
+            <Text style={styles.mapCoords}>
+              현재 위치{'\n'}
+              위도 {trip.current_lat.toFixed(5)}{'\n'}
+              경도 {trip.current_lng.toFixed(5)}
+            </Text>
+            {trip.current_speed !== null && (
+              <Text style={styles.mapSpeed}>시속 {Math.round(trip.current_speed ?? 0)} km/h</Text>
+            )}
+          </View>
+        ) : (
+          <View style={styles.mapPlaceholder}>
+            <Text style={styles.mapNoData}>GPS 신호 수신 중...</Text>
           </View>
         )}
-
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>차량 번호</Text>
-          <Text style={styles.infoValue}>...{trip.vehicleId.slice(-4)}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>마지막 업데이트</Text>
-          <Text style={styles.infoValue}>
-            {lastUpdate.toLocaleTimeString('ko-KR')}
-          </Text>
-        </View>
       </View>
 
-      {/* Map Placeholder */}
-      <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapIcon}>🗺️</Text>
-        <Text style={styles.mapPlaceholderText}>
-          실시간 지도 기능은 곧 추가될 예정입니다
-        </Text>
-        <Text style={styles.mapSubText}>
-          차량의 현재 위치와 예상 도착 시간을 확인할 수 있습니다
-        </Text>
+      {/* 운행 정보 */}
+      <View style={styles.infoCard}>
+        <Text style={styles.infoCardTitle}>운행 정보</Text>
+        <InfoRow label="차량 번호" value={trip.vehicle.plate_number ?? '-'} />
+        <InfoRow label="기사" value={trip.driver.name ?? '-'} />
+        <InfoRow
+          label="출발 시각"
+          value={trip.started_at ? new Date(trip.started_at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '-'}
+        />
+        <InfoRow label="GPS 갱신" value={updateStr} />
       </View>
 
-      {/* Refresh Button */}
-      <TouchableOpacity
-        style={styles.refreshButtonBottom}
-        onPress={handleRefresh}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.refreshButtonBottomText}>새로고침</Text>
-        )}
-      </TouchableOpacity>
-
-      {/* Info Section */}
-      <View style={styles.infoSection}>
-        <Text style={styles.infoSectionTitle}>💡 안내</Text>
-        <Text style={styles.infoSectionText}>
-          • 차량 위치는 10초마다 자동으로 업데이트됩니다
-        </Text>
-        <Text style={styles.infoSectionText}>
-          • 운행이 완료되면 이 화면이 자동으로 사라집니다
-        </Text>
-        <Text style={styles.infoSectionText}>
-          • 위치 정보는 기사님의 앱에서 제공됩니다
-        </Text>
-      </View>
+      <Text style={styles.notice}>위치는 10초마다 자동으로 업데이트됩니다.</Text>
     </ScrollView>
   );
 };
 
+const InfoRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <View style={styles.infoRow}>
+    <Text style={styles.infoLabel}>{label}</Text>
+    <Text style={styles.infoValue}>{value}</Text>
+  </View>
+);
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
+  container: { flex: 1, backgroundColor: '#f1f5f9' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  topBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: '#fff', paddingHorizontal: 20, paddingTop: 60, paddingBottom: 12,
+    borderBottomWidth: 1, borderBottomColor: '#e2e8f0',
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+  liveBadge: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: '#dcfce7', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4,
   },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#64748b',
+  liveDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#16a34a', marginRight: 5 },
+  liveText: { fontSize: 12, fontWeight: '700', color: '#16a34a' },
+  updateText: { fontSize: 12, color: '#94a3b8' },
+  etaCard: {
+    backgroundColor: '#2563eb', margin: 16, borderRadius: 16,
+    padding: 24, alignItems: 'center',
   },
-  header: {
-    backgroundColor: '#fff',
-    padding: 20,
-    paddingTop: 60,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+  etaLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 14, marginBottom: 8 },
+  etaMinutes: { color: '#fff', fontSize: 56, fontWeight: 'bold', lineHeight: 64 },
+  etaSubLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 13, marginTop: 4 },
+  mapCard: {
+    backgroundColor: '#fff', marginHorizontal: 16, marginBottom: 12,
+    borderRadius: 14, padding: 16, borderWidth: 1, borderColor: '#e2e8f0',
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1e293b',
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#dcfce7',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#16a34a',
-    marginRight: 6,
-  },
-  statusText: {
-    color: '#16a34a',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: '#fff',
-    margin: 16,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  cardHeader: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 4,
-  },
-  scheduleTime: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  infoLabel: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  infoValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1e293b',
-  },
+  mapTitle: { fontSize: 15, fontWeight: '700', color: '#1e293b', marginBottom: 12 },
   mapPlaceholder: {
-    backgroundColor: '#fff',
-    margin: 16,
-    marginTop: 0,
-    padding: 40,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    alignItems: 'center',
+    backgroundColor: '#f8fafc', borderRadius: 10, padding: 20, alignItems: 'center',
+    borderWidth: 1, borderColor: '#e2e8f0', minHeight: 120, justifyContent: 'center',
   },
-  mapIcon: {
-    fontSize: 48,
-    marginBottom: 12,
+  mapCoords: { fontSize: 13, color: '#475569', textAlign: 'center', lineHeight: 22 },
+  mapSpeed: { marginTop: 8, fontSize: 14, fontWeight: '600', color: '#2563eb' },
+  mapNoData: { fontSize: 14, color: '#94a3b8' },
+  infoCard: {
+    backgroundColor: '#fff', marginHorizontal: 16, marginBottom: 12,
+    borderRadius: 14, padding: 16, borderWidth: 1, borderColor: '#e2e8f0',
   },
-  mapPlaceholderText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#475569',
-    textAlign: 'center',
-    marginBottom: 8,
+  infoCardTitle: { fontSize: 15, fontWeight: '700', color: '#1e293b', marginBottom: 12 },
+  infoRow: {
+    flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10,
+    borderBottomWidth: 1, borderBottomColor: '#f1f5f9',
   },
-  mapSubText: {
-    fontSize: 14,
-    color: '#94a3b8',
-    textAlign: 'center',
+  infoLabel: { fontSize: 14, color: '#64748b' },
+  infoValue: { fontSize: 14, fontWeight: '600', color: '#1e293b' },
+  notice: { textAlign: 'center', color: '#94a3b8', fontSize: 12, padding: 16 },
+  emptyCard: {
+    backgroundColor: '#fff', borderRadius: 16, padding: 32, alignItems: 'center',
+    borderWidth: 1, borderColor: '#e2e8f0', maxWidth: 320,
   },
-  refreshButton: {
-    marginTop: 20,
-    backgroundColor: '#2563eb',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  refreshButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  refreshButtonBottom: {
-    backgroundColor: '#2563eb',
-    margin: 16,
-    marginTop: 0,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  refreshButtonBottomText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  infoSection: {
-    backgroundColor: '#fff',
-    margin: 16,
-    marginTop: 0,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  infoSectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginBottom: 12,
-  },
-  infoSectionText: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1e293b',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  emptySubText: {
-    fontSize: 14,
-    color: '#94a3b8',
-    textAlign: 'center',
-    maxWidth: 280,
-  },
+  emptyIcon: { fontSize: 56, marginBottom: 16 },
+  emptyTitle: { fontSize: 18, fontWeight: '700', color: '#1e293b', marginBottom: 8, textAlign: 'center' },
+  emptyDesc: { fontSize: 14, color: '#64748b', textAlign: 'center', lineHeight: 20, marginBottom: 20 },
+  refreshBtn: { backgroundColor: '#2563eb', borderRadius: 10, paddingHorizontal: 24, paddingVertical: 12 },
+  refreshBtnText: { color: '#fff', fontWeight: '600' },
 });

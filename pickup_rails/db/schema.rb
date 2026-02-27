@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_030001) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -74,6 +74,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
     t.index ["vehicle_id"], name: "index_dtc_reports_on_vehicle_id"
   end
 
+  create_table "guardians", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "passenger_id", null: false
+    t.string "relationship", default: "parent"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["passenger_id"], name: "index_guardians_on_passenger_id"
+    t.index ["user_id", "passenger_id"], name: "index_guardians_on_user_passenger", unique: true
+    t.index ["user_id"], name: "index_guardians_on_user_id"
+  end
+
   create_table "institution_types", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "minimum_care_time_hours"
@@ -120,6 +131,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
     t.float "dropoff_lng"
     t.string "guardian_phone"
     t.integer "institution_id", null: false
+    t.string "invite_code"
     t.boolean "is_active"
     t.string "name"
     t.string "phone"
@@ -128,6 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
     t.float "pickup_lng"
     t.datetime "updated_at", null: false
     t.index ["institution_id"], name: "index_passengers_on_institution_id"
+    t.index ["invite_code"], name: "index_passengers_on_invite_code", unique: true
   end
 
   create_table "plans", force: :cascade do |t|
@@ -187,6 +200,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
     t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
   end
 
+  create_table "trip_cancellations", force: :cascade do |t|
+    t.date "cancel_date", null: false
+    t.datetime "created_at", null: false
+    t.string "reason"
+    t.integer "requested_by_id", null: false
+    t.integer "roster_passenger_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["requested_by_id"], name: "index_trip_cancellations_on_requested_by_id"
+    t.index ["roster_passenger_id"], name: "index_trip_cancellations_on_roster_passenger_id"
+  end
+
   create_table "trips", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "current_lat", precision: 10, scale: 7
@@ -214,6 +238,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
+    t.string "fcm_token"
     t.integer "institution_id"
     t.boolean "is_active"
     t.datetime "last_login_at"
@@ -251,6 +276,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
   add_foreign_key "driving_events", "users", column: "driver_id"
   add_foreign_key "dtc_reports", "trips"
   add_foreign_key "dtc_reports", "vehicles"
+  add_foreign_key "guardians", "passengers"
+  add_foreign_key "guardians", "users"
   add_foreign_key "institutions", "institution_types"
   add_foreign_key "passenger_schedules", "passengers"
   add_foreign_key "passengers", "institutions"
@@ -260,6 +287,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
   add_foreign_key "rosters", "vehicles"
   add_foreign_key "subscriptions", "institutions"
   add_foreign_key "subscriptions", "plans"
+  add_foreign_key "trip_cancellations", "roster_passengers"
+  add_foreign_key "trip_cancellations", "users", column: "requested_by_id"
   add_foreign_key "trips", "rosters"
   add_foreign_key "trips", "users", column: "driver_id"
   add_foreign_key "trips", "vehicles"

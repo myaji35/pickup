@@ -69,6 +69,27 @@ Rails.application.routes.draw do
         end
       end
 
+      # 보호자/승객 전용
+      namespace :guardian do
+        # 회원가입 (초대 코드 기반)
+        scope :auth do
+          post "register",   to: "auth#register"
+          post "fcm_token",  to: "auth#update_fcm_token"
+        end
+
+        # 내 승객 운행 조회
+        resources :trips, only: [] do
+          collection do
+            get :active   # 현재 운행 중인 trip
+          end
+        end
+        get  "trips",              to: "trips#index"
+        post "trips/:trip_id/cancel", to: "trips#cancel", as: :guardian_cancel_trip
+
+        # 프로필
+        get "profile", to: "profile#show"
+      end
+
       # DRIVER 전용
       namespace :driver do
         resources :trips, only: [:index, :show] do

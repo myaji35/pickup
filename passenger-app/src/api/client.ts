@@ -25,7 +25,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use(
   async (config) => {
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
+      const token = await SecureStore.getItemAsync('access_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -34,19 +34,31 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response Interceptor: 에러 처리
+// Response Interceptor: 401 시 refresh 토큰으로 재발급 시도
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      // 401 Unauthorized: 토큰 만료 또는 유효하지 않음
-      await SecureStore.deleteItemAsync('auth_token');
-      // TODO: 로그인 화면으로 리다이렉트
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshToken = await SecureStore.getItemAsync('refresh_token');
+        if (refreshToken) {
+          const res = await axios.post(`${API_BASE_URL}/api/v1/auth/refresh`, {
+            refresh_token: refreshToken,
+          });
+          const newToken = res.data.data.access_token;
+          await SecureStore.setItemAsync('access_token', newToken);
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return apiClient(originalRequest);
+        }
+      } catch {
+        await SecureStore.deleteItemAsync('access_token');
+        await SecureStore.deleteItemAsync('refresh_token');
+      }
     }
     return Promise.reject(error);
   }

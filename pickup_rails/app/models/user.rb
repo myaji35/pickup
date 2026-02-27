@@ -12,6 +12,8 @@ class User < ApplicationRecord
 
   has_many :approved_institutions, class_name: "Institution", foreign_key: :approved_by_id
   has_many :trips, foreign_key: :driver_id
+  has_many :guardians, dependent: :destroy
+  has_many :watched_passengers, through: :guardians, source: :passenger
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true
