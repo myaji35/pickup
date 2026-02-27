@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_130000) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -115,6 +115,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_120000) do
     t.index ["status"], name: "index_dtc_reports_on_status"
     t.index ["trip_id"], name: "index_dtc_reports_on_trip_id"
     t.index ["vehicle_id"], name: "index_dtc_reports_on_vehicle_id"
+  end
+
+  create_table "expense_receipts", force: :cascade do |t|
+    t.integer "amount_krw"
+    t.boolean "confirmed", default: false
+    t.datetime "created_at", null: false
+    t.integer "driver_id", null: false
+    t.string "image_url"
+    t.text "ocr_raw"
+    t.string "ocr_status", default: "pending"
+    t.date "receipt_date"
+    t.string "receipt_type", null: false
+    t.integer "trip_id"
+    t.datetime "updated_at", null: false
+    t.integer "vehicle_id", null: false
+    t.string "vendor_name"
+    t.index ["driver_id"], name: "index_expense_receipts_on_driver_id"
+    t.index ["ocr_status"], name: "index_expense_receipts_on_ocr_status"
+    t.index ["receipt_date"], name: "index_expense_receipts_on_receipt_date"
+    t.index ["trip_id"], name: "index_expense_receipts_on_trip_id"
+    t.index ["vehicle_id"], name: "index_expense_receipts_on_vehicle_id"
   end
 
   create_table "fcm_tokens", force: :cascade do |t|
@@ -254,6 +275,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_120000) do
     t.index ["maintenance_prediction_id"], name: "index_maintenance_records_on_maintenance_prediction_id"
     t.index ["performed_on"], name: "index_maintenance_records_on_performed_on"
     t.index ["vehicle_id"], name: "index_maintenance_records_on_vehicle_id"
+  end
+
+  create_table "monthly_settlements", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "fuel_cost_krw", default: 0
+    t.integer "institution_id", null: false
+    t.integer "maintenance_cost_krw", default: 0
+    t.integer "month", null: false
+    t.string "status", default: "draft"
+    t.integer "toll_cost_krw", default: 0
+    t.integer "total_cost_krw", default: 0
+    t.integer "total_distance_km", default: 0
+    t.integer "total_trips", default: 0
+    t.datetime "updated_at", null: false
+    t.integer "vehicle_id", null: false
+    t.integer "year", null: false
+    t.index ["institution_id", "year", "month"], name: "idx_monthly_settlements_institution_period"
+    t.index ["institution_id"], name: "index_monthly_settlements_on_institution_id"
+    t.index ["vehicle_id", "year", "month"], name: "idx_monthly_settlements_vehicle_period", unique: true
+    t.index ["vehicle_id"], name: "index_monthly_settlements_on_vehicle_id"
   end
 
   create_table "notification_logs", force: :cascade do |t|
@@ -531,6 +572,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_120000) do
   add_foreign_key "driving_events", "users", column: "driver_id"
   add_foreign_key "dtc_reports", "trips"
   add_foreign_key "dtc_reports", "vehicles"
+  add_foreign_key "expense_receipts", "trips"
+  add_foreign_key "expense_receipts", "users", column: "driver_id"
+  add_foreign_key "expense_receipts", "vehicles"
   add_foreign_key "fcm_tokens", "users"
   add_foreign_key "garage_reservations", "dtc_reports"
   add_foreign_key "garage_reservations", "institutions"
@@ -545,6 +589,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_120000) do
   add_foreign_key "maintenance_predictions", "vehicles"
   add_foreign_key "maintenance_records", "maintenance_predictions"
   add_foreign_key "maintenance_records", "vehicles"
+  add_foreign_key "monthly_settlements", "institutions"
+  add_foreign_key "monthly_settlements", "vehicles"
   add_foreign_key "notification_logs", "institutions"
   add_foreign_key "notification_logs", "users"
   add_foreign_key "passenger_schedules", "passengers"

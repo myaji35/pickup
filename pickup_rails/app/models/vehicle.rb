@@ -9,6 +9,10 @@ class Vehicle < ApplicationRecord
   has_one :driver_user, class_name: "User", foreign_key: :vehicle_id  # 기사 배정
   has_many :rosters
   has_many :trips
+  has_many :maintenance_predictions, dependent: :destroy
+  has_many :maintenance_records, dependent: :destroy
+  has_many :expense_receipts, dependent: :destroy
+  has_many :monthly_settlements, dependent: :destroy
 
   validates :plate_number, presence: true, uniqueness: true
   validates :capacity, presence: true, numericality: { greater_than: 0 }

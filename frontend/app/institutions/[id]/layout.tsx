@@ -17,6 +17,10 @@ import {
   Bus,
   Route,
   BarChart2,
+  Bell,
+  FileBarChart,
+  MapPin,
+  Receipt,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -71,6 +75,26 @@ export default function InstitutionLayout({
       name: '안전 대시보드',
       href: `/institutions/${institutionId}/safety`,
       icon: Shield,
+    },
+    {
+      name: '알림 현황',
+      href: `/institutions/${institutionId}/notifications`,
+      icon: Bell,
+    },
+    {
+      name: '보험 리스크',
+      href: `/institutions/${institutionId}/risk-report`,
+      icon: FileBarChart,
+    },
+    {
+      name: '운행 이력',
+      href: `/institutions/${institutionId}/trips`,
+      icon: MapPin,
+    },
+    {
+      name: '정산 관리',
+      href: `/institutions/${institutionId}/settlements`,
+      icon: Receipt,
     },
     {
       name: '결제 관리',

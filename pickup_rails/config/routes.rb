@@ -94,6 +94,21 @@ Rails.application.routes.draw do
           post "change_plan",  to: "billing#change_plan"
         end
 
+        # 경비 영수증 + 월별 정산 (Epic 6)
+        resources :expense_receipts, only: [:index, :create, :destroy] do
+          member do
+            patch :confirm
+          end
+        end
+        get 'settlements', to: 'expense_receipts#settlements'
+
+        # 운행 이력 (Admin Portal)
+        resources :trips, only: [:index, :show] do
+          member do
+            get :check_ins, to: 'trips#check_ins'
+          end
+        end
+
         # BI 대시보드 집계
         scope :analytics do
           get "overview",   to: "analytics#overview"
