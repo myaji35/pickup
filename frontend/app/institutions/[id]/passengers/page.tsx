@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { CsvUploadDialog } from '@/components/dialogs/csv-upload-dialog';
 import { ScheduleEditDialog } from '@/components/dialogs/schedule-edit-dialog';
-import { Loader2, Plus, Upload, Search, X, Filter, Clock, AlertTriangle } from 'lucide-react';
+import { Loader2, Plus, Upload, Search, X, Filter, Clock, AlertTriangle, QrCode } from 'lucide-react';
 
 /**
  * Passengers Page
@@ -53,6 +53,32 @@ export default function PassengersPage() {
   const createMutation = useCreatePassenger();
   const updateMutation = useUpdatePassenger();
   const deleteMutation = useDeletePassenger();
+
+  // QR 코드 PNG 다운로드
+  const [qrDownloading, setQrDownloading] = useState<string | null>(null);
+  const handleQrDownload = async (passengerId: string, passengerName: string) => {
+    setQrDownloading(passengerId);
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+      const res = await fetch(`${apiBase}/institutions/passengers/${passengerId}/qr_code`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('QR 코드 다운로드 실패');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `qr_${passengerName}_${new Date().toISOString().slice(0, 10)}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('QR 코드 다운로드에 실패했습니다.');
+    } finally {
+      setQrDownloading(null);
+    }
+  };
 
   // T322: Clear all filters
   const clearFilters = () => {
@@ -248,6 +274,19 @@ export default function PassengersPage() {
                 )}
               </div>
               <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  title="QR 코드 다운로드"
+                  onClick={() => handleQrDownload(passenger.id, passenger.name)}
+                  disabled={qrDownloading === passenger.id}
+                >
+                  {qrDownloading === passenger.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <QrCode className="h-4 w-4" />
+                  )}
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

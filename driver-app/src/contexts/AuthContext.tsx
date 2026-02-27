@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
 import * as authApi from '../api/authApi';
+import { setupNotificationHandler, registerPushToken } from '../services/notificationService';
 
 interface AuthContextData {
   user: User | null;
@@ -18,6 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setupNotificationHandler();
     restoreSession();
   }, []);
 
@@ -43,6 +45,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await SecureStore.setItemAsync('access_token', res.data.access_token);
     await SecureStore.setItemAsync('refresh_token', res.data.refresh_token);
     setUser(res.data.user);
+
+    // 로그인 성공 후 FCM 토큰 등록 (백그라운드 처리 — 실패해도 로그인 계속)
+    registerPushToken().catch(() => {});
   };
 
   const logout = async () => {

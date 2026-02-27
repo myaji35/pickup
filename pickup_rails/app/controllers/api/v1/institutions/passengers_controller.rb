@@ -3,7 +3,7 @@ module Api
     module Institutions
       class PassengersController < ApplicationController
         before_action :require_institution_admin!
-        before_action :set_passenger, only: [:show, :update, :destroy]
+        before_action :set_passenger, only: [:show, :update, :destroy, :qr_code]
 
         # GET /api/v1/institutions/passengers
         def index
@@ -51,6 +51,18 @@ module Api
                     filename:    "passengers_template.csv",
                     type:        "text/csv; charset=utf-8",
                     disposition: "attachment"
+        end
+
+        # GET /api/v1/institutions/passengers/:id/qr_code
+        # QR 코드 PNG 이미지 반환 (당일 유효, HMAC-SHA256 서명)
+        def qr_code
+          png_data = QrCodeService.generate_png(@passenger)
+          send_data png_data,
+                    filename:    "qr_passenger_#{@passenger.id}_#{Date.current}.png",
+                    type:        "image/png",
+                    disposition: "inline"
+        rescue => e
+          render_error("QR 코드 생성 실패: #{e.message}", :internal_server_error)
         end
 
         # PATCH /api/v1/institutions/passengers/:id

@@ -15,6 +15,8 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { TripDetailScreen } from '../screens/TripDetailScreen';
 import { CheckInScreen } from '../screens/CheckInScreen';
 import { ObdSettingsScreen } from '../screens/ObdSettingsScreen';
+import { QrScanScreen } from '../screens/QrScanScreen';
+import { CoachingScreen } from '../screens/CoachingScreen';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -48,6 +50,8 @@ export const AppNavigator: React.FC = () => {
             <Stack.Screen name="TripDetail" component={TripDetailScreen} />
             <Stack.Screen name="CheckIn" component={CheckInScreen} />
             <Stack.Screen name="ObdSettings" component={ObdSettingsScreen} />
+            <Stack.Screen name="QrScan" component={QrScanScreen} />
+            <Stack.Screen name="Coaching" component={CoachingScreen} />
           </>
         )}
       </Stack.Navigator>

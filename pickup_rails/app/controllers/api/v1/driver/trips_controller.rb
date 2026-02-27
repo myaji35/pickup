@@ -24,6 +24,8 @@ module Api
         def start
           if @trip.scheduled?
             @trip.start!
+            # 보호자에게 FCM 푸시 알림 (비동기)
+            FcmNotificationService.notify_trip_started(@trip) rescue nil
             render_success(trip_json(@trip))
           else
             render_error("운행을 시작할 수 없는 상태입니다")
@@ -34,6 +36,12 @@ module Api
         def end
           if @trip.in_progress?
             @trip.end!
+            # 운행 완료 후 코칭 메시지 생성 (백그라운드, 실패해도 응답 영향 없음)
+            begin
+              DriverCoachingService.new(current_user).generate_post_trip_coaching(@trip)
+            rescue StandardError => e
+              Rails.logger.warn "[TripsController#end] 코칭 생성 오류: #{e.message}"
+            end
             render_success(trip_json(@trip))
           else
             render_error("운행을 종료할 수 없는 상태입니다")
@@ -78,7 +86,8 @@ module Api
 
           codes.each do |code|
             next unless code.match?(/\A[PCBU]\d[0-9A-F]{3}\z/i)
-            DtcReport.create!(trip: @trip, vehicle: vehicle, code: code)
+            report = DtcReport.create!(trip: @trip, vehicle: vehicle, code: code)
+            FcmNotificationService.notify_dtc_alert(report) rescue nil
             count += 1
           end
 

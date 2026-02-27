@@ -14,6 +14,9 @@ class User < ApplicationRecord
   has_many :trips, foreign_key: :driver_id
   has_many :guardians, dependent: :destroy
   has_many :watched_passengers, through: :guardians, source: :passenger
+  has_many :coaching_messages, foreign_key: :driver_id, dependent: :destroy
+  has_many :driver_badges, foreign_key: :driver_id, dependent: :destroy
+  has_many :weekly_coaching_summaries, foreign_key: :driver_id, dependent: :destroy
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :name, presence: true

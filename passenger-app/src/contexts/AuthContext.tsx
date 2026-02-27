@@ -8,6 +8,7 @@ import * as SecureStore from 'expo-secure-store';
 import { apiClient } from '../api/client';
 import { login as apiLogin, logout as apiLogout, register as apiRegister } from '../api/authApi';
 import { User } from '../types';
+import { setupNotificationHandler, registerPushToken } from '../services/notificationService';
 
 interface RegisterParams {
   email: string;
@@ -33,7 +34,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const cleanup = setupNotificationHandler();
     checkAuthStatus();
+    return () => { if (typeof cleanup === 'function') cleanup(); };
   }, []);
 
   const checkAuthStatus = async () => {
@@ -62,6 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await apiLogin(email, password);
       await saveTokens(response.access_token, response.refresh_token, response.user);
+      // 로그인 성공 후 FCM 토큰 등록 (백그라운드)
+      registerPushToken().catch(() => {});
     } finally {
       setIsLoading(false);
     }
@@ -72,6 +77,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await apiRegister(params);
       await saveTokens(response.access_token, response.refresh_token, response.user);
+      // 회원가입 후 FCM 토큰 등록 (백그라운드)
+      registerPushToken().catch(() => {});
     } finally {
       setIsLoading(false);
     }

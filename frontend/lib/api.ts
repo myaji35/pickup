@@ -669,7 +669,6 @@ export class ApiClient {
     const data = await response.json();
     return data.data;
   }
-}
 
   // Notification APIs
   async getNotifications(limit: number = 50): Promise<any[]> {

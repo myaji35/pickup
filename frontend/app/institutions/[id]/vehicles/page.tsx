@@ -121,6 +121,7 @@ export default function VehiclesPage() {
             onDelete={handleDelete}
             onConnectGroup={handleConnectGroup}
             onDisconnectGroup={handleDisconnectGroup}
+            institutionId={institutionId}
           />
         </div>
       )}

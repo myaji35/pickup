@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
-  StyleSheet, ActivityIndicator, Alert,
+  StyleSheet, ActivityIndicator, Alert, Linking,
 } from 'react-native';
 import { TripDetail, TripPassenger } from '../types';
 import * as tripApi from '../api/tripApi';
@@ -52,6 +52,49 @@ export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
     loadTrip();
     return () => stopWatchRef.current?.();
   }, [loadTrip]);
+
+  // ── 카카오/Tmap 다중 경유지 내비 실행 ─────────────────────────────────
+  const handleNavigation = async () => {
+    if (!trip) return;
+
+    // 대기 중(pending) 승객만 픽업 순서로 정렬
+    const pendingPassengers = trip.passengers
+      .filter(p => p.status === 'pending' && p.pickup_lat && p.pickup_lng)
+      .sort((a, b) => (a.boarding_order ?? 999) - (b.boarding_order ?? 999));
+
+    if (pendingPassengers.length === 0) {
+      Alert.alert('안내', '픽업 대기 중인 승객이 없습니다.');
+      return;
+    }
+
+    // 첫 번째 목적지
+    const first = pendingPassengers[0];
+    const dest = `${first.pickup_lat},${first.pickup_lng}`;
+
+    // 카카오내비 다중 경유지 URL Scheme
+    // 앱 미설치 시 Tmap fallback
+    if (pendingPassengers.length === 1) {
+      const kakaoUrl = `kakaomap://route?ep=${dest}&by=CAR`;
+      const tmapUrl  = `tmap://route?goalx=${first.pickup_lng}&goaly=${first.pickup_lat}&goalname=${encodeURIComponent(first.name)}`;
+      const canKakao = await Linking.canOpenURL(kakaoUrl);
+      await Linking.openURL(canKakao ? kakaoUrl : tmapUrl);
+    } else {
+      // 다중 경유지: 카카오내비 waypoints
+      const waypoints = pendingPassengers.slice(1).map(p =>
+        `${p.pickup_lat},${p.pickup_lng}`
+      ).join('|');
+      const kakaoUrl = `kakaomap://route?ep=${dest}&waypoints=${encodeURIComponent(waypoints)}&by=CAR`;
+      const canKakao = await Linking.canOpenURL(kakaoUrl);
+
+      if (canKakao) {
+        await Linking.openURL(kakaoUrl);
+      } else {
+        // Tmap 다중 경유지 미지원 → 첫 번째 목적지만
+        const tmapUrl = `tmap://route?goalx=${first.pickup_lng}&goaly=${first.pickup_lat}&goalname=${encodeURIComponent(first.name)}`;
+        await Linking.openURL(tmapUrl);
+      }
+    }
+  };
 
   // 운행 중이면 GPS 감시 시작
   useEffect(() => {
@@ -268,6 +311,20 @@ export const TripDetailScreen: React.FC<{ route: any; navigation: any }> = ({
               </View>
             )}
           </View>
+          {/* 내비 시작 버튼 */}
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.naviBtn]}
+            onPress={handleNavigation}
+          >
+            <Text style={styles.actionBtnText}>내비</Text>
+          </TouchableOpacity>
+          {/* QR 스캔 버튼 */}
+          <TouchableOpacity
+            style={[styles.actionBtn, styles.qrBtn]}
+            onPress={() => navigation.navigate('QrScan', { tripId: trip.id })}
+          >
+            <Text style={styles.actionBtnText}>QR 스캔</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionBtn, styles.endBtn]}
             onPress={handleEnd}
@@ -408,6 +465,8 @@ const styles = StyleSheet.create({
   eventBadgeText: { fontSize: 11, color: '#FF9500', fontWeight: '600' },
   actionBtn:    { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   startBtn:     { backgroundColor: '#34C759' },
+  naviBtn:      { backgroundColor: '#FF9500', flex: 0, paddingHorizontal: 14 },
+  qrBtn:        { backgroundColor: '#007AFF', flex: 0, paddingHorizontal: 14 },
   endBtn:       { backgroundColor: '#FF3B30' },
   actionBtnText:{ fontSize: 16, fontWeight: '700', color: '#fff' },
 });

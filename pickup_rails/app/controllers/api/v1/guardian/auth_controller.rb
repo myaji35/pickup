@@ -50,10 +50,14 @@ module Api
         end
 
         # POST /api/v1/guardian/auth/fcm_token
-        # { token }
+        # { token, device_type? }
         def update_fcm_token
-          current_user.update!(fcm_token: params[:token])
+          token       = params.require(:token)
+          device_type = params[:device_type].presence_in(%w[ios android web]) || 'unknown'
+          FcmToken.register(user: current_user, token: token, device_type: device_type)
           render_success({ message: "FCM 토큰이 등록되었습니다" })
+        rescue ActionController::ParameterMissing
+          render_error("token 파라미터가 필요합니다", status: :bad_request)
         end
       end
     end

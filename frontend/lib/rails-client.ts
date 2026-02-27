@@ -38,6 +38,8 @@ export const railsClient = {
   },
   patch: <T>(path: string, body?: unknown) =>
     railsRequest<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
-  post:  <T>(path: string, body?: unknown) =>
+  post:   <T>(path: string, body?: unknown) =>
     railsRequest<T>(path, { method: 'POST', body: JSON.stringify(body) }),
+  delete: <T = void>(path: string) =>
+    railsRequest<T>(path, { method: 'DELETE' }),
 };

@@ -61,6 +61,7 @@ export interface TripPassenger {
   pickup_lat: number | null;
   pickup_lng: number | null;
   status: CheckInStatus;
+  boarding_order: number | null;   // VRP 최적화 픽업 순서
   boarded_at: string | null;
   alighted_at: string | null;
 }

@@ -38,6 +38,17 @@ module Api
         render json: { success: true, message: "로그아웃 되었습니다" }
       end
 
+      # POST /api/v1/auth/fcm_token
+      # { token, device_type? }  — 모든 역할의 사용자 FCM 토큰 등록
+      def register_fcm_token
+        token       = params.require(:token)
+        device_type = params[:device_type].presence_in(%w[ios android web]) || 'unknown'
+        FcmToken.register(user: current_user, token: token, device_type: device_type)
+        render_success({ message: "FCM 토큰이 등록되었습니다" })
+      rescue ActionController::ParameterMissing
+        render_error("token 파라미터가 필요합니다", status: :bad_request)
+      end
+
       private
 
       def auth_response(user)

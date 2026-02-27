@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Vehicle } from '@/types/vehicle';
 
 interface VehicleTableProps {
@@ -8,6 +9,7 @@ interface VehicleTableProps {
   onDelete: (vehicle: Vehicle) => void;
   onConnectGroup?: (vehicle: Vehicle) => void;
   onDisconnectGroup?: (vehicle: Vehicle) => void;
+  institutionId?: string;
 }
 
 /**
@@ -15,7 +17,7 @@ interface VehicleTableProps {
  * 차량 목록 테이블
  * T261-T263: 그룹 연결/해제 기능 추가
  */
-export function VehicleTable({ vehicles, onEdit, onDelete, onConnectGroup, onDisconnectGroup }: VehicleTableProps) {
+export function VehicleTable({ vehicles, onEdit, onDelete, onConnectGroup, onDisconnectGroup, institutionId }: VehicleTableProps) {
   if (vehicles.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -97,6 +99,14 @@ export function VehicleTable({ vehicles, onEdit, onDelete, onConnectGroup, onDis
                       </button>
                     )}
                   </>
+                )}
+                {institutionId && (
+                  <Link
+                    href={`/institutions/${institutionId}/vehicles/${vehicle.id}/maintenance`}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    정비
+                  </Link>
                 )}
                 <button
                   onClick={() => onEdit(vehicle)}

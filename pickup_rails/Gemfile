@@ -20,6 +20,9 @@ gem "kaminari"
 # CSV parsing
 gem "csv"
 
+# QR 코드 생성
+gem "rqrcode", "~> 2.2"
+
 # Background jobs (SQLite 기반 - 외부 Redis 불필요)
 gem "solid_queue"
 gem "solid_cache"
