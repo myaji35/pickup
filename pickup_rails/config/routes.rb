@@ -14,8 +14,10 @@ Rails.application.routes.draw do
       # SUPER_ADMIN 전용
       namespace :admin do
         resources :institutions, only: [:index, :show] do
-          collection { get :pending }
-          collection { get :stats }
+          collection do
+            get :pending
+            get :stats
+          end
           member do
             post :approve
             post :reject
@@ -25,18 +27,26 @@ Rails.application.routes.draw do
         end
 
         resources :plans, only: [:index, :show, :create, :update, :destroy]
-
         resources :users, only: [:index, :show, :create, :update, :destroy]
       end
 
       # INSTITUTION_ADMIN 전용
       namespace :institutions do
         resources :vehicles, only: [:index, :show, :create, :update, :destroy]
+
         resources :passengers, only: [:index, :show, :create, :update, :destroy] do
-          collection { post :bulk_import }
+          collection do
+            post :bulk_import    # CSV 업로드
+            get  :csv_template   # CSV 양식 다운로드
+          end
         end
+
         resources :rosters, only: [:index, :show, :create, :update, :destroy] do
-          member { post :copy_from_previous }
+          member do
+            post   :copy_from_previous          # 이전 주 명단 복사
+            post   :add_passenger               # 승객 추가
+            delete "remove_passenger/:passenger_id", action: :remove_passenger  # 승객 제거
+          end
         end
       end
 

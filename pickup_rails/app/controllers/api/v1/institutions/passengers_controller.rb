@@ -13,6 +13,11 @@ module Api
           render_success(passengers.map { |p| passenger_json(p) }, meta: pagination_meta(passengers))
         end
 
+        # GET /api/v1/institutions/passengers/:id
+        def show
+          render_success(passenger_json(@passenger))
+        end
+
         # POST /api/v1/institutions/passengers
         def create
           passenger = current_institution.passengers.build(passenger_params)
@@ -23,17 +28,29 @@ module Api
           end
         end
 
-        # POST /api/v1/institutions/passengers/bulk_import (CSV)
+        # POST /api/v1/institutions/passengers/bulk_import (CSV 업로드)
         def bulk_import
-          csv_file = params[:file]
+          csv_file = params[:csv_file] || params[:file]
           return render_error("CSV 파일이 없습니다") unless csv_file
 
-          results = CsvImportService.new(current_institution, csv_file).call
+          file_io = csv_file.respond_to?(:tempfile) ? csv_file.tempfile : csv_file
+          results = CsvImportService.new(current_institution, file_io).call
           render_success({
             imported: results[:success],
-            failed: results[:failed],
-            errors: results[:errors]
+            failed:   results[:failed],
+            errors:   results[:errors]
           }, status: :created)
+        rescue => e
+          render_error("CSV 처리 중 오류: #{e.message}")
+        end
+
+        # GET /api/v1/institutions/passengers/csv_template (CSV 양식 다운로드)
+        def csv_template
+          csv_data = CsvImportService.template_csv
+          send_data "\xEF\xBB\xBF#{csv_data}",
+                    filename:    "passengers_template.csv",
+                    type:        "text/csv; charset=utf-8",
+                    disposition: "attachment"
         end
 
         # PATCH /api/v1/institutions/passengers/:id
