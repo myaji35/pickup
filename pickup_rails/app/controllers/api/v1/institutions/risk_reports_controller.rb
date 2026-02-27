@@ -2,7 +2,7 @@ module Api
   module V1
     module Institutions
       # RiskReportsController — 기관 어드민용 보험 리스크 리포트 API
-      class RiskReportsController < InstitutionBaseController
+      class RiskReportsController < ApplicationController
         # GET /api/v1/institutions/risk_reports/current
         # 현재 달 리스크 지수 즉시 산출
         def current

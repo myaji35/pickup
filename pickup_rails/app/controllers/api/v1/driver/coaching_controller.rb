@@ -2,7 +2,7 @@ module Api
   module V1
     module Driver
       # CoachingController — 드라이버 앱 코칭 & 배지 API
-      class CoachingController < DriverBaseController
+      class CoachingController < ApplicationController
         # GET /api/v1/driver/coaching/messages?unread_only=true
         def messages
           msgs = CoachingMessage.for_driver(current_user)

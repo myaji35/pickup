@@ -2,7 +2,7 @@ module Api
   module V1
     module Institutions
       # MaintenanceController — 예측 정비 & 정비 기록 API
-      class MaintenanceController < InstitutionBaseController
+      class MaintenanceController < ApplicationController
         before_action :set_vehicle
         before_action :set_record, only: %i[show_record update_record destroy_record]
 
