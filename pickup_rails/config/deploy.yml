@@ -21,8 +21,11 @@ proxy:
   app_port: 80
   healthcheck:
     path: /up
-    interval: 10
+    interval: 3
     timeout: 5
+
+# ── 배포 타임아웃 (Puma 클러스터 부팅 시간 고려) ──
+deploy_timeout: 90
 
 # ── 레지스트리 (GitHub Container Registry) ──
 registry:
