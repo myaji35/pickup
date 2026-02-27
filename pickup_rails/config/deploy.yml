@@ -52,7 +52,9 @@ volumes:
 # ── 빌더 (서버에서 직접 빌드 — QEMU 크로스컴파일 우회) ──
 builder:
   arch: amd64
-  remote: true
+  remote:
+    arch: amd64
+    host: ssh://root@158.247.235.31
 
 # ── 별칭 ──────────────────────────────────
 aliases:
