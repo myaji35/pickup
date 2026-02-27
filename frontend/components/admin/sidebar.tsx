@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Truck,
+  Receipt,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -62,6 +63,11 @@ const navigation = [
     name: '통계',
     href: '/admin/stats',
     icon: BarChart3,
+  },
+  {
+    name: '구독 관리',
+    href: '/admin/subscriptions',
+    icon: Receipt,
   },
 ];
 

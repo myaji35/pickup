@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_030001) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_040000) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -112,6 +112,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_030001) do
     t.index ["institution_type_id"], name: "index_institutions_on_institution_type_id"
   end
 
+  create_table "invoices", force: :cascade do |t|
+    t.integer "amount_krw", null: false
+    t.datetime "created_at", null: false
+    t.date "due_date"
+    t.integer "institution_id", null: false
+    t.string "invoice_number", null: false
+    t.date "issue_date", null: false
+    t.integer "payment_record_id", null: false
+    t.string "pdf_url"
+    t.string "status", default: "issued"
+    t.integer "tax_amount_krw", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id"], name: "index_invoices_on_institution_id"
+    t.index ["invoice_number"], name: "index_invoices_on_invoice_number", unique: true
+    t.index ["issue_date"], name: "index_invoices_on_issue_date"
+    t.index ["payment_record_id"], name: "index_invoices_on_payment_record_id"
+  end
+
   create_table "passenger_schedules", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "day_of_week"
@@ -141,6 +159,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_030001) do
     t.datetime "updated_at", null: false
     t.index ["institution_id"], name: "index_passengers_on_institution_id"
     t.index ["invite_code"], name: "index_passengers_on_invite_code", unique: true
+  end
+
+  create_table "payment_records", force: :cascade do |t|
+    t.integer "amount_krw", null: false
+    t.string "card_company"
+    t.string "card_number_masked"
+    t.datetime "created_at", null: false
+    t.string "failure_reason"
+    t.integer "institution_id", null: false
+    t.datetime "paid_at"
+    t.string "status", default: "pending", null: false
+    t.integer "subscription_id", null: false
+    t.string "toss_order_id", null: false
+    t.string "toss_payment_key"
+    t.datetime "updated_at", null: false
+    t.index ["institution_id"], name: "index_payment_records_on_institution_id"
+    t.index ["paid_at"], name: "index_payment_records_on_paid_at"
+    t.index ["status"], name: "index_payment_records_on_status"
+    t.index ["subscription_id"], name: "index_payment_records_on_subscription_id"
+    t.index ["toss_order_id"], name: "index_payment_records_on_toss_order_id", unique: true
+    t.index ["toss_payment_key"], name: "index_payment_records_on_toss_payment_key", unique: true, where: "toss_payment_key IS NOT NULL"
   end
 
   create_table "plans", force: :cascade do |t|
@@ -190,14 +229,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_030001) do
     t.boolean "auto_renew"
     t.datetime "created_at", null: false
     t.datetime "end_date"
+    t.integer "failed_payment_count", default: 0, null: false
     t.integer "institution_id", null: false
+    t.date "next_billing_date"
+    t.text "notes"
     t.integer "plan_id", null: false
     t.datetime "start_date"
     t.integer "status"
+    t.string "toss_billing_key"
     t.datetime "trial_ends_at"
     t.datetime "updated_at", null: false
     t.index ["institution_id"], name: "index_subscriptions_on_institution_id"
+    t.index ["next_billing_date"], name: "index_subscriptions_on_next_billing_date"
     t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
+    t.index ["toss_billing_key"], name: "index_subscriptions_on_toss_billing_key", unique: true, where: "toss_billing_key IS NOT NULL"
   end
 
   create_table "trip_cancellations", force: :cascade do |t|
@@ -279,8 +324,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_030001) do
   add_foreign_key "guardians", "passengers"
   add_foreign_key "guardians", "users"
   add_foreign_key "institutions", "institution_types"
+  add_foreign_key "invoices", "institutions"
+  add_foreign_key "invoices", "payment_records"
   add_foreign_key "passenger_schedules", "passengers"
   add_foreign_key "passengers", "institutions"
+  add_foreign_key "payment_records", "institutions"
+  add_foreign_key "payment_records", "subscriptions"
   add_foreign_key "roster_passengers", "passengers"
   add_foreign_key "roster_passengers", "rosters"
   add_foreign_key "rosters", "institutions"

@@ -31,6 +31,17 @@ Rails.application.routes.draw do
 
         resources :plans, only: [:index, :show, :create, :update, :destroy]
         resources :users, only: [:index, :show, :create, :update, :destroy]
+
+        # 구독 관리 (슈퍼어드민)
+        resources :subscriptions, only: [:index, :show] do
+          member do
+            patch :plan,     action: :change_plan
+            post  :activate
+            post  :suspend
+            post  :cancel
+            post  :charge
+          end
+        end
       end
 
       # INSTITUTION_ADMIN 전용
@@ -66,6 +77,15 @@ Rails.application.routes.draw do
           get  "summary",           to: "safety#summary"
           get  "dtc_history",       to: "safety#dtc_history"
           patch "dtc_history/:id/acknowledge", to: "safety#acknowledge_dtc", as: :acknowledge_dtc
+        end
+
+        # 결제 및 구독 관리
+        scope :billing do
+          get  "status",       to: "billing#status"
+          post "register_card", to: "billing#register_card"
+          get  "history",      to: "billing#history"
+          get  "invoices",     to: "billing#invoices"
+          post "change_plan",  to: "billing#change_plan"
         end
       end
 

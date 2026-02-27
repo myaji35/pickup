@@ -11,6 +11,7 @@ import {
   UsersRound,
   Settings,
   Shield,
+  CreditCard,
   ChevronLeft,
   ChevronRight,
   Bus,
@@ -58,6 +59,11 @@ export default function InstitutionLayout({
       name: '안전 대시보드',
       href: `/institutions/${institutionId}/safety`,
       icon: Shield,
+    },
+    {
+      name: '결제 관리',
+      href: `/institutions/${institutionId}/billing`,
+      icon: CreditCard,
     },
     {
       name: '설정',

@@ -14,6 +14,8 @@ class Institution < ApplicationRecord
   has_many :passengers, dependent: :destroy
   has_many :rosters, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
+  has_many :payment_records, dependent: :destroy
+  has_many :invoices, dependent: :destroy
 
   validates :name, presence: true
   validates :business_number, presence: true, uniqueness: true, format: { with: /\A\d{3}-\d{2}-\d{5}\z/, message: "형식: 000-00-00000" }
