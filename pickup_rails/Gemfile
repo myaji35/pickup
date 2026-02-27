@@ -1,0 +1,43 @@
+source "https://rubygems.org"
+
+gem "rails", "~> 8.1.2"
+gem "sqlite3", ">= 2.1"
+gem "puma", ">= 5.0"
+
+# Auth
+gem "bcrypt", "~> 3.1.7"
+gem "jwt", "~> 2.8"
+
+# CORS
+gem "rack-cors"
+
+# JSON serialization
+gem "blueprinter"
+
+# Pagination
+gem "kaminari"
+
+# CSV parsing
+gem "csv"
+
+# Background jobs (SQLite 기반 - 외부 Redis 불필요)
+gem "solid_queue"
+gem "solid_cache"
+gem "solid_cable"
+
+# Reduces boot times through caching
+gem "bootsnap", require: false
+
+gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+group :development, :test do
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "brakeman", require: false
+  gem "rubocop-rails-omakase", require: false
+  gem "factory_bot_rails"
+  gem "faker"
+end
+
+group :test do
+  gem "shoulda-matchers"
+end
