@@ -49,9 +49,10 @@ env:
 volumes:
   - "pickup_api_storage:/rails/storage"
 
-# ── 빌더 (Mac amd64 크로스컴파일) ──────────
+# ── 빌더 (서버에서 직접 빌드 — QEMU 크로스컴파일 우회) ──
 builder:
   arch: amd64
+  remote: true
 
 # ── 별칭 ──────────────────────────────────
 aliases:
