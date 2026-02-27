@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_27_173712) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_27_175233) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -128,8 +128,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_173712) do
 
   create_table "trips", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.decimal "current_lat", precision: 10, scale: 7
+    t.decimal "current_lng", precision: 10, scale: 7
     t.integer "driver_id", null: false
     t.datetime "ended_at"
+    t.datetime "location_updated_at"
     t.integer "roster_id", null: false
     t.integer "shuttle_type"
     t.datetime "started_at"
@@ -150,6 +153,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_173712) do
     t.datetime "last_login_at"
     t.string "name"
     t.string "password_digest"
+    t.string "phone"
     t.integer "role"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -159,9 +163,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_173712) do
   create_table "vehicles", force: :cascade do |t|
     t.integer "capacity"
     t.datetime "created_at", null: false
+    t.decimal "current_lat", precision: 10, scale: 7
+    t.decimal "current_lng", precision: 10, scale: 7
+    t.decimal "heading", precision: 5, scale: 2
     t.integer "institution_id", null: false
+    t.datetime "location_updated_at"
     t.string "plate_last4"
     t.string "plate_number"
+    t.decimal "speed", precision: 5, scale: 2
     t.integer "status"
     t.datetime "updated_at", null: false
     t.string "vehicle_type"

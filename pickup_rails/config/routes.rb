@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # ActionCable WebSocket
+  mount ActionCable.server => "/cable"
+
   namespace :api do
     namespace :v1 do
       # 인증
@@ -50,12 +53,20 @@ Rails.application.routes.draw do
         end
       end
 
+      # INSTITUTION_ADMIN 전용 - 실시간 위치 조회
+      namespace :institutions do
+        # 운행 중 차량 위치 목록 (폴링 fallback)
+        get  "vehicle_locations",          to: "vehicle_locations#index"
+        get  "vehicle_locations/:trip_id", to: "vehicle_locations#show", as: :institution_vehicle_location
+      end
+
       # DRIVER 전용
       namespace :driver do
         resources :trips, only: [:index, :show] do
           member do
             post :start
             post :end
+            post :update_location   # GPS 위치 업데이트 (→ ActionCable 브로드캐스트)
           end
         end
         resources :check_ins, only: [] do
