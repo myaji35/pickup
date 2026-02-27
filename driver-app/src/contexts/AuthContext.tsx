@@ -1,12 +1,3 @@
-/**
- * Auth Context (Phase 12.3)
- *
- * 전역 인증 상태 관리
- * - 로그인/로그아웃
- * - 토큰 저장/삭제
- * - 사용자 정보 관리
- */
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
@@ -22,100 +13,58 @@ interface AuthContextData {
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-/**
- * Auth Provider Component
- */
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /**
-   * 앱 시작 시 저장된 토큰으로 자동 로그인 시도
-   */
   useEffect(() => {
-    loadStoredAuth();
+    restoreSession();
   }, []);
 
-  const loadStoredAuth = async () => {
+  const restoreSession = async () => {
     try {
-      const token = await SecureStore.getItemAsync('auth_token');
+      const token = await SecureStore.getItemAsync('access_token');
       if (token) {
-        // 토큰이 있으면 사용자 정보 조회
-        const response = await authApi.getCurrentUser();
-        setUser(response.data.user);
+        const res = await authApi.getCurrentUser();
+        if (res.success) setUser(res.data.user);
       }
-    } catch (error) {
-      console.error('Failed to load stored auth:', error);
-      // 토큰이 만료되었거나 유효하지 않으면 삭제
-      await SecureStore.deleteItemAsync('auth_token');
+    } catch {
+      await clearTokens();
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * 로그인
-   */
   const login = async (email: string, password: string) => {
-    try {
-      const response = await authApi.login(email, password);
+    const res = await authApi.login(email, password);
+    if (!res.success) throw new Error(res.error || '로그인 실패');
 
-      if (response.success) {
-        // 토큰 저장
-        await SecureStore.setItemAsync('auth_token', response.data.access_token);
-
-        // 사용자 정보 설정
-        setUser(response.data.user);
-      } else {
-        throw new Error(response.message || 'Login failed');
-      }
-    } catch (error: any) {
-      console.error('Login error:', error);
-      throw new Error(
-        error.response?.data?.message || 'Login failed. Please try again.'
-      );
-    }
+    // Rails 응답: { access_token, refresh_token, user }
+    await SecureStore.setItemAsync('access_token', res.data.access_token);
+    await SecureStore.setItemAsync('refresh_token', res.data.refresh_token);
+    setUser(res.data.user);
   };
 
-  /**
-   * 로그아웃
-   */
   const logout = async () => {
-    try {
-      // 토큰 삭제
-      await SecureStore.deleteItemAsync('auth_token');
+    await authApi.logout();
+    await clearTokens();
+    setUser(null);
+  };
 
-      // 사용자 정보 초기화
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  const clearTokens = async () => {
+    await SecureStore.deleteItemAsync('access_token');
+    await SecureStore.deleteItemAsync('refresh_token');
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        isAuthenticated: !!user,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, isAuthenticated: !!user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-/**
- * Auth Hook
- */
 export const useAuth = (): AuthContextData => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };

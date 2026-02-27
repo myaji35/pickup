@@ -1,32 +1,18 @@
-/**
- * Login Screen (Phase 12.3)
- *
- * 기사 로그인 화면
- */
-
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
+  View, Text, TextInput, TouchableOpacity,
+  StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 
 export const LoginScreen: React.FC = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]   = useState(false);
 
   const handleLogin = async () => {
-    // 입력 검증
-    if (!email.trim() || !password.trim()) {
+    if (!email.trim() || !password) {
       Alert.alert('입력 오류', '이메일과 비밀번호를 입력해주세요.');
       return;
     }
@@ -34,12 +20,8 @@ export const LoginScreen: React.FC = () => {
     setLoading(true);
     try {
       await login(email.trim(), password);
-      // 로그인 성공 시 자동으로 홈 화면으로 이동 (Navigation에서 처리)
-    } catch (error: any) {
-      Alert.alert(
-        '로그인 실패',
-        error.message || '로그인에 실패했습니다. 다시 시도해주세요.'
-      );
+    } catch (e: any) {
+      Alert.alert('로그인 실패', e?.message || '이메일 또는 비밀번호를 확인해주세요.');
     } finally {
       setLoading(false);
     }
@@ -48,129 +30,70 @@ export const LoginScreen: React.FC = () => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.content}>
-        {/* 앱 타이틀 */}
-        <View style={styles.header}>
-          <Text style={styles.title}>기사 앱</Text>
-          <Text style={styles.subtitle}>송영 서비스</Text>
+      <View style={styles.inner}>
+        {/* 로고 영역 */}
+        <View style={styles.logoArea}>
+          <Text style={styles.logoIcon}>🚌</Text>
+          <Text style={styles.appName}>픽업 드라이버</Text>
+          <Text style={styles.appSub}>기사 전용 앱</Text>
         </View>
 
-        {/* 입력 폼 */}
+        {/* 로그인 폼 */}
         <View style={styles.form}>
+          <Text style={styles.inputLabel}>이메일</Text>
           <TextInput
             style={styles.input}
-            placeholder="이메일"
-            placeholderTextColor="#999"
             value={email}
             onChangeText={setEmail}
-            autoCapitalize="none"
+            placeholder="driver@example.com"
+            placeholderTextColor="#C7C7CC"
             keyboardType="email-address"
-            editable={!loading}
+            autoCapitalize="none"
+            autoComplete="email"
           />
 
+          <Text style={styles.inputLabel}>비밀번호</Text>
           <TextInput
             style={styles.input}
-            placeholder="비밀번호"
-            placeholderTextColor="#999"
             value={password}
             onChangeText={setPassword}
+            placeholder="비밀번호"
+            placeholderTextColor="#C7C7CC"
             secureTextEntry
-            editable={!loading}
-            onSubmitEditing={handleLogin}
+            autoComplete="password"
           />
 
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
+            style={[styles.loginBtn, loading && styles.loginBtnDisabled]}
             onPress={handleLogin}
             disabled={loading}
           >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>로그인</Text>
-            )}
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.loginBtnText}>로그인</Text>}
           </TouchableOpacity>
         </View>
-
-        {/* 테스트 계정 안내 (개발 모드에서만 표시) */}
-        {__DEV__ && (
-          <View style={styles.devInfo}>
-            <Text style={styles.devInfoText}>개발 모드</Text>
-            <Text style={styles.devInfoText}>
-              테스트 계정: driver@example.com / password123
-            </Text>
-          </View>
-        )}
       </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 48,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-  form: {
-    width: '100%',
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-    marginBottom: 16,
-    color: '#333',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    backgroundColor: '#999',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  devInfo: {
-    marginTop: 32,
-    padding: 16,
-    backgroundColor: '#fff3cd',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ffc107',
-  },
-  devInfoText: {
-    fontSize: 12,
-    color: '#856404',
-    textAlign: 'center',
-  },
+  container:       { flex: 1, backgroundColor: '#F2F2F7' },
+  inner:           { flex: 1, justifyContent: 'center', paddingHorizontal: 28 },
+  logoArea:        { alignItems: 'center', marginBottom: 48 },
+  logoIcon:        { fontSize: 60, marginBottom: 12 },
+  appName:         { fontSize: 28, fontWeight: '700', color: '#1C1C1E' },
+  appSub:          { fontSize: 14, color: '#8E8E93', marginTop: 4 },
+  form:            { gap: 8 },
+  inputLabel:      { fontSize: 13, fontWeight: '600', color: '#3C3C43', marginBottom: 2 },
+  input:           { backgroundColor: '#fff', borderRadius: 10, padding: 14,
+                     fontSize: 16, color: '#1C1C1E',
+                     borderWidth: 1, borderColor: '#E5E5EA', marginBottom: 12 },
+  loginBtn:        { backgroundColor: '#007AFF', borderRadius: 12,
+                     paddingVertical: 16, alignItems: 'center', marginTop: 8 },
+  loginBtnDisabled:{ opacity: 0.6 },
+  loginBtnText:    { fontSize: 17, fontWeight: '700', color: '#fff' },
 });

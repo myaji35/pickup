@@ -1,60 +1,18 @@
-/**
- * CheckIn API (Phase 12.3)
- *
- * 체크인 관련 API 호출 함수
- */
-
 import apiClient from './client';
-import { ApiResponse, CheckIn, CheckInType, GpsLocation } from '../types';
+import { ApiResponse, CheckInResult } from '../types';
 
-/**
- * POST /driver/checkin
- * 체크인 생성 (탑승/하차)
- */
-export const createCheckIn = async (
-  tripId: string,
-  passengerId: string,
-  type: CheckInType,
-  location: GpsLocation
-): Promise<ApiResponse<CheckIn>> => {
-  const response = await apiClient.post<ApiResponse<CheckIn>>(
-    '/driver/checkin',
-    {
-      tripId,
-      passengerId,
-      type,
-      timestamp: new Date().toISOString(),
-      location,
-    }
+// POST /driver/check_ins/:id/board
+export const boardPassenger = async (checkInId: number): Promise<ApiResponse<CheckInResult>> => {
+  const res = await apiClient.post<ApiResponse<CheckInResult>>(
+    `/driver/check_ins/${checkInId}/board`
   );
-  return response.data;
+  return res.data;
 };
 
-/**
- * GET /driver/trips/:id/checkins
- * 운행의 체크인 목록 조회
- */
-export const getTripCheckIns = async (
-  tripId: string
-): Promise<
-  ApiResponse<{
-    checkIns: CheckIn[];
-    stats: {
-      totalCheckIns: number;
-      boardingCount: number;
-      alightingCount: number;
-    };
-  }>
-> => {
-  const response = await apiClient.get<
-    ApiResponse<{
-      checkIns: CheckIn[];
-      stats: {
-        totalCheckIns: number;
-        boardingCount: number;
-        alightingCount: number;
-      };
-    }>
-  >(`/driver/trips/${tripId}/checkins`);
-  return response.data;
+// POST /driver/check_ins/:id/alight
+export const alightPassenger = async (checkInId: number): Promise<ApiResponse<CheckInResult>> => {
+  const res = await apiClient.post<ApiResponse<CheckInResult>>(
+    `/driver/check_ins/${checkInId}/alight`
+  );
+  return res.data;
 };
