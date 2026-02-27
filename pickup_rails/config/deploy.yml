@@ -1,0 +1,65 @@
+# Pickup MaaS — Kamal Deploy Config
+# Rails API 서버
+# 접속: http://pickup-api.158.247.235.31.nip.io
+# 업데이트: 2026-02-28
+
+service: pickup_api
+image: ghcr.io/myaji35/pickup_api
+
+# ── 서버 설정 ──────────────────────────────
+servers:
+  web:
+    - 158.247.235.31
+
+# ── SSH 설정 ──────────────────────────────
+ssh:
+  user: root
+
+# ── Proxy 설정 (kamal-proxy via nip.io) ───
+proxy:
+  host: pickup-api.158.247.235.31.nip.io
+  app_port: 80
+  healthcheck:
+    path: /up
+    interval: 10
+    timeout: 5
+
+# ── 레지스트리 (GitHub Container Registry) ──
+registry:
+  server: ghcr.io
+  username: myaji35
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# ── 환경변수 ──────────────────────────────
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - SECRET_KEY_BASE
+  clear:
+    RAILS_ENV: production
+    RAILS_SERVE_STATIC_FILES: "true"
+    RAILS_LOG_TO_STDOUT: "true"
+    WEB_CONCURRENCY: "2"
+    RAILS_MAX_THREADS: "5"
+    # CORS — Next.js Admin Portal 허용
+    CORS_ORIGINS: "http://pickup.158.247.235.31.nip.io,https://pickup.158.247.235.31.nip.io"
+
+# ── 볼륨 (SQLite 영속성) ──────────────────
+volumes:
+  - "pickup_api_storage:/rails/storage"
+
+# ── 에셋 경로 ─────────────────────────────
+asset_path: /rails/public/assets
+
+# ── 빌더 (Mac amd64 크로스컴파일) ──────────
+builder:
+  arch: amd64
+
+# ── 별칭 ──────────────────────────────────
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell:   app exec --interactive --reuse "bash"
+  logs:    app logs -f
+  migrate: app exec "bin/rails db:migrate"
+  seed:    app exec "bin/rails db:seed"

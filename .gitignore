@@ -18,6 +18,10 @@ out/
 
 # Environment variables
 .env
+
+# Kamal secrets (contains credentials)
+pickup_rails/.kamal/secrets
+frontend/.kamal/secrets
 .env.local
 .env.development.local
 .env.test.local
