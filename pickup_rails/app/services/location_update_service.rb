@@ -1,4 +1,4 @@
-# GPS 위치 업데이트 + OBD 데이터 저장 + ActionCable 브로드캐스트
+# GPS 위치 업데이트 + OBD 데이터 저장 + ActionCable 브로드캐스트 + ETA 계산
 class LocationUpdateService
   attr_reader :trip, :lat, :lng, :heading, :speed,
               :rpm, :coolant_temp, :fuel_level, :throttle, :events
@@ -91,7 +91,9 @@ class LocationUpdateService
   end
 
   def build_payload(now)
-    {
+    eta_info = calculate_next_stop_eta
+
+    payload = {
       type:        "location_update",
       trip_id:     trip.id,
       vehicle_id:  trip.vehicle_id,
@@ -105,5 +107,61 @@ class LocationUpdateService
       status:      trip.status,
       updated_at:  now.iso8601
     }
+
+    payload.merge!(eta_info) if eta_info
+    payload
+  end
+
+  # 다음 탑승 예정 정류장까지의 ETA 계산
+  # - 현재 위치 → 다음 미탑승 승객 픽업 위치
+  # - boarding_order 순서 기준, 아직 pending 상태인 첫 번째 승객
+  def calculate_next_stop_eta
+    next_check_in = find_next_pending_check_in
+    return nil unless next_check_in
+
+    passenger = next_check_in.passenger
+    return nil unless passenger.pickup_lat.present? && passenger.pickup_lng.present?
+
+    origin      = { lat: lat, lng: lng }
+    destination = { lat: passenger.pickup_lat.to_f, lng: passenger.pickup_lng.to_f }
+
+    svc    = VrpClientService.new
+    result = svc.eta(origin: origin, destination: destination)
+
+    {
+      next_stop: {
+        check_in_id:     next_check_in.id,
+        passenger_id:    passenger.id,
+        passenger_name:  passenger.name,
+        pickup_address:  passenger.pickup_address,
+        lat:             passenger.pickup_lat.to_f,
+        lng:             passenger.pickup_lng.to_f,
+        boarding_order:  next_check_in_boarding_order(next_check_in),
+      },
+      eta_minutes:    result[:duration_min],
+      eta_distance_m: result[:distance_m],
+      eta_source:     result[:source] || "haversine",
+    }
+  rescue => e
+    Rails.logger.warn("[LocationUpdateService] ETA 계산 실패: #{e.message}")
+    nil
+  end
+
+  # 다음 탑승 대기 중인 CheckIn 조회 (boarding_order 기준 오름차순)
+  def find_next_pending_check_in
+    trip.check_ins
+        .where(status: :pending)
+        .joins("LEFT JOIN roster_passengers ON roster_passengers.passenger_id = check_ins.passenger_id
+                AND roster_passengers.roster_id = #{trip.roster_id}")
+        .order(Arel.sql("COALESCE(roster_passengers.boarding_order, 9999), check_ins.id"))
+        .includes(:passenger)
+        .first
+  end
+
+  # check_in에 대응하는 roster_passenger의 boarding_order 조회
+  def next_check_in_boarding_order(check_in)
+    trip.roster.roster_passengers
+        .find_by(passenger_id: check_in.passenger_id)
+        &.boarding_order
   end
 end

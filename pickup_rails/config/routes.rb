@@ -87,6 +87,16 @@ Rails.application.routes.draw do
           get  "invoices",     to: "billing#invoices"
           post "change_plan",  to: "billing#change_plan"
         end
+
+        # AI 경로 최적화
+        resources :rosters, only: [] do
+          member do
+            post :optimize,             to: "route_optimization#optimize"
+            get  :route_preview,        to: "route_optimization#route_preview"
+            post :apply_optimization,   to: "route_optimization#apply_optimization"
+          end
+        end
+        post "eta", to: "route_optimization#eta"
       end
 
       # 보호자/승객 전용
