@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-27T20:34:57.522Z",
+  "lastUpdated": "2026-02-27T21:17:23.284Z",
   "activeFeatures": [
     "migrate",
     "pickup_rails",
@@ -61,7 +61,11 @@
     "notification_template_service.rb",
     "settings",
     "companion-checkin",
-    "ui"
+    "ui",
+    "clova_ocr_service.rb",
+    "trips",
+    "[tripId]",
+    "settlements"
   ],
   "primaryFeature": "migrate",
   "features": {
@@ -74,9 +78,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:08.083Z",
-        "lastUpdated": "2026-02-27T20:28:31.312Z"
+        "lastUpdated": "2026-02-27T21:00:34.320Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260228120000_add_notification_settings_to_guardians.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260228130000_epic6_expense_ocr.rb"
     },
     "pickup_rails": {
       "phase": "do",
@@ -87,9 +91,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:37.392Z",
-        "lastUpdated": "2026-02-27T20:30:18.539Z"
+        "lastUpdated": "2026-02-27T21:03:30.596Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/guardian_notification_setting.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/vehicle.rb"
     },
     "initializers": {
       "phase": "do",
@@ -100,7 +104,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:34:33.936Z",
-        "lastUpdated": "2026-02-27T17:34:33.936Z"
+        "lastUpdated": "2026-02-27T21:17:05.956Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/initializers/cors.rb"
     },
@@ -152,9 +156,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:34.844Z",
-        "lastUpdated": "2026-02-27T20:30:11.351Z"
+        "lastUpdated": "2026-02-27T21:01:57.480Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/notification_settings_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/trips_controller.rb"
     },
     "driver": {
       "phase": "do",
@@ -178,7 +182,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:36:12.046Z",
-        "lastUpdated": "2026-02-27T20:30:24.171Z"
+        "lastUpdated": "2026-02-27T21:01:42.281Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/routes.rb"
     },
@@ -386,9 +390,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:49:32.344Z",
-        "lastUpdated": "2026-02-27T20:09:58.408Z"
+        "lastUpdated": "2026-02-27T21:17:23.284Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/lib/rails-client.ts"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/next.config.js"
     },
     "queries": {
       "phase": "do",
@@ -451,7 +455,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:54:58.261Z",
-        "lastUpdated": "2026-02-27T20:12:46.837Z"
+        "lastUpdated": "2026-02-27T21:03:44.252Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/layout.tsx"
     },
@@ -844,6 +848,58 @@
         "lastUpdated": "2026-02-27T20:34:57.522Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/ui/switch.tsx"
+    },
+    "clova_ocr_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T21:01:11.028Z",
+        "lastUpdated": "2026-02-27T21:01:11.028Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/clova_ocr_service.rb"
+    },
+    "trips": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T21:04:20.168Z",
+        "lastUpdated": "2026-02-27T21:08:10.484Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/trips/page.tsx"
+    },
+    "[tripId]": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T21:04:57.856Z",
+        "lastUpdated": "2026-02-27T21:08:14.142Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/trips/[tripId]/page.tsx"
+    },
+    "settlements": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T21:06:19.594Z",
+        "lastUpdated": "2026-02-27T21:08:06.812Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/settlements/page.tsx"
     }
   },
   "pipeline": {
@@ -854,7 +910,7 @@
   "session": {
     "startedAt": "2026-02-27T17:24:38.804Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-27T20:34:57.522Z"
+    "lastActivity": "2026-02-27T21:17:23.284Z"
   },
   "history": [
     {
@@ -2726,6 +2782,162 @@
     {
       "timestamp": "2026-02-27T20:34:57.522Z",
       "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:00:34.320Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:00:42.898Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:00:54.102Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:01:11.028Z",
+      "feature": "clova_ocr_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:01:31.930Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:01:42.281Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:01:57.480Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:03:30.596Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:03:39.365Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:03:44.252Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:04:20.168Z",
+      "feature": "trips",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:04:57.856Z",
+      "feature": "[tripId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:06:19.594Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:02.607Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:07.745Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:12.445Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:25.082Z",
+      "feature": "trips",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:29.632Z",
+      "feature": "[tripId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:34.837Z",
+      "feature": "[tripId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:07:58.874Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:08:03.878Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:08:06.812Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:08:10.484Z",
+      "feature": "trips",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:08:14.142Z",
+      "feature": "[tripId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:17:05.956Z",
+      "feature": "initializers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T21:17:23.284Z",
+      "feature": "frontend",
       "phase": "do",
       "action": "updated"
     }
