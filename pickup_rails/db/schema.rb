@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_28_010002) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_020001) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -23,9 +23,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_010002) do
     t.index ["trip_id"], name: "index_check_ins_on_trip_id"
   end
 
+  create_table "driver_safety_scores", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "driver_id", null: false
+    t.integer "harsh_accel_count", default: 0
+    t.integer "harsh_brake_count", default: 0
+    t.integer "idling_count", default: 0
+    t.integer "institution_id", null: false
+    t.integer "period_week", null: false
+    t.integer "period_year", null: false
+    t.integer "rank_in_institution"
+    t.integer "speeding_count", default: 0
+    t.integer "total_distance_km", default: 0
+    t.decimal "total_score", precision: 5, scale: 2, default: "100.0"
+    t.integer "total_trips", default: 0
+    t.datetime "updated_at", null: false
+    t.index ["driver_id", "period_year", "period_week"], name: "idx_safety_score_driver_period", unique: true
+    t.index ["driver_id"], name: "index_driver_safety_scores_on_driver_id"
+    t.index ["institution_id", "period_year", "period_week"], name: "idx_safety_score_institution_period"
+    t.index ["institution_id"], name: "index_driver_safety_scores_on_institution_id"
+  end
+
   create_table "driving_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "driver_id", null: false
+    t.integer "duration_seconds", default: 0
     t.string "event_type", null: false
     t.decimal "lat", precision: 10, scale: 7
     t.decimal "lng", precision: 10, scale: 7
@@ -223,6 +245,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_28_010002) do
 
   add_foreign_key "check_ins", "passengers"
   add_foreign_key "check_ins", "trips"
+  add_foreign_key "driver_safety_scores", "institutions"
+  add_foreign_key "driver_safety_scores", "users", column: "driver_id"
   add_foreign_key "driving_events", "trips"
   add_foreign_key "driving_events", "users", column: "driver_id"
   add_foreign_key "dtc_reports", "trips"

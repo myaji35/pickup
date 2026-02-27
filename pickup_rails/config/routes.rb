@@ -61,6 +61,7 @@ Rails.application.routes.draw do
 
         # 안전 대시보드
         scope :safety do
+          get  "scores",            to: "safety#scores"
           get  "events",            to: "safety#events"
           get  "summary",           to: "safety#summary"
           get  "dtc_history",       to: "safety#dtc_history"

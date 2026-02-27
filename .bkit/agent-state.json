@@ -1,14 +1,35 @@
 {
   "version": "1.0",
-  "enabled": false,
+  "enabled": true,
   "teamName": "",
-  "feature": "",
-  "pdcaPhase": "plan",
+  "feature": "migrate",
+  "pdcaPhase": "do",
   "orchestrationPattern": "leader",
   "ctoAgent": "opus",
-  "startedAt": "2026-02-27T17:26:02.498Z",
-  "lastUpdated": "2026-02-27T17:27:09.535Z",
-  "teammates": [],
+  "startedAt": "2026-02-27T18:17:16.763Z",
+  "lastUpdated": "2026-02-27T18:21:31.206Z",
+  "teammates": [
+    {
+      "name": "a40956c8494008ba8",
+      "role": "bkit:gap-detector",
+      "model": "sonnet",
+      "status": "completed",
+      "currentTask": null,
+      "taskId": null,
+      "startedAt": "2026-02-27T18:17:16.773Z",
+      "lastActivityAt": "2026-02-27T18:21:07.239Z"
+    },
+    {
+      "name": "a69fa4e94686e9ad4",
+      "role": "bkit:product-manager",
+      "model": "sonnet",
+      "status": "spawning",
+      "currentTask": null,
+      "taskId": null,
+      "startedAt": "2026-02-27T18:21:31.205Z",
+      "lastActivityAt": "2026-02-27T18:21:31.205Z"
+    }
+  ],
   "progress": {
     "totalTasks": 0,
     "completedTasks": 0,

@@ -18,5 +18,16 @@ class Trip < ApplicationRecord
 
   def end!
     update!(status: :completed, ended_at: Time.current)
+    # 운행 종료 후 안전 점수 비동기 갱신
+    recalculate_safety_score
+  end
+
+  private
+
+  def recalculate_safety_score
+    institution_id = roster.institution_id
+    SafetyScoreService.new(driver_id, institution_id).call
+  rescue => e
+    Rails.logger.warn("SafetyScoreService 실패: #{e.message}")
   end
 end

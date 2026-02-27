@@ -4,6 +4,25 @@ module Api
       class SafetyController < ApplicationController
         before_action :require_institution_admin!
 
+        # GET /api/v1/institutions/safety/scores
+        # 드라이버별 주간 안전 점수 (현재 주 또는 지정 주차)
+        def scores
+          year = (params[:year] || Time.current.year).to_i
+          week = (params[:week] || Time.current.strftime('%V')).to_i
+
+          scores = DriverSafetyScore
+            .for_institution(current_institution.id)
+            .where(period_year: year, period_week: week)
+            .includes(:driver)
+            .order(:rank_in_institution)
+
+          render_success({
+            year:    year,
+            week:    week,
+            drivers: scores.map { |s| score_json(s) }
+          })
+        end
+
         # GET /api/v1/institutions/safety/events
         # 기관 내 드라이버 안전 이벤트 목록
         # Query: date_from, date_to, event_type, driver_id, limit (default 50)
@@ -132,6 +151,23 @@ module Api
               plate_number: d.vehicle.plate_number
             },
             reported_at: d.created_at.iso8601
+          }
+        end
+
+        def score_json(s)
+          {
+            driver_id:          s.driver_id,
+            driver_name:        s.driver.name,
+            total_score:        s.total_score.to_f,
+            rank:               s.rank_in_institution,
+            harsh_accel_count:  s.harsh_accel_count,
+            harsh_brake_count:  s.harsh_brake_count,
+            speeding_count:     s.speeding_count,
+            idling_count:       s.idling_count,
+            total_trips:        s.total_trips,
+            period_year:        s.period_year,
+            period_week:        s.period_week,
+            updated_at:         s.updated_at.iso8601
           }
         end
       end
