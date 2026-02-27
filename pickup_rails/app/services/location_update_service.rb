@@ -108,8 +108,40 @@ class LocationUpdateService
       updated_at:  now.iso8601
     }
 
-    payload.merge!(eta_info) if eta_info
+    if eta_info
+      payload.merge!(eta_info)
+      # ETA 5분 이내 → 보호자에게 FCM 알림 (중복 방지: 5분 간격)
+      maybe_notify_eta(eta_info)
+    end
     payload
+  end
+
+  def maybe_notify_eta(eta_info)
+    eta_min = eta_info[:eta_minutes]
+    return unless eta_min.present? && eta_min.to_f <= 5.0
+
+    next_stop   = eta_info[:next_stop]
+    passenger   = Passenger.find_by(id: next_stop[:passenger_id])
+    return unless passenger
+
+    # Redis 또는 간단히 Rails.cache로 중복 발송 방지 (5분 쿨다운)
+    cache_key = "eta_notified:#{trip.id}:#{passenger.id}"
+    return if Rails.cache.exist?(cache_key)
+
+    # 승차 전(pending) vs 하차 전(boarded) 구분
+    check_in = trip.check_ins.find_by(passenger: passenger)
+    context_type = if check_in&.status.to_s == 'boarded'
+                     :before_alighting
+                   else
+                     :before_boarding
+                   end
+
+    FcmNotificationService.notify_eta_approaching(
+      trip, passenger, eta_min.to_i, context_type: context_type
+    ) rescue nil
+    Rails.cache.write(cache_key, true, expires_in: 5.minutes)
+  rescue => e
+    Rails.logger.warn("[LocationUpdateService] ETA 알림 실패: #{e.message}")
   end
 
   # 다음 탑승 예정 정류장까지의 ETA 계산

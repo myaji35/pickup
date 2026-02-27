@@ -1,8 +1,11 @@
 {
-  "sessionCount": 4,
+  "sessionCount": 12,
   "lastSession": {
-    "startedAt": "2026-02-27T18:36:03.379Z",
+    "startedAt": "2026-02-27T20:27:54.910Z",
     "platform": "claude",
     "level": "Starter"
-  }
+  },
+  "currentFeature": null,
+  "currentPhase": "archived",
+  "lastArchived": "notification-settings"
 }

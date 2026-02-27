@@ -8,10 +8,11 @@ Rails.application.routes.draw do
     namespace :v1 do
       # 인증
       scope :auth do
-        post   "login",   to: "auth#login"
-        post   "refresh", to: "auth#refresh"
-        get    "me",      to: "auth#me"
-        delete "logout",  to: "auth#logout"
+        post   "login",     to: "auth#login"
+        post   "refresh",   to: "auth#refresh"
+        get    "me",        to: "auth#me"
+        delete "logout",    to: "auth#logout"
+        post   "fcm_token", to: "auth#register_fcm_token"  # 공용 FCM 토큰 등록
       end
 
       # SUPER_ADMIN 전용
@@ -52,6 +53,11 @@ Rails.application.routes.draw do
           collection do
             post :bulk_import    # CSV 업로드
             get  :csv_template   # CSV 양식 다운로드
+          end
+          member do
+            get   :qr_code                  # QR 코드 PNG 다운로드
+            get   :notification_settings,   to: 'notification_settings#show'
+            patch :notification_settings,   to: 'notification_settings#update'
           end
         end
 
@@ -106,6 +112,45 @@ Rails.application.routes.draw do
           end
         end
         post "eta", to: "route_optimization#eta"
+
+        # 알림 이력 (Epic 14)
+        scope :notifications do
+          get '/',      to: 'notifications#index', as: :institution_notifications
+          get 'stats',  to: 'notifications#stats',  as: :institution_notifications_stats
+        end
+
+        # 보험 리스크 리포트 (Epic 15-3)
+        scope :risk_reports do
+          get 'current',  to: 'risk_reports#current',  as: :institution_risk_current
+          get 'monthly',  to: 'risk_reports#monthly',  as: :institution_risk_monthly
+          get 'trend',    to: 'risk_reports#trend',    as: :institution_risk_trend
+        end
+
+        # 파트너십 — 정비소 추천 + 예약 (Epic 13)
+        scope :garages do
+          get  "nearby",                       to: "garages#nearby"
+          get  "reservations",                 to: "garages#reservations"
+          post ":id/reservations",             to: "garages#create_reservation"
+        end
+
+        # 예측 정비 (Epic 15)
+        scope "vehicles/:vehicle_id/maintenance" do
+          get  "predictions",         to: "maintenance#predictions",         as: :maintenance_predictions
+          post "predictions/refresh", to: "maintenance#refresh_predictions", as: :refresh_maintenance_predictions
+          get  "records",             to: "maintenance#records",             as: :maintenance_records
+          post "records",             to: "maintenance#create_record"
+          get  "records/:id",         to: "maintenance#show_record",         as: :maintenance_record
+          patch "records/:id",        to: "maintenance#update_record"
+          delete "records/:id",       to: "maintenance#destroy_record"
+          patch "mileage",            to: "maintenance#update_mileage",      as: :maintenance_mileage
+        end
+      end
+
+      # 파트너 외부 API (보험사 전용, X-Partner-Key 인증)
+      namespace :partner do
+        scope :insurance do
+          get "safety_report", to: "insurance#safety_report"
+        end
       end
 
       # 보호자/승객 전용
@@ -131,6 +176,15 @@ Rails.application.routes.draw do
 
       # DRIVER 전용
       namespace :driver do
+        # 코칭 & 배지 (Epic 15-4)
+        scope :coaching do
+          get  'messages',             to: 'coaching#messages'
+          patch 'messages/:id/read',   to: 'coaching#mark_read',    as: :driver_coaching_read
+          patch 'messages/read_all',   to: 'coaching#mark_all_read', as: :driver_coaching_read_all
+          get  'badges',               to: 'coaching#badges'
+          get  'summary',              to: 'coaching#summary'
+        end
+
         resources :trips, only: [:index, :show] do
           member do
             post :start
@@ -140,6 +194,9 @@ Rails.application.routes.draw do
           end
         end
         resources :check_ins, only: [] do
+          collection do
+            post :qr_scan        # QR 스캔 → 승객 자동 체크인
+          end
           member do
             post :board
             post :alight

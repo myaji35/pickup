@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-27T18:44:11.478Z",
+  "lastUpdated": "2026-02-27T20:34:57.522Z",
   "activeFeatures": [
     "migrate",
     "pickup_rails",
@@ -25,7 +25,43 @@
     "navigation",
     "safety_score_service.rb",
     "guardian",
-    "passenger-app"
+    "passenger-app",
+    "frontend",
+    "queries",
+    "safety",
+    "events",
+    "dtc",
+    "[id]",
+    "toss_payments_service.rb",
+    "subscription_billing_service.rb",
+    "jobs",
+    "billing",
+    "subscriptions",
+    "solver",
+    "vrp_service",
+    "vrp_client_service.rb",
+    "rosters",
+    "optimize",
+    "analytics_query_service.rb",
+    "analytics",
+    "qr_code_service.rb",
+    "passengers",
+    "partner",
+    "insurance_safety_report_service.rb",
+    "fcm_notification_service.rb",
+    "notificationService.ts",
+    "notifications",
+    "maintenance_prediction_service.rb",
+    "maintenance",
+    "tables",
+    "vehicles",
+    "risk_index_calculator_service.rb",
+    "risk-report",
+    "driver_coaching_service.rb",
+    "notification_template_service.rb",
+    "settings",
+    "companion-checkin",
+    "ui"
   ],
   "primaryFeature": "migrate",
   "features": {
@@ -38,9 +74,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:08.083Z",
-        "lastUpdated": "2026-02-27T18:39:58.212Z"
+        "lastUpdated": "2026-02-27T20:28:31.312Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260228030001_backfill_passenger_invite_codes.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260228120000_add_notification_settings_to_guardians.rb"
     },
     "pickup_rails": {
       "phase": "do",
@@ -51,9 +87,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:37.392Z",
-        "lastUpdated": "2026-02-27T18:39:53.598Z"
+        "lastUpdated": "2026-02-27T20:30:18.539Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/passenger.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/guardian_notification_setting.rb"
     },
     "initializers": {
       "phase": "do",
@@ -90,7 +126,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:11.219Z",
-        "lastUpdated": "2026-02-27T17:35:11.219Z"
+        "lastUpdated": "2026-02-27T19:47:23.499Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/auth_controller.rb"
     },
@@ -103,9 +139,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:25.980Z",
-        "lastUpdated": "2026-02-27T17:38:42.647Z"
+        "lastUpdated": "2026-02-27T19:03:56.403Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/admin/institutions_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/admin/sidebar.tsx"
     },
     "institutions": {
       "phase": "do",
@@ -116,9 +152,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:34.844Z",
-        "lastUpdated": "2026-02-27T18:40:26.285Z"
+        "lastUpdated": "2026-02-27T20:30:11.351Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/passengers_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/notification_settings_controller.rb"
     },
     "driver": {
       "phase": "do",
@@ -129,9 +165,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:54.403Z",
-        "lastUpdated": "2026-02-27T18:13:44.663Z"
+        "lastUpdated": "2026-02-27T20:15:22.210Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/driver/trips_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/driver/coaching_controller.rb"
     },
     "config": {
       "phase": "do",
@@ -142,7 +178,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:36:12.046Z",
-        "lastUpdated": "2026-02-27T18:40:11.617Z"
+        "lastUpdated": "2026-02-27T20:30:24.171Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/routes.rb"
     },
@@ -155,7 +191,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:36:24.637Z",
-        "lastUpdated": "2026-02-27T17:36:24.637Z"
+        "lastUpdated": "2026-02-27T20:07:27.866Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/seeds.rb"
     },
@@ -220,7 +256,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:51:43.176Z",
-        "lastUpdated": "2026-02-27T18:13:27.352Z"
+        "lastUpdated": "2026-02-27T20:29:52.763Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/location_update_service.rb"
     },
@@ -233,9 +269,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:56:54.443Z",
-        "lastUpdated": "2026-02-27T18:12:32.086Z"
+        "lastUpdated": "2026-02-27T19:38:18.855Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/App.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/types/index.ts"
     },
     "api": {
       "phase": "do",
@@ -259,7 +295,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:57:32.191Z",
-        "lastUpdated": "2026-02-27T18:41:39.837Z"
+        "lastUpdated": "2026-02-27T19:51:50.438Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/contexts/AuthContext.tsx"
     },
@@ -272,9 +308,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:58:08.287Z",
-        "lastUpdated": "2026-02-27T18:43:53.956Z"
+        "lastUpdated": "2026-02-27T20:16:51.355Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/screens/ProfileScreen.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/screens/CoachingScreen.tsx"
     },
     "obd2": {
       "phase": "do",
@@ -298,9 +334,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:12:15.806Z",
-        "lastUpdated": "2026-02-27T18:44:11.478Z"
+        "lastUpdated": "2026-02-27T20:17:01.625Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/navigation/AppNavigator.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/driver-app/src/navigation/AppNavigator.tsx"
     },
     "safety_score_service.rb": {
       "phase": "do",
@@ -324,9 +360,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:39:23.543Z",
-        "lastUpdated": "2026-02-27T18:39:48.346Z"
+        "lastUpdated": "2026-02-27T19:47:12.394Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/guardian/profile_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/guardian/auth_controller.rb"
     },
     "passenger-app": {
       "phase": "do",
@@ -340,6 +376,474 @@
         "lastUpdated": "2026-02-27T18:41:00.446Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/types/index.ts"
+    },
+    "frontend": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:49:32.344Z",
+        "lastUpdated": "2026-02-27T20:09:58.408Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/lib/rails-client.ts"
+    },
+    "queries": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:50:06.466Z",
+        "lastUpdated": "2026-02-27T19:38:44.380Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/hooks/queries/use-garages.ts"
+    },
+    "safety": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:50:49.333Z",
+        "lastUpdated": "2026-02-27T18:50:49.333Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/safety/page.tsx"
+    },
+    "events": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:51:13.190Z",
+        "lastUpdated": "2026-02-27T18:51:13.191Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/safety/events/page.tsx"
+    },
+    "dtc": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:51:41.667Z",
+        "lastUpdated": "2026-02-27T19:42:36.924Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/safety/dtc/page.tsx"
+    },
+    "[id]": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:54:58.261Z",
+        "lastUpdated": "2026-02-27T20:12:46.837Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/layout.tsx"
+    },
+    "toss_payments_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T18:59:50.252Z",
+        "lastUpdated": "2026-02-27T18:59:50.252Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/toss_payments_service.rb"
+    },
+    "subscription_billing_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:00:09.793Z",
+        "lastUpdated": "2026-02-27T19:00:09.793Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/subscription_billing_service.rb"
+    },
+    "jobs": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:00:20.447Z",
+        "lastUpdated": "2026-02-27T20:15:04.983Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/jobs/weekly_coaching_job.rb"
+    },
+    "billing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:03:10.197Z",
+        "lastUpdated": "2026-02-27T19:03:10.197Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/billing/page.tsx"
+    },
+    "subscriptions": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:03:47.644Z",
+        "lastUpdated": "2026-02-27T19:03:47.644Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/(admin)/admin/subscriptions/page.tsx"
+    },
+    "solver": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:06:49.238Z",
+        "lastUpdated": "2026-02-27T19:06:51.769Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/vrp_service/solver/__init__.py"
+    },
+    "vrp_service": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:07:21.701Z",
+        "lastUpdated": "2026-02-27T19:07:21.701Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/vrp_service/main.py"
+    },
+    "vrp_client_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:08:17.906Z",
+        "lastUpdated": "2026-02-27T19:08:17.906Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/vrp_client_service.rb"
+    },
+    "rosters": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:13:09.390Z",
+        "lastUpdated": "2026-02-27T19:13:09.390Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/rosters/page.tsx"
+    },
+    "optimize": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:14:09.808Z",
+        "lastUpdated": "2026-02-27T19:14:09.808Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/rosters/[rosterId]/optimize/page.tsx"
+    },
+    "analytics_query_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:18:27.467Z",
+        "lastUpdated": "2026-02-27T19:18:27.467Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/analytics_query_service.rb"
+    },
+    "analytics": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:20:34.224Z",
+        "lastUpdated": "2026-02-27T19:20:34.224Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/analytics/page.tsx"
+    },
+    "qr_code_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:22:33.214Z",
+        "lastUpdated": "2026-02-27T19:22:33.214Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/qr_code_service.rb"
+    },
+    "passengers": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:27:18.425Z",
+        "lastUpdated": "2026-02-27T19:28:09.640Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/passengers/page.tsx"
+    },
+    "partner": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:35:59.342Z",
+        "lastUpdated": "2026-02-27T19:35:59.342Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/partner/insurance_controller.rb"
+    },
+    "insurance_safety_report_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:36:21.770Z",
+        "lastUpdated": "2026-02-27T20:11:06.961Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/insurance_safety_report_service.rb"
+    },
+    "fcm_notification_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:46:27.891Z",
+        "lastUpdated": "2026-02-27T20:29:42.729Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/fcm_notification_service.rb"
+    },
+    "notificationService.ts": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:50:15.713Z",
+        "lastUpdated": "2026-02-27T19:51:31.223Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/services/notificationService.ts"
+    },
+    "notifications": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T19:53:46.121Z",
+        "lastUpdated": "2026-02-27T19:53:46.121Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/notifications/page.tsx"
+    },
+    "maintenance_prediction_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:05:53.560Z",
+        "lastUpdated": "2026-02-27T20:05:53.560Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/maintenance_prediction_service.rb"
+    },
+    "maintenance": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:09:05.455Z",
+        "lastUpdated": "2026-02-27T20:09:05.455Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/vehicles/[vehicleId]/maintenance/page.tsx"
+    },
+    "tables": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:09:24.928Z",
+        "lastUpdated": "2026-02-27T20:09:32.971Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/tables/vehicle-table.tsx"
+    },
+    "vehicles": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:09:37.284Z",
+        "lastUpdated": "2026-02-27T20:09:37.284Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/vehicles/page.tsx"
+    },
+    "risk_index_calculator_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:10:46.545Z",
+        "lastUpdated": "2026-02-27T20:10:46.545Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/risk_index_calculator_service.rb"
+    },
+    "risk-report": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:12:36.058Z",
+        "lastUpdated": "2026-02-27T20:12:36.058Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/risk-report/page.tsx"
+    },
+    "driver_coaching_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:14:40.864Z",
+        "lastUpdated": "2026-02-27T20:14:40.864Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/driver_coaching_service.rb"
+    },
+    "notification_template_service.rb": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:28:50.561Z",
+        "lastUpdated": "2026-02-27T20:28:50.561Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/notification_template_service.rb"
+    },
+    "settings": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:31:36.107Z",
+        "lastUpdated": "2026-02-27T20:33:56.608Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/settings/page.tsx"
+    },
+    "companion-checkin": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:32:11.320Z",
+        "lastUpdated": "2026-02-27T20:34:07.785Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/trips/[tripId]/companion-checkin/page.tsx"
+    },
+    "ui": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T20:34:40.059Z",
+        "lastUpdated": "2026-02-27T20:34:57.522Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/ui/switch.tsx"
     }
   },
   "pipeline": {
@@ -350,7 +854,7 @@
   "session": {
     "startedAt": "2026-02-27T17:24:38.804Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-27T18:44:11.478Z"
+    "lastActivity": "2026-02-27T20:34:57.522Z"
   },
   "history": [
     {
@@ -1114,6 +1618,1124 @@
       "feature": "navigation",
       "phase": "do",
       "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:49:32.344Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:49:49.942Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:50:06.466Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:50:49.333Z",
+      "feature": "safety",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:51:13.191Z",
+      "feature": "events",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:51:41.667Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:54:58.261Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:58:41.559Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:58:56.862Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:59:08.803Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:59:16.071Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:59:27.631Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T18:59:50.252Z",
+      "feature": "toss_payments_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:00:09.793Z",
+      "feature": "subscription_billing_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:00:20.448Z",
+      "feature": "jobs",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:00:52.846Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:01:13.639Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:01:21.497Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:01:27.827Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:01:39.187Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:01:53.073Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:02:07.752Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:03:10.197Z",
+      "feature": "billing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:03:47.644Z",
+      "feature": "subscriptions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:03:52.963Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:03:56.403Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:04:03.938Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:04:08.785Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:06:49.238Z",
+      "feature": "solver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:06:51.769Z",
+      "feature": "solver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:07:21.701Z",
+      "feature": "vrp_service",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:07:48.774Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:08:17.906Z",
+      "feature": "vrp_client_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:08:50.455Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:08:57.979Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:11:30.949Z",
+      "feature": "location_update_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:11:45.827Z",
+      "feature": "location_update_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:12:28.613Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:12:36.337Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:13:09.390Z",
+      "feature": "rosters",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:14:09.808Z",
+      "feature": "optimize",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:14:18.398Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:14:24.112Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:18:27.467Z",
+      "feature": "analytics_query_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:18:41.858Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:18:48.380Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:19:02.751Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:19:26.608Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:19:33.487Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:20:34.224Z",
+      "feature": "analytics",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:20:39.611Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:20:45.005Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:22:06.504Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:22:33.214Z",
+      "feature": "qr_code_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:23:04.686Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:23:21.843Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:23:31.253Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:23:36.274Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:23:41.772Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:24:57.222Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:25:08.783Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:25:13.279Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:25:24.381Z",
+      "feature": "navigation",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:25:28.171Z",
+      "feature": "navigation",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:27:18.425Z",
+      "feature": "passengers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:27:47.339Z",
+      "feature": "passengers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:28:01.649Z",
+      "feature": "passengers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:28:09.640Z",
+      "feature": "passengers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:31:07.625Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:31:31.111Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:35:12.053Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:35:24.657Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:35:33.922Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:35:39.145Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:35:42.881Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:35:59.342Z",
+      "feature": "partner",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:36:21.770Z",
+      "feature": "insurance_safety_report_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:36:43.569Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:36:47.595Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:36:57.447Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:37:25.819Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:37:42.972Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:37:50.851Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:37:58.353Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:38:10.697Z",
+      "feature": "driver-app",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:38:15.123Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:38:18.855Z",
+      "feature": "driver-app",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:38:44.380Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:38:52.135Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:39:04.127Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:39:18.649Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:39:32.386Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:39:47.096Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:41:37.205Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:42:07.336Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:42:36.925Z",
+      "feature": "dtc",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:45:26.782Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:45:34.901Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:45:46.186Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:45:51.004Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:46:27.891Z",
+      "feature": "fcm_notification_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:46:43.337Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:46:47.654Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:46:58.630Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:02.713Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:12.394Z",
+      "feature": "guardian",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:23.499Z",
+      "feature": "v1",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:28.580Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:41.815Z",
+      "feature": "location_update_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:50.294Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:47:55.766Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:50:15.713Z",
+      "feature": "notificationService.ts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:50:19.588Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:50:22.923Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:50:28.307Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:51:31.223Z",
+      "feature": "notificationService.ts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:51:36.208Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:51:40.200Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:51:50.438Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:52:16.140Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:53:46.121Z",
+      "feature": "notifications",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:53:51.387Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T19:53:55.905Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:04:24.803Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:04:34.178Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:04:50.672Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:04:58.679Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:05:04.338Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:05:10.316Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:05:53.560Z",
+      "feature": "maintenance_prediction_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:06:08.384Z",
+      "feature": "jobs",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:06:33.482Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:06:44.421Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:07:27.866Z",
+      "feature": "db",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:09:05.455Z",
+      "feature": "maintenance",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:09:24.928Z",
+      "feature": "tables",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:09:29.096Z",
+      "feature": "tables",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:09:32.971Z",
+      "feature": "tables",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:09:37.284Z",
+      "feature": "vehicles",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:09:58.408Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:10:46.545Z",
+      "feature": "risk_index_calculator_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:11:06.961Z",
+      "feature": "insurance_safety_report_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:11:19.032Z",
+      "feature": "jobs",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:11:37.208Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:11:43.200Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:12:36.058Z",
+      "feature": "risk-report",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:12:42.567Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:12:46.837Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:13:08.851Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:13:19.532Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:13:30.303Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:13:38.094Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:13:41.988Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:13:52.325Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:14:40.864Z",
+      "feature": "driver_coaching_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:14:57.485Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:15:04.983Z",
+      "feature": "jobs",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:15:22.210Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:15:28.819Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:16:51.355Z",
+      "feature": "screens",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:16:55.707Z",
+      "feature": "navigation",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:17:01.625Z",
+      "feature": "navigation",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:28:31.312Z",
+      "feature": "migrate",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:28:39.350Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:28:43.216Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:28:50.561Z",
+      "feature": "notification_template_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:29:42.729Z",
+      "feature": "fcm_notification_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:29:52.763Z",
+      "feature": "location_update_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:30:11.351Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:30:18.539Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:30:24.171Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:31:36.107Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:32:11.320Z",
+      "feature": "companion-checkin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:32:36.639Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:32:40.441Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:32:44.648Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:32:48.583Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:33:21.543Z",
+      "feature": "companion-checkin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:33:37.439Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:33:44.680Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:33:56.608Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:34:07.785Z",
+      "feature": "companion-checkin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:34:40.059Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:34:46.821Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T20:34:57.522Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
     }
-  ]
+  ],
+  "notification-settings": {
+    "phase": "archived",
+    "matchRate": 100,
+    "iterationCount": 0,
+    "startedAt": "2026-02-28T00:00:00Z",
+    "archivedAt": "2026-02-28T00:00:00Z",
+    "archivedTo": "docs/archive/2026-02/notification-settings/"
+  }
 }
