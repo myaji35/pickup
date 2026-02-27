@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Bus,
   Route,
+  BarChart2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +56,11 @@ export default function InstitutionLayout({
       name: '차량 관리',
       href: `/institutions/${institutionId}/vehicles`,
       icon: Car,
+    },
+    {
+      name: 'BI 대시보드',
+      href: `/institutions/${institutionId}/analytics`,
+      icon: BarChart2,
     },
     {
       name: '경로 최적화',

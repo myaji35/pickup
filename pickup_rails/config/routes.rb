@@ -88,6 +88,15 @@ Rails.application.routes.draw do
           post "change_plan",  to: "billing#change_plan"
         end
 
+        # BI 대시보드 집계
+        scope :analytics do
+          get "overview",   to: "analytics#overview"
+          get "trips",      to: "analytics#trips"
+          get "safety",     to: "analytics#safety"
+          get "passengers", to: "analytics#passengers"
+          get "export",     to: "analytics#export"
+        end
+
         # AI 경로 최적화
         resources :rosters, only: [] do
           member do
