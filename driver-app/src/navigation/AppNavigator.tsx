@@ -14,6 +14,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { TripDetailScreen } from '../screens/TripDetailScreen';
 import { CheckInScreen } from '../screens/CheckInScreen';
+import { ObdSettingsScreen } from '../screens/ObdSettingsScreen';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -46,6 +47,7 @@ export const AppNavigator: React.FC = () => {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="TripDetail" component={TripDetailScreen} />
             <Stack.Screen name="CheckIn" component={CheckInScreen} />
+            <Stack.Screen name="ObdSettings" component={ObdSettingsScreen} />
           </>
         )}
       </Stack.Navigator>

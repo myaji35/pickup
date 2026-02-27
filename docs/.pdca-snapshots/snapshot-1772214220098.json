@@ -1,0 +1,385 @@
+{
+  "timestamp": "2026-02-27T17:43:40.076Z",
+  "reason": "compaction",
+  "status": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-27T17:43:39.954Z",
+    "activeFeatures": [
+      "migrate",
+      "pickup_rails",
+      "initializers",
+      "jwt_service.rb",
+      "v1",
+      "admin",
+      "institutions",
+      "driver",
+      "config",
+      "db",
+      "csv_import_service.rb",
+      "tmp"
+    ],
+    "primaryFeature": "migrate",
+    "features": {
+      "migrate": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:33:08.083Z",
+          "lastUpdated": "2026-02-27T17:33:24.796Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/migrate/20260227173253_create_trips.rb"
+      },
+      "pickup_rails": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:33:37.392Z",
+          "lastUpdated": "2026-02-27T17:35:02.026Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/application_controller.rb"
+      },
+      "initializers": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:34:33.936Z",
+          "lastUpdated": "2026-02-27T17:34:33.936Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/initializers/cors.rb"
+      },
+      "jwt_service.rb": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:34:43.451Z",
+          "lastUpdated": "2026-02-27T17:34:43.451Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/jwt_service.rb"
+      },
+      "v1": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:35:11.219Z",
+          "lastUpdated": "2026-02-27T17:35:11.219Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/auth_controller.rb"
+      },
+      "admin": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:35:25.980Z",
+          "lastUpdated": "2026-02-27T17:38:42.647Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/admin/institutions_controller.rb"
+      },
+      "institutions": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:35:34.844Z",
+          "lastUpdated": "2026-02-27T17:42:53.266Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/passengers_controller.rb"
+      },
+      "driver": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:35:54.403Z",
+          "lastUpdated": "2026-02-27T17:36:00.680Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/driver/check_ins_controller.rb"
+      },
+      "config": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:36:12.046Z",
+          "lastUpdated": "2026-02-27T17:41:48.092Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/routes.rb"
+      },
+      "db": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:36:24.637Z",
+          "lastUpdated": "2026-02-27T17:36:24.637Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/db/seeds.rb"
+      },
+      "csv_import_service.rb": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:41:03.628Z",
+          "lastUpdated": "2026-02-27T17:43:39.954Z"
+        },
+        "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/csv_import_service.rb"
+      },
+      "tmp": {
+        "phase": "do",
+        "phaseNumber": 3,
+        "matchRate": null,
+        "iterationCount": 0,
+        "requirements": [],
+        "documents": {},
+        "timestamps": {
+          "started": "2026-02-27T17:42:14.652Z",
+          "lastUpdated": "2026-02-27T17:42:14.652Z"
+        },
+        "lastFile": "/tmp/seed_test.rb"
+      }
+    },
+    "pipeline": {
+      "currentPhase": 1,
+      "level": "Dynamic",
+      "phaseHistory": []
+    },
+    "session": {
+      "startedAt": "2026-02-27T17:24:38.804Z",
+      "onboardingCompleted": false,
+      "lastActivity": "2026-02-27T17:43:39.954Z"
+    },
+    "history": [
+      {
+        "timestamp": "2026-02-27T17:33:08.083Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:33:17.424Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:33:24.796Z",
+        "feature": "migrate",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:33:37.392Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:33:44.346Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:33:49.547Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:33:55.813Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:00.336Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:05.068Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:08.548Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:14.988Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:18.637Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:33.936Z",
+        "feature": "initializers",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:34:43.451Z",
+        "feature": "jwt_service.rb",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:35:02.026Z",
+        "feature": "pickup_rails",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:35:11.219Z",
+        "feature": "v1",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:35:25.980Z",
+        "feature": "admin",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:35:34.844Z",
+        "feature": "institutions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:35:44.233Z",
+        "feature": "institutions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:35:54.403Z",
+        "feature": "driver",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:36:00.680Z",
+        "feature": "driver",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:36:12.046Z",
+        "feature": "config",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:36:24.637Z",
+        "feature": "db",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:38:42.647Z",
+        "feature": "admin",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:38:46.119Z",
+        "feature": "config",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:41:03.628Z",
+        "feature": "csv_import_service.rb",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:41:28.022Z",
+        "feature": "institutions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:41:40.653Z",
+        "feature": "institutions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:41:48.092Z",
+        "feature": "config",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:42:14.652Z",
+        "feature": "tmp",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:42:53.266Z",
+        "feature": "institutions",
+        "phase": "do",
+        "action": "updated"
+      },
+      {
+        "timestamp": "2026-02-27T17:43:39.954Z",
+        "feature": "csv_import_service.rb",
+        "phase": "do",
+        "action": "updated"
+      }
+    ]
+  }
+}

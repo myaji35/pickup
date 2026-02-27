@@ -5,7 +5,9 @@ class Trip < ApplicationRecord
   belongs_to :roster
   belongs_to :driver, class_name: "User", foreign_key: :driver_id
   belongs_to :vehicle
-  has_many :check_ins, dependent: :destroy
+  has_many :check_ins,      dependent: :destroy
+  has_many :driving_events, dependent: :destroy
+  has_many :dtc_reports,    dependent: :destroy
 
   validates :trip_date, presence: true
   validates :shuttle_type, presence: true

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_27_175233) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_28_010002) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -21,6 +21,35 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_175233) do
     t.datetime "updated_at", null: false
     t.index ["passenger_id"], name: "index_check_ins_on_passenger_id"
     t.index ["trip_id"], name: "index_check_ins_on_trip_id"
+  end
+
+  create_table "driving_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "driver_id", null: false
+    t.string "event_type", null: false
+    t.decimal "lat", precision: 10, scale: 7
+    t.decimal "lng", precision: 10, scale: 7
+    t.decimal "rpm", precision: 7, scale: 2
+    t.decimal "speed", precision: 6, scale: 2
+    t.integer "trip_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_driving_events_on_created_at"
+    t.index ["driver_id"], name: "index_driving_events_on_driver_id"
+    t.index ["event_type"], name: "index_driving_events_on_event_type"
+    t.index ["trip_id"], name: "index_driving_events_on_trip_id"
+  end
+
+  create_table "dtc_reports", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "status", default: "pending"
+    t.integer "trip_id", null: false
+    t.datetime "updated_at", null: false
+    t.integer "vehicle_id", null: false
+    t.index ["code"], name: "index_dtc_reports_on_code"
+    t.index ["status"], name: "index_dtc_reports_on_status"
+    t.index ["trip_id"], name: "index_dtc_reports_on_trip_id"
+    t.index ["vehicle_id"], name: "index_dtc_reports_on_vehicle_id"
   end
 
   create_table "institution_types", force: :cascade do |t|
@@ -112,6 +141,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_175233) do
     t.index ["vehicle_id"], name: "index_rosters_on_vehicle_id"
   end
 
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", limit: 1024, null: false
+    t.integer "channel_hash", limit: 8, null: false
+    t.datetime "created_at", null: false
+    t.binary "payload", limit: 536870912, null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.boolean "auto_renew"
     t.datetime "created_at", null: false
@@ -132,7 +171,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_175233) do
     t.decimal "current_lng", precision: 10, scale: 7
     t.integer "driver_id", null: false
     t.datetime "ended_at"
+    t.decimal "last_coolant_temp", precision: 5, scale: 2
+    t.decimal "last_fuel_level", precision: 5, scale: 2
+    t.decimal "last_rpm", precision: 7, scale: 2
+    t.decimal "last_throttle", precision: 5, scale: 2
     t.datetime "location_updated_at"
+    t.datetime "obd_updated_at"
     t.integer "roster_id", null: false
     t.integer "shuttle_type"
     t.datetime "started_at"
@@ -179,6 +223,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_27_175233) do
 
   add_foreign_key "check_ins", "passengers"
   add_foreign_key "check_ins", "trips"
+  add_foreign_key "driving_events", "trips"
+  add_foreign_key "driving_events", "users", column: "driver_id"
+  add_foreign_key "dtc_reports", "trips"
+  add_foreign_key "dtc_reports", "vehicles"
   add_foreign_key "institutions", "institution_types"
   add_foreign_key "passenger_schedules", "passengers"
   add_foreign_key "passengers", "institutions"

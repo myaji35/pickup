@@ -58,6 +58,14 @@ Rails.application.routes.draw do
         # 운행 중 차량 위치 목록 (폴링 fallback)
         get  "vehicle_locations",          to: "vehicle_locations#index"
         get  "vehicle_locations/:trip_id", to: "vehicle_locations#show", as: :institution_vehicle_location
+
+        # 안전 대시보드
+        scope :safety do
+          get  "events",            to: "safety#events"
+          get  "summary",           to: "safety#summary"
+          get  "dtc_history",       to: "safety#dtc_history"
+          patch "dtc_history/:id/acknowledge", to: "safety#acknowledge_dtc", as: :acknowledge_dtc
+        end
       end
 
       # DRIVER 전용
@@ -66,7 +74,8 @@ Rails.application.routes.draw do
           member do
             post :start
             post :end
-            post :update_location   # GPS 위치 업데이트 (→ ActionCable 브로드캐스트)
+            post :update_location   # GPS + OBD 위치 업데이트 (→ ActionCable 브로드캐스트)
+            post :report_dtc        # DTC 오류 코드 보고
           end
         end
         resources :check_ins, only: [] do

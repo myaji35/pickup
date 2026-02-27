@@ -3,7 +3,7 @@ module Api
     module Driver
       class TripsController < ApplicationController
         before_action :require_driver!
-        before_action :set_trip, only: [:show, :start, :end, :update_location]
+        before_action :set_trip, only: [:show, :start, :end, :update_location, :report_dtc]
 
         # GET /api/v1/driver/trips
         def index
@@ -41,7 +41,7 @@ module Api
         end
 
         # POST /api/v1/driver/trips/:id/update_location
-        # Body: { lat: 37.123, lng: 127.456, heading: 90.0, speed: 40.5 }
+        # Body: { lat, lng, heading?, speed?, rpm?, coolant_temp?, fuel_level?, throttle?, events?: [...] }
         def update_location
           unless @trip.in_progress?
             return render_error("운행 중인 상태에서만 위치를 업데이트할 수 있습니다", status: :unprocessable_entity)
@@ -49,15 +49,56 @@ module Api
 
           payload = LocationUpdateService.new(
             @trip,
-            lat:     params.require(:lat),
-            lng:     params.require(:lng),
-            heading: params[:heading],
-            speed:   params[:speed]
+            lat:          params.require(:lat),
+            lng:          params.require(:lng),
+            heading:      params[:heading],
+            speed:        params[:speed],
+            rpm:          params[:rpm],
+            coolant_temp: params[:coolant_temp],
+            fuel_level:   params[:fuel_level],
+            throttle:     params[:throttle],
+            events:       params[:events] || []
           ).call
 
           render_success(payload)
         rescue ActionController::ParameterMissing => e
           render_error("위치 정보 누락: #{e.param}", status: :bad_request)
+        end
+
+        # POST /api/v1/driver/trips/:id/report_dtc
+        # Body: { codes: ["P0133", "P023A"] }
+        def report_dtc
+          unless @trip.in_progress?
+            return render_error("운행 중인 상태에서만 DTC를 보고할 수 있습니다", status: :unprocessable_entity)
+          end
+
+          codes  = Array(params[:codes]).map(&:upcase).uniq
+          vehicle = @trip.vehicle
+          count  = 0
+
+          codes.each do |code|
+            next unless code.match?(/\A[PCBU]\d[0-9A-F]{3}\z/i)
+            DtcReport.create!(trip: @trip, vehicle: vehicle, code: code)
+            count += 1
+          end
+
+          # 기관 관리자에게 실시간 알림 (DTC 감지)
+          if count > 0
+            institution_id = @trip.roster.institution_id
+            ActionCable.server.broadcast(
+              "vehicle_locations:institution:#{institution_id}",
+              {
+                type:       "dtc_alert",
+                trip_id:    @trip.id,
+                vehicle_id: vehicle.id,
+                plate_last4: vehicle.plate_last4,
+                codes:      codes.first(count),
+                reported_at: Time.current.iso8601
+              }
+            )
+          end
+
+          render_success({ reported: count })
         end
 
         private

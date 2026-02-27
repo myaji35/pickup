@@ -1,5 +1,6 @@
 import apiClient from './client';
 import { ApiResponse, Trip, TripDetail, LocationUpdate } from '../types';
+import { DrivingEvent } from '../services/obd2/elm327';
 
 // GET /driver/trips?date=YYYY-MM-DD
 export const getTodayTrips = async (): Promise<ApiResponse<Trip[]>> => {
@@ -28,17 +29,36 @@ export const endTrip = async (tripId: number): Promise<ApiResponse<Trip>> => {
   return res.data;
 };
 
-// POST /driver/trips/:id/update_location
+// POST /driver/trips/:id/update_location (OBD 데이터 포함)
 export const updateLocation = async (
   tripId: number,
   lat: number,
   lng: number,
   heading?: number,
-  speed?: number
+  speed?: number,
+  obdPayload?: {
+    rpm?: number;
+    coolant_temp?: number;
+    fuel_level?: number;
+    throttle?: number;
+    events?: Array<{ event_type: string; speed: number; rpm: number }>;
+  }
 ): Promise<ApiResponse<LocationUpdate>> => {
   const res = await apiClient.post<ApiResponse<LocationUpdate>>(
     `/driver/trips/${tripId}/update_location`,
-    { lat, lng, heading, speed }
+    { lat, lng, heading, speed, ...obdPayload }
+  );
+  return res.data;
+};
+
+// POST /driver/trips/:id/report_dtc
+export const reportDtc = async (
+  tripId: number,
+  codes: string[]
+): Promise<ApiResponse<{ reported: number }>> => {
+  const res = await apiClient.post<ApiResponse<{ reported: number }>>(
+    `/driver/trips/${tripId}/report_dtc`,
+    { codes }
   );
   return res.data;
 };
