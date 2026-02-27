@@ -18,10 +18,13 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# 빌드 시 환경변수 (실제값은 런타임에 오버라이드)
+# 빌드 시 환경변수
+ARG NEXT_PUBLIC_RAILS_API_URL="http://pickup-api.158.247.235.31.nip.io/api/v1"
 ENV NEXT_TELEMETRY_DISABLED=1 \
     NODE_ENV=production \
-    NEXT_OUTPUT=standalone
+    NEXT_OUTPUT=standalone \
+    NEXT_PUBLIC_RAILS_API_URL=${NEXT_PUBLIC_RAILS_API_URL} \
+    NEXT_PUBLIC_ENV=production
 
 RUN npm run build
 

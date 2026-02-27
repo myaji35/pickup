@@ -15,6 +15,10 @@ ssh:
 proxy:
   host: pickup.158.247.235.31.nip.io
   app_port: 3000
+  healthcheck:
+    path: /
+    interval: 3
+    timeout: 5
 
 registry:
   server: ghcr.io
@@ -30,16 +34,13 @@ env:
     NEXT_PUBLIC_RAILS_API_URL: "http://pickup-api.158.247.235.31.nip.io/api/v1"
     NEXT_PUBLIC_ENV: production
 
+# ── 배포 타임아웃 ──────────────────────────────
+deploy_timeout: 90
+
+# ── 빌더 (서버에서 직접 빌드 — QEMU 크로스컴파일 우회) ──
 builder:
   arch: amd64
-
-healthcheck:
-  path: /
-  port: 3000
-  interval: 10s
-  timeout: 5s
-  retries: 5
-  initial_delay_at: 15
+  remote: ssh://root@158.247.235.31
 
 aliases:
   logs: app logs -f
