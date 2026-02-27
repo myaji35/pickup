@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>승객 명단 - Pickup MaaS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1392ec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101a22",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans KR", "Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex min-h-screen w-full">
+<aside class="flex flex-col w-64 p-4 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Company Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcQdw7c2ptLaRnv8E8U3a7LpgPiPIB6iNHB2R0H1pygApbJUOTavIFWlW7zzwzSL-vPjym0OOn_oFnMPLbdXI2Kk6Wb-HGazq6yxU6xIlA1xFBcD-cGX_5x0WFddzngyXrSYT3rz0nKUjNmuevEgtbwm-cbpYh-4atMNQmrYie2gzi-LVv33ZPUEkd6R20jo8Fzkm-yj2X4JVkbuW7Q2ebi8S210Kr-KrW69wdkthzJPVweseuwkE-Np_ictR4Ua9APBmyUn9OqNA");'></div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-base font-medium leading-normal">Pickup MaaS</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">B2B 솔루션</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2 mt-4">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">dashboard</span>
+<p class="text-sm font-medium leading-normal">대시보드</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-300" href="#">
+<span class="material-symbols-outlined !fill-1">list_alt</span>
+<p class="text-sm font-medium leading-normal">승객 명단</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">local_shipping</span>
+<p class="text-sm font-medium leading-normal">차량 관리</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">timeline</span>
+<p class="text-sm font-medium leading-normal">운행 기록</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">bar_chart</span>
+<p class="text-sm font-medium leading-normal">분석</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4 mt-auto">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+<span class="truncate">새 경로 생성</span>
+</button>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">settings</span>
+<p class="text-sm font-medium leading-normal">설정</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">help</span>
+<p class="text-sm font-medium leading-normal">지원</p>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 p-8 overflow-y-auto">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-tight">주간 승객 명단</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">주간 승객 명단을 생성 및 관리하고 탑승 순서를 최적화합니다.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-sm font-bold leading-normal tracking-[0.015em] border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50">
+<span class="truncate">명단 내보내기</span>
+</button>
+</div>
+<div class="flex mt-8">
+<div class="flex h-10 w-full items-center justify-center rounded-lg bg-slate-200/60 dark:bg-slate-800/60 p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-slate-900 dark:has-[:checked]:bg-slate-700 dark:has-[:checked]:text-white">
+<span class="truncate">월 18</span>
+<input class="invisible w-0" name="weekday-selector" type="radio" value="월 18"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-slate-900 dark:has-[:checked]:bg-slate-700 dark:has-[:checked]:text-white">
+<span class="truncate">화 19</span>
+<input checked="" class="invisible w-0" name="weekday-selector" type="radio" value="화 19"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-slate-900 dark:has-[:checked]:bg-slate-700 dark:has-[:checked]:text-white">
+<span class="truncate">수 20</span>
+<input class="invisible w-0" name="weekday-selector" type="radio" value="수 20"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-slate-900 dark:has-[:checked]:bg-slate-700 dark:has-[:checked]:text-white">
+<span class="truncate">목 21</span>
+<input class="invisible w-0" name="weekday-selector" type="radio" value="목 21"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 text-slate-500 dark:text-slate-400 text-sm font-medium leading-normal has-[:checked]:bg-white has-[:checked]:shadow-sm has-[:checked]:text-slate-900 dark:has-[:checked]:bg-slate-700 dark:has-[:checked]:text-white">
+<span class="truncate">금 22</span>
+<input class="invisible w-0" name="weekday-selector" type="radio" value="금 22"/>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<p class="text-slate-600 dark:text-slate-400 text-base font-medium leading-normal">총 승객 수</p>
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">12</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<p class="text-slate-600 dark:text-slate-400 text-base font-medium leading-normal">예상 운행 시간</p>
+<p class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">1시간 45분</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+<p class="text-slate-600 dark:text-slate-400 text-base font-medium leading-normal">명단 상태</p>
+<p class="text-green-600 dark:text-green-400 tracking-tight text-3xl font-bold leading-tight">최적화됨</p>
+</div>
+</div>
+<div class="mt-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+<div class="flex flex-wrap items-center justify-between gap-2 p-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<button class="flex items-center justify-center size-10 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-xl">person_add</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-xl">save</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-xl">refresh</span>
+</button>
+</div>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-primary text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-4 hover:bg-primary/90">
+<span class="material-symbols-outlined text-lg !fill-1">auto_awesome</span>
+<span class="truncate">탑승 순서 최적화</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+<thead class="text-xs text-slate-700 dark:text-slate-300 uppercase bg-slate-50 dark:bg-slate-800">
+<tr>
+<th class="p-4 w-12" scope="col"></th>
+<th class="p-4 w-12 text-center" scope="col">순서</th>
+<th class="p-4" scope="col">승객 이름</th>
+<th class="p-4" scope="col">탑승 주소</th>
+<th class="p-4" scope="col">상태</th>
+<th class="p-4 text-right" scope="col">관리</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<td class="p-4 text-slate-400 cursor-grab"><span class="material-symbols-outlined text-lg">drag_indicator</span></td>
+<td class="p-4 font-medium text-slate-900 dark:text-white text-center">1</td>
+<td class="p-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">올리비아 리</td>
+<td class="p-4">서울시 강남구 테헤란로 123</td>
+<td class="p-4"><span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">확정</span></td>
+<td class="p-4 text-right space-x-2 whitespace-nowrap">
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<td class="p-4 text-slate-400 cursor-grab"><span class="material-symbols-outlined text-lg">drag_indicator</span></td>
+<td class="p-4 font-medium text-slate-900 dark:text-white text-center">2</td>
+<td class="p-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">박서준</td>
+<td class="p-4">경기도 성남시 분당구 판교역로 456</td>
+<td class="p-4"><span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">확정</span></td>
+<td class="p-4 text-right space-x-2 whitespace-nowrap">
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<td class="p-4 text-slate-400 cursor-grab"><span class="material-symbols-outlined text-lg">drag_indicator</span></td>
+<td class="p-4 font-medium text-slate-900 dark:text-white text-center">3</td>
+<td class="p-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">김민지</td>
+<td class="p-4">인천광역시 연수구 송도국제대로 789</td>
+<td class="p-4"><span class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900 dark:text-red-300">취소</span></td>
+<td class="p-4 text-right space-x-2 whitespace-nowrap">
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<tr class="border-b dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<td class="p-4 text-slate-400 cursor-grab"><span class="material-symbols-outlined text-lg">drag_indicator</span></td>
+<td class="p-4 font-medium text-slate-900 dark:text-white text-center">4</td>
+<td class="p-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">최유나</td>
+<td class="p-4">서울시 마포구 월드컵북로 101</td>
+<td class="p-4"><span class="inline-flex items-center px-2 py-1 text-xs font-medium text-slate-700 bg-slate-200 rounded-full dark:bg-slate-700 dark:text-slate-300">대기</span></td>
+<td class="p-4 text-right space-x-2 whitespace-nowrap">
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<td class="p-4 text-slate-400 cursor-grab"><span class="material-symbols-outlined text-lg">drag_indicator</span></td>
+<td class="p-4 font-medium text-slate-900 dark:text-white text-center">5</td>
+<td class="p-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">이정훈</td>
+<td class="p-4">경기도 수원시 영통구 광교중앙로 212</td>
+<td class="p-4"><span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900 dark:text-green-300">확정</span></td>
+<td class="p-4 text-right space-x-2 whitespace-nowrap">
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 rounded-md hover:bg-slate-200 dark:hover:bg-slate-700"><span class="material-symbols-outlined text-lg">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

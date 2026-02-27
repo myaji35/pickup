@@ -1,0 +1,295 @@
+// PickUp - Prisma Schema
+// Database: PostgreSQL (prod), SQLite (dev)
+// Generated: 2025-11-09
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // 개발 시 "sqlite"로 변경
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Institution Context (기관 관리)
+// ============================================================================
+
+model Institution {
+  id                         String   @id @default(uuid())
+  businessRegistrationNumber String   @unique @map("business_registration_number") // 사업자등록번호 (10자리)
+  name                       String
+  address                    String
+  phone                      String
+  status                     InstitutionStatus @default(ACTIVE)
+
+  // Relations
+  admins    InstitutionAdmin[]
+  vehicles  Vehicle[]
+  drivers   Driver[]
+  passengers Passenger[]
+  rosters   Roster[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("institutions")
+}
+
+model InstitutionAdmin {
+  id            String  @id @default(uuid())
+  institutionId String  @map("institution_id")
+  clerkUserId   String  @unique @map("clerk_user_id") // Clerk User ID
+  name          String
+  email         String  @unique
+  phone         String
+  role          AdminRole @default(MANAGER)
+
+  // Relations
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("institution_admins")
+}
+
+enum InstitutionStatus {
+  ACTIVE    // 활성
+  INACTIVE  // 비활성
+}
+
+enum AdminRole {
+  OWNER    // 원장/대표
+  MANAGER  // 관리자
+}
+
+// ============================================================================
+// Fleet Context (차량 및 기사 관리)
+// ============================================================================
+
+model Vehicle {
+  id                String  @id @default(uuid())
+  institutionId     String  @map("institution_id")
+  licensePlate      String  @map("license_plate")           // 전체 차량번호 (예: "12가3456")
+  licensePlateLast4 String  @map("license_plate_last4")     // 뒤 4자리 (예: "3456")
+  vehicleType       String  @map("vehicle_type")            // 차종 (예: "그랜드스타렉스")
+  capacity          Int                                      // 정원 (5-15)
+  status            VehicleStatus @default(ACTIVE)
+  driverId          String? @unique @map("driver_id")       // 1:1 관계
+
+  // Relations
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  driver      Driver?     @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  rosters     Roster[]
+  trips       Trip[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([institutionId, licensePlate])
+  @@index([institutionId])
+  @@map("vehicles")
+}
+
+model Driver {
+  id            String  @id @default(uuid())
+  institutionId String  @map("institution_id")
+  clerkUserId   String? @unique @map("clerk_user_id") // Clerk User ID (기사 앱 로그인)
+  name          String
+  licenseNumber String  @map("license_number")        // 운전면허번호
+  phone         String
+
+  // Relations
+  institution Institution @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  vehicle     Vehicle?
+  trips       Trip[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([institutionId, phone])
+  @@index([institutionId])
+  @@map("drivers")
+}
+
+enum VehicleStatus {
+  ACTIVE       // 운행 가능
+  MAINTENANCE  // 정비 중
+  RETIRED      // 폐차
+}
+
+// ============================================================================
+// Roster Context (승객 명단 관리)
+// ============================================================================
+
+model Passenger {
+  id             String  @id @default(uuid())
+  institutionId  String  @map("institution_id")
+  name           String
+  phone          String                          // 승객 본인 또는 보호자 연락처
+  pickupAddress  String  @map("pickup_address")  // 픽업 주소
+  dropoffAddress String  @map("dropoff_address") // 하차 주소
+  inviteCode     String  @unique @map("invite_code") // 보호자 초대 코드
+
+  // Relations
+  institution   Institution    @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  guardians     Guardian[]
+  rosterEntries RosterEntry[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([institutionId])
+  @@map("passengers")
+}
+
+model Guardian {
+  id          String  @id @default(uuid())
+  clerkUserId String  @unique @map("clerk_user_id") // Clerk User ID (보호자 앱 로그인)
+  passengerId String  @map("passenger_id")
+  name        String
+  phone       String
+
+  // Relations
+  passenger Passenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([passengerId])
+  @@map("guardians")
+}
+
+model Roster {
+  id            String  @id @default(uuid())
+  institutionId String  @map("institution_id")
+  vehicleId     String  @map("vehicle_id")
+  week          String                        // ISO Week (예: "2025-W10")
+  shuttleType   ShuttleType @map("shuttle_type")
+
+  // Relations
+  institution Institution   @relation(fields: [institutionId], references: [id], onDelete: Cascade)
+  vehicle     Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  entries     RosterEntry[]
+  trips       Trip[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([institutionId, vehicleId, week, shuttleType])
+  @@index([institutionId, week])
+  @@map("rosters")
+}
+
+model RosterEntry {
+  id            String   @id @default(uuid())
+  rosterId      String   @map("roster_id")
+  passengerId   String   @map("passenger_id")
+  boardingOrder Int?     @map("boarding_order") // MVP: null, Stage 2: AI 최적화 순서
+  boardedAt     DateTime? @map("boarded_at")    // 탑승 시각
+  alightedAt    DateTime? @map("alighted_at")   // 하차 시각
+  status        RosterEntryStatus @default(ACTIVE)
+
+  // Relations
+  roster    Roster    @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  passenger Passenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([rosterId, passengerId])
+  @@index([rosterId])
+  @@map("roster_entries")
+}
+
+enum ShuttleType {
+  MORNING    // 오전 셔틀 (픽업 → 기관)
+  EVENING    // 저녁 셔틀 (기관 → 하차)
+  TEMPORARY  // 임시 셔틀 (Stage 2)
+}
+
+enum RosterEntryStatus {
+  ACTIVE     // 정상
+  CANCELLED  // 당일 취소
+}
+
+// ============================================================================
+// Route Context (경로 및 운행 관리)
+// ============================================================================
+
+model Trip {
+  id        String   @id @default(uuid())
+  rosterId  String   @map("roster_id")
+  vehicleId String   @map("vehicle_id")
+  driverId  String   @map("driver_id")
+  startedAt DateTime @map("started_at")
+  endedAt   DateTime? @map("ended_at")
+  status    TripStatus @default(IN_PROGRESS)
+
+  // Relations
+  roster       Roster        @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  vehicle      Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  driver       Driver        @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  locationLogs LocationLog[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([rosterId])
+  @@index([vehicleId])
+  @@index([driverId])
+  @@map("trips")
+}
+
+model LocationLog {
+  id        String   @id @default(uuid())
+  tripId    String   @map("trip_id")
+  latitude  Float
+  longitude Float
+  timestamp DateTime @default(now())
+
+  // Relations
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId, timestamp])
+  @@map("location_logs")
+}
+
+enum TripStatus {
+  IN_PROGRESS  // 운행 중
+  COMPLETED    // 완료
+  CANCELLED    // 취소
+}
+
+// ============================================================================
+// Utility Models (추후 확장)
+// ============================================================================
+
+// Stage 2: 알림 로그
+// model Notification {
+//   id          String   @id @default(uuid())
+//   userId      String   @map("user_id")       // Clerk User ID
+//   type        String                          // "trip_started", "boarded", etc.
+//   title       String
+//   body        String
+//   readAt      DateTime? @map("read_at")
+//   createdAt   DateTime @default(now()) @map("created_at")
+//
+//   @@index([userId, createdAt])
+//   @@map("notifications")
+// }
+
+// Stage 2: 영수증 (OCR)
+// model Receipt {
+//   id          String   @id @default(uuid())
+//   tripId      String   @map("trip_id")
+//   type        String                          // "fuel", "maintenance"
+//   amount      Int
+//   imageUrl    String   @map("image_url")
+//   ocrData     Json?    @map("ocr_data")
+//   createdAt   DateTime @default(now()) @map("created_at")
+//
+//   @@index([tripId])
+//   @@map("receipts")
+// }
