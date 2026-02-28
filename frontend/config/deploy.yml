@@ -3,7 +3,7 @@
 # 업데이트: 2026-02-28
 
 service: pickup_web
-image: ghcr.io/myaji35/pickup_web
+image: myaji35/pickup_web
 
 servers:
   web:
