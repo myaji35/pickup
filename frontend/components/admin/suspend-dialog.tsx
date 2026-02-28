@@ -25,9 +25,9 @@ interface SuspendDialogProps {
   open: boolean;
   onClose: () => void;
   institution: {
-    id: string;
+    id: number | string;
     name: string;
-    businessRegistrationNo: string;
+    business_number?: string;
   };
   onSuccess: () => void;
 }
@@ -54,24 +54,10 @@ export function SuspendDialog({
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3012/backend/api/v1'}/admin/institutions/${institution.id}/suspend`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            suspensionReason,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to suspend institution');
-      }
+      const { railsClient } = await import('@/lib/rails-client');
+      await railsClient.post(`/admin/institutions/${institution.id}/suspend`, {
+        suspension_reason: suspensionReason,
+      });
 
       toast({
         title: '정지 완료',

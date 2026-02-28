@@ -80,8 +80,8 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
     const fetchPendingCount = async () => {
       try {
         const { railsClient } = await import('@/lib/rails-client');
-        const data = await railsClient.get<{ meta?: { total_count: number } }>('/admin/institutions/pending');
-        setPendingCount((data as any)?.meta?.total_count ?? 0);
+        const raw = await railsClient.getRaw<{ meta?: { total_count: number } }>('/admin/institutions/pending');
+        setPendingCount(raw?.meta?.total_count ?? 0);
       } catch {
         // 조용히 실패
       }

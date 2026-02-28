@@ -44,7 +44,7 @@ export default function AdminSettings() {
 
       if (Object.keys(updates).length > 0) {
         const { railsClient } = await import('@/lib/rails-client');
-        await railsClient.patch(`/admin/users/${user.id}`, updates);
+        await railsClient.patch(`/admin/users/${user.id}`, { user: updates });
         setMessage({ type: 'success', text: '프로필이 성공적으로 업데이트되었습니다.' });
       }
     } catch (error: any) {
@@ -73,7 +73,7 @@ export default function AdminSettings() {
 
     try {
       const { railsClient } = await import('@/lib/rails-client');
-      await railsClient.patch(`/admin/users/${user.id}`, { password: newPassword });
+      await railsClient.patch(`/admin/users/${user.id}`, { user: { password: newPassword } });
       setMessage({ type: 'success', text: '비밀번호가 성공적으로 변경되었습니다.' });
       setNewPassword('');
       setConfirmPassword('');
