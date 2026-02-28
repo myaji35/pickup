@@ -3,6 +3,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     allowed = [
       ENV.fetch("FRONTEND_URL", "http://localhost:3000"),
       "http://localhost:3001",
+      "http://localhost:3007",
       "http://localhost:3012",
     ]
     # Production: CORS_ORIGINS 환경변수로 추가 허용

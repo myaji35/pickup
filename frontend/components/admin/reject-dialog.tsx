@@ -25,9 +25,9 @@ interface RejectDialogProps {
   open: boolean;
   onClose: () => void;
   institution: {
-    id: string;
+    id: string | number;
     name: string;
-    businessRegistrationNo: string;
+    business_number?: string;
   };
   onSuccess: () => void;
 }
@@ -54,24 +54,8 @@ export function RejectDialog({
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3012/backend/api/v1'}/admin/institutions/${institution.id}/reject`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            rejectionReason,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to reject institution');
-      }
+      const { railsClient } = await import('@/lib/rails-client');
+      await railsClient.post(`/admin/institutions/${institution.id}/reject`, { reason: rejectionReason });
 
       toast({
         title: '거부 완료',

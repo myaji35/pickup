@@ -4,7 +4,7 @@
  * Rails 8.1.2 API-only 응답 형식: { success, data, message }
  */
 
-const RAILS_BASE = process.env.NEXT_PUBLIC_RAILS_API_URL || 'http://localhost:3000/api/v1';
+const RAILS_BASE = process.env.NEXT_PUBLIC_RAILS_API_URL || 'http://localhost:3001/api/v1';
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;

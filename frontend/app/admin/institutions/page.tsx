@@ -6,15 +6,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { apiClient, User, Institution } from '@/lib/api';
+import { useAuth } from '@/contexts/auth-context';
+import { railsClient } from '@/lib/rails-client';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { Building2, CheckCircle, XCircle, Ban, RefreshCw, Clock } from 'lucide-react';
 
+interface Institution {
+  id: number;
+  name: string;
+  business_number: string;
+  address: string;
+  phone: string;
+  status: string;
+  suspension_reason?: string;
+  created_at?: string;
+}
+
 export default function InstitutionsPage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
@@ -22,52 +34,36 @@ export default function InstitutionsPage() {
   const [allInstitutions, setAllInstitutions] = useState<Institution[]>([]);
   const [selectedTab, setSelectedTab] = useState<'pending' | 'all'>('pending');
 
-  // Modal state
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
   const [selectedInstitution, setSelectedInstitution] = useState<Institution | null>(null);
   const [reason, setReason] = useState('');
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await apiClient.getCurrentUser();
-        setUser(userData);
-      } catch (error) {
-        router.push('/admin/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUser();
-  }, [router]);
-
-  useEffect(() => {
-    if (user) {
-      loadInstitutions();
-    }
-  }, [user]);
+    if (!authLoading) loadInstitutions();
+  }, [authLoading]);
 
   const loadInstitutions = async () => {
+    setLoading(true);
     try {
       const [pending, all] = await Promise.all([
-        apiClient.getPendingInstitutions(),
-        apiClient.getInstitutions(),
+        railsClient.get<Institution[]>('/admin/institutions/pending'),
+        railsClient.get<Institution[]>('/admin/institutions'),
       ]);
-      setPendingInstitutions(pending);
-      setAllInstitutions(all);
+      setPendingInstitutions(pending ?? []);
+      setAllInstitutions(all ?? []);
     } catch (error) {
       console.error('Failed to load institutions:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleApprove = async (institutionId: string) => {
+  const handleApprove = async (institutionId: number) => {
     if (!confirm('이 기관을 승인하시겠습니까?')) return;
-
     setProcessing(true);
     try {
-      await apiClient.approveInstitution(institutionId);
+      await railsClient.post(`/admin/institutions/${institutionId}/approve`);
       alert('기관이 승인되었습니다.');
       await loadInstitutions();
     } catch (error: any) {
@@ -82,10 +78,9 @@ export default function InstitutionsPage() {
       alert('거부 사유를 입력해주세요.');
       return;
     }
-
     setProcessing(true);
     try {
-      await apiClient.rejectInstitution(selectedInstitution.id, reason);
+      await railsClient.post(`/admin/institutions/${selectedInstitution.id}/reject`, { reason });
       alert('기관이 거부되었습니다.');
       setShowRejectModal(false);
       setSelectedInstitution(null);
@@ -103,10 +98,9 @@ export default function InstitutionsPage() {
       alert('정지 사유를 입력해주세요.');
       return;
     }
-
     setProcessing(true);
     try {
-      await apiClient.suspendInstitution(selectedInstitution.id, reason);
+      await railsClient.post(`/admin/institutions/${selectedInstitution.id}/suspend`, { reason });
       alert('기관이 정지되었습니다.');
       setShowSuspendModal(false);
       setSelectedInstitution(null);
@@ -119,12 +113,11 @@ export default function InstitutionsPage() {
     }
   };
 
-  const handleReactivate = async (institutionId: string) => {
+  const handleReactivate = async (institutionId: number) => {
     if (!confirm('이 기관을 재활성화하시겠습니까?')) return;
-
     setProcessing(true);
     try {
-      await apiClient.reactivateInstitution(institutionId);
+      await railsClient.post(`/admin/institutions/${institutionId}/reactivate`);
       alert('기관이 재활성화되었습니다.');
       await loadInstitutions();
     } catch (error: any) {
@@ -135,14 +128,15 @@ export default function InstitutionsPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const badges = {
-      PENDING: { color: 'bg-yellow-100 text-yellow-800', text: '승인 대기', icon: Clock },
-      ACTIVE: { color: 'bg-green-100 text-green-800', text: '활성', icon: CheckCircle },
-      SUSPENDED: { color: 'bg-red-100 text-red-800', text: '정지됨', icon: Ban },
-      INACTIVE: { color: 'bg-gray-100 text-gray-800', text: '비활성', icon: XCircle },
+    const s = status?.toLowerCase();
+    const badges: Record<string, { color: string; text: string; icon: any }> = {
+      pending:   { color: 'bg-yellow-100 text-yellow-800', text: '승인 대기', icon: Clock },
+      active:    { color: 'bg-green-100 text-green-800',   text: '활성',     icon: CheckCircle },
+      suspended: { color: 'bg-red-100 text-red-800',       text: '정지됨',   icon: Ban },
+      inactive:  { color: 'bg-gray-100 text-gray-800',     text: '비활성',   icon: XCircle },
     };
 
-    const badge = badges[status as keyof typeof badges] || badges.INACTIVE;
+    const badge = badges[s] || badges.inactive;
     const Icon = badge.icon;
 
     return (
@@ -168,7 +162,7 @@ export default function InstitutionsPage() {
       <AdminHeader
         title="기관 관리"
         subtitle="기관 승인/거부/정지 관리"
-        user={user}
+        user={user as any}
       />
 
       <main className="container mx-auto px-4 py-8">
@@ -208,7 +202,7 @@ export default function InstitutionsPage() {
                           {institution.name}
                         </CardTitle>
                         <CardDescription>
-                          사업자번호: {institution.businessRegistrationNumber}
+                          사업자번호: {institution.business_number}
                         </CardDescription>
                       </div>
                       {institution.status && getStatusBadge(institution.status)}
@@ -223,43 +217,29 @@ export default function InstitutionsPage() {
                         </div>
                         <div>
                           <p className="text-gray-500">연락처</p>
-                          <p className="font-medium">{institution.contact}</p>
+                          <p className="font-medium">{institution.phone}</p>
                         </div>
-                        <div>
-                          <p className="text-gray-500">위치 좌표</p>
-                          <p className="font-medium text-xs">
-                            {institution.latitude?.toFixed(6)}, {institution.longitude?.toFixed(6)}
-                          </p>
-                        </div>
-                        {institution.createdAt && (
+                        {institution.created_at && (
                           <div>
                             <p className="text-gray-500">등록일</p>
                             <p className="font-medium">
-                              {new Date(institution.createdAt).toLocaleDateString('ko-KR')}
+                              {new Date(institution.created_at).toLocaleDateString('ko-KR')}
                             </p>
                           </div>
                         )}
                       </div>
 
-                      {institution.rejectionReason && (
-                        <div className="p-3 bg-red-50 border border-red-200 rounded">
-                          <p className="text-sm text-red-800">
-                            <strong>거부 사유:</strong> {institution.rejectionReason}
-                          </p>
-                        </div>
-                      )}
-
-                      {institution.suspensionReason && (
+                      {institution.suspension_reason && (
                         <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
                           <p className="text-sm text-yellow-800">
-                            <strong>정지 사유:</strong> {institution.suspensionReason}
+                            <strong>정지 사유:</strong> {institution.suspension_reason}
                           </p>
                         </div>
                       )}
 
                       {/* Actions */}
                       <div className="flex gap-2 pt-2">
-                        {institution.status === 'PENDING' && (
+                        {institution.status === 'pending' && (
                           <>
                             <Button
                               size="sm"
@@ -284,7 +264,7 @@ export default function InstitutionsPage() {
                           </>
                         )}
 
-                        {institution.status === 'ACTIVE' && (
+                        {institution.status === 'active' && (
                           <Button
                             size="sm"
                             variant="destructive"
@@ -299,7 +279,7 @@ export default function InstitutionsPage() {
                           </Button>
                         )}
 
-                        {institution.status === 'SUSPENDED' && (
+                        {institution.status === 'suspended' && (
                           <Button
                             size="sm"
                             onClick={() => handleReactivate(institution.id)}

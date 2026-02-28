@@ -1,18 +1,22 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiClient, User } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
 /**
- * T522: Auth Context Provider
- *
- * Authentication state management using React Context
- * - User state
- * - Login/Logout actions
- * - Token management
- * - Auto token refresh
+ * Auth Context Provider — Rails API 연동
+ * Rails JWT: localStorage 'rails_access_token'
  */
+
+const RAILS_BASE = process.env.NEXT_PUBLIC_RAILS_API_URL || 'http://localhost:3001/api/v1';
+
+export interface User {
+  id: string | number;
+  email: string;
+  name: string;
+  role: string;
+  institutionId?: string | number | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -31,48 +35,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Load user on mount
   useEffect(() => {
     loadUser();
   }, []);
 
   const loadUser = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      if (token) {
-        const currentUser = await apiClient.getCurrentUser();
-        setUser(currentUser);
+      const token = localStorage.getItem('rails_access_token');
+      if (!token) return;
+      const res = await fetch(`${RAILS_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const u = json.data;
+        setUser({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          role: u.role?.toUpperCase(),
+          institutionId: u.institution_id ?? null,
+        });
+      } else {
+        localStorage.removeItem('rails_access_token');
       }
-    } catch (error) {
-      console.error('Failed to load user:', error);
-      // Clear invalid token
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+    } catch {
+      localStorage.removeItem('rails_access_token');
     } finally {
       setLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await apiClient.login({ email, password });
-      setUser(response.data.user);
-      // Redirect is handled by the login page
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
+    const res = await fetch(`${RAILS_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.message || '로그인에 실패했습니다.');
+    const { access_token, user: u } = json.data;
+    localStorage.setItem('rails_access_token', access_token);
+    setUser({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role?.toUpperCase(),
+      institutionId: u.institution_id ?? null,
+    });
   };
 
   const logout = () => {
-    apiClient.logout();
+    localStorage.removeItem('rails_access_token');
     setUser(null);
     router.push('/admin/login');
   };
-
-  const isAuthenticated = !!user;
-  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
-  const isInstitutionAdmin = user?.role === 'INSTITUTION_ADMIN';
 
   return (
     <AuthContext.Provider
@@ -81,9 +98,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         login,
         logout,
-        isAuthenticated,
-        isSuperAdmin,
-        isInstitutionAdmin,
+        isAuthenticated: !!user,
+        isSuperAdmin: user?.role === 'SUPER_ADMIN',
+        isInstitutionAdmin: user?.role === 'INSTITUTION_ADMIN',
       }}
     >
       {children}

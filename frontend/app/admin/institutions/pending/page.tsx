@@ -25,11 +25,11 @@ import { RejectDialog } from '@/components/admin/reject-dialog';
  */
 
 interface PendingInstitution {
-  id: string;
+  id: number;
   name: string;
-  businessRegistrationNo: string;
+  business_number: string;
   status: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export default function PendingInstitutionsPage() {
@@ -46,22 +46,9 @@ export default function PendingInstitutionsPage() {
 
   const loadPendingInstitutions = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3012/backend/api/v1'}/admin/institutions/pending`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to load institutions');
-      }
-
-      const data = await response.json();
-      setInstitutions(data.data || []);
+      const { railsClient } = await import('@/lib/rails-client');
+      const data = await railsClient.get<PendingInstitution[]>('/admin/institutions/pending');
+      setInstitutions(data ?? []);
     } catch (error) {
       console.error('Failed to load pending institutions:', error);
     } finally {
@@ -145,9 +132,9 @@ export default function PendingInstitutionsPage() {
               institutions.map((institution) => (
                 <TableRow key={institution.id}>
                   <TableCell className="font-medium">{institution.name}</TableCell>
-                  <TableCell>{institution.businessRegistrationNo}</TableCell>
+                  <TableCell>{institution.business_number}</TableCell>
                   <TableCell>
-                    {new Date(institution.createdAt).toLocaleDateString('ko-KR')}
+                    {new Date(institution.created_at).toLocaleDateString('ko-KR')}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">

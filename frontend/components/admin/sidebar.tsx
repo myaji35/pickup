@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   LayoutDashboard,
   Building2,
@@ -61,7 +62,7 @@ const navigation = [
   },
   {
     name: '통계',
-    href: '/admin/stats',
+    href: '/admin/statistics',
     icon: BarChart3,
   },
   {
@@ -73,6 +74,20 @@ const navigation = [
 
 export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const { railsClient } = await import('@/lib/rails-client');
+        const data = await railsClient.get<{ meta?: { total_count: number } }>('/admin/institutions/pending');
+        setPendingCount((data as any)?.meta?.total_count ?? 0);
+      } catch {
+        // 조용히 실패
+      }
+    };
+    fetchPendingCount();
+  }, []);
 
   return (
     <>
@@ -123,9 +138,9 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
                 {!collapsed && (
                   <>
                     <span className="flex-1">{item.name}</span>
-                    {item.badge && (
+                    {item.badge && pendingCount > 0 && (
                       <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                        3
+                        {pendingCount}
                       </span>
                     )}
                   </>

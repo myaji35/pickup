@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/auth/protected-route';
 import { AdminSidebar } from '@/components/admin/sidebar';
 import { AdminTopbar } from '@/components/admin/topbar';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 /**
  * T536: Admin Layout
@@ -25,6 +26,18 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const pathname = usePathname();
+
+  // 로그인 페이지는 ProtectedRoute 및 레이아웃 제외
+  const isLoginPage = pathname === '/admin/login';
+
+  if (isLoginPage) {
+    return (
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    );
+  }
 
   return (
     <AuthProvider>

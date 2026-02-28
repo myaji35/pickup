@@ -1,124 +1,80 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, X } from 'lucide-react';
-import { apiClient, User, Subscription, Institution, Plan } from '@/lib/api';
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/auth-context';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Receipt, RefreshCw, Ban, XCircle, CreditCard } from 'lucide-react';
+
+interface Subscription {
+  id: number;
+  institution_id: number;
+  institution_name: string;
+  plan_code: string;
+  plan_name: string;
+  monthly_price: number;
+  status: string;
+  start_date: string | null;
+  next_billing_date: string | null;
+  failed_payment_count: number;
+  has_billing_key: boolean;
+  notes: string | null;
+  created_at: string;
+}
 
 export default function SubscriptionsPage() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [institutions, setInstitutions] = useState<Institution[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>('');
-
-  // Modal states
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedInstitutionId, setSelectedInstitutionId] = useState('');
-  const [selectedPlanId, setSelectedPlanId] = useState('');
-  const [autoRenew, setAutoRenew] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await apiClient.getCurrentUser();
-        setUser(userData);
-      } catch (error) {
-        router.push('/admin/login');
-      } finally {
-        setLoading(false);
-      }
+    if (!authLoading) loadSubscriptions();
+  }, [authLoading, statusFilter]);
+
+  const loadSubscriptions = async () => {
+    try {
+      const { railsClient } = await import('@/lib/rails-client');
+      const url = statusFilter ? `/admin/subscriptions?status=${statusFilter}` : '/admin/subscriptions';
+      const data = await railsClient.get<Subscription[]>(url);
+      setSubscriptions(data ?? []);
+    } catch (error) {
+      console.error('Failed to load subscriptions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAction = async (subId: number, action: 'activate' | 'suspend' | 'cancel' | 'charge') => {
+    const labels: Record<string, string> = { activate: '활성화', suspend: '정지', cancel: '해지', charge: '수동 결제' };
+    if (!confirm(`${labels[action]}하시겠습니까?`)) return;
+    setProcessing(subId);
+    try {
+      const { railsClient } = await import('@/lib/rails-client');
+      await railsClient.post(`/admin/subscriptions/${subId}/${action}`);
+      alert(`${labels[action]}되었습니다.`);
+      await loadSubscriptions();
+    } catch (error: any) {
+      alert(`실패: ${error.message}`);
+    } finally {
+      setProcessing(null);
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    const config: Record<string, { className: string; label: string }> = {
+      trial:     { className: 'bg-blue-100 text-blue-800',   label: '체험' },
+      active:    { className: 'bg-green-100 text-green-800', label: '활성' },
+      suspended: { className: 'bg-red-100 text-red-800',     label: '정지' },
+      cancelled: { className: 'bg-gray-100 text-gray-800',   label: '해지' },
     };
-
-    loadUser();
-  }, [router]);
-
-  useEffect(() => {
-    if (user) {
-      loadAllData();
-    }
-  }, [user, statusFilter]);
-
-  const loadAllData = async () => {
-    try {
-      const [subsData, instsData, plansData] = await Promise.all([
-        apiClient.getAllSubscriptions(statusFilter || undefined),
-        apiClient.getInstitutions(),
-        apiClient.getAllPlans(),
-      ]);
-
-      setSubscriptions(subsData);
-      setInstitutions(instsData);
-      setPlans(plansData);
-    } catch (error: any) {
-      alert('데이터 로드 중 오류가 발생했습니다: ' + error.message);
-    }
-  };
-
-  const getInstitutionName = (institutionId: string): string => {
-    const inst = institutions.find((i) => i.id === institutionId);
-    return inst?.name || '알 수 없음';
-  };
-
-  const getPlanName = (subscription: Subscription): string => {
-    if (subscription.plan) {
-      return subscription.plan.name;
-    }
-    const plan = plans.find((p) => p.id === subscription.planId);
-    return plan?.name || '알 수 없음';
-  };
-
-  const getStatusBadgeColor = (status: string): string => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-100 text-green-800';
-      case 'TRIAL':
-        return 'bg-blue-100 text-blue-800';
-      case 'CANCELLED':
-        return 'bg-gray-100 text-gray-800';
-      case 'EXPIRED':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const handleCreateSubscription = async () => {
-    if (!selectedInstitutionId || !selectedPlanId) {
-      alert('기관과 요금제를 선택해주세요.');
-      return;
-    }
-
-    try {
-      await apiClient.createInstitutionSubscription(selectedInstitutionId, selectedPlanId, autoRenew);
-      alert('구독이 생성되었습니다.');
-      setShowCreateModal(false);
-      setSelectedInstitutionId('');
-      setSelectedPlanId('');
-      setAutoRenew(true);
-      await loadAllData();
-    } catch (error: any) {
-      alert('구독 생성 실패: ' + error.message);
-    }
-  };
-
-  const handleCancelSubscription = async (subscriptionId: string) => {
-    if (!confirm('정말로 이 구독을 강제 취소하시겠습니까?')) return;
-
-    try {
-      await apiClient.forceCancelSubscription(subscriptionId);
-      alert('구독이 취소되었습니다.');
-      await loadAllData();
-    } catch (error: any) {
-      alert('구독 취소 실패: ' + error.message);
-    }
+    const c = config[status] || config.cancelled;
+    return <span className={`px-2 py-1 text-xs rounded ${c.className}`}>{c.label}</span>;
   };
 
   if (loading) {
@@ -133,208 +89,129 @@ export default function SubscriptionsPage() {
     <PageContainer>
       <AdminHeader
         title="구독 관리"
-        subtitle="기관별 구독 현황 및 요금제 관리"
-        user={user}
+        subtitle="기관별 구독 현황 및 관리"
+        user={user as any}
       />
 
       <main className="container mx-auto px-4 py-8">
-        {/* 필터 & 액션 */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
-            <Button
-              variant={statusFilter === '' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('')}
-            >
-              전체
-            </Button>
-            <Button
-              variant={statusFilter === 'ACTIVE' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('ACTIVE')}
-            >
-              활성
-            </Button>
-            <Button
-              variant={statusFilter === 'TRIAL' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('TRIAL')}
-            >
-              체험판
-            </Button>
-            <Button
-              variant={statusFilter === 'CANCELLED' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('CANCELLED')}
-            >
-              취소됨
-            </Button>
-            <Button
-              variant={statusFilter === 'EXPIRED' ? 'default' : 'outline'}
-              onClick={() => setStatusFilter('EXPIRED')}
-            >
-              만료됨
-            </Button>
+        <div className="space-y-6">
+          {/* 필터 */}
+          <div className="flex gap-2 flex-wrap">
+            {['', 'trial', 'active', 'suspended', 'cancelled'].map((s) => (
+              <Button
+                key={s}
+                variant={statusFilter === s ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setStatusFilter(s)}
+              >
+                {s === '' ? '전체' : s === 'trial' ? '체험' : s === 'active' ? '활성' : s === 'suspended' ? '정지' : '해지'}
+                {s === statusFilter && subscriptions.length > 0 && ` (${subscriptions.length})`}
+              </Button>
+            ))}
           </div>
 
-          <Button onClick={() => setShowCreateModal(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            구독 생성
-          </Button>
-        </div>
-
-        {/* 구독 목록 */}
-        <div className="grid gap-4">
+          {/* 구독 목록 */}
           {subscriptions.length === 0 ? (
             <Card>
-              <CardContent className="py-8 text-center text-gray-500">
-                구독 내역이 없습니다.
+              <CardContent className="py-12 text-center text-gray-500">
+                구독 데이터가 없습니다.
               </CardContent>
             </Card>
           ) : (
-            subscriptions.map((sub) => (
-              <Card key={sub.id}>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">
-                        {getInstitutionName(sub.institutionId)}
-                      </CardTitle>
-                      <CardDescription>
-                        {getPlanName(sub)} • 구독 ID: {sub.id.slice(0, 8)}...
-                      </CardDescription>
+            <div className="grid gap-4">
+              {subscriptions.map((sub) => (
+                <Card key={sub.id}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Receipt className="w-5 h-5 text-blue-600" />
+                          {sub.institution_name}
+                        </CardTitle>
+                        <CardDescription>
+                          {sub.plan_name} ({sub.plan_code}) — ₩{sub.monthly_price.toLocaleString()}/월
+                        </CardDescription>
+                      </div>
+                      {getStatusBadge(sub.status)}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(
-                          sub.status
-                        )}`}
-                      >
-                        {sub.status}
-                      </span>
-                      {(sub.status === 'ACTIVE' || sub.status === 'TRIAL') && (
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+                      <div>
+                        <p className="text-gray-500">빌링키</p>
+                        <p className="font-medium">{sub.has_billing_key ? '등록됨' : '미등록'}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">다음 결제일</p>
+                        <p className="font-medium">
+                          {sub.next_billing_date
+                            ? new Date(sub.next_billing_date).toLocaleDateString('ko-KR')
+                            : '-'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">결제 실패 횟수</p>
+                        <p className={`font-medium ${sub.failed_payment_count > 0 ? 'text-red-600' : ''}`}>
+                          {sub.failed_payment_count}회
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">등록일</p>
+                        <p className="font-medium">
+                          {new Date(sub.created_at).toLocaleDateString('ko-KR')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      {sub.status !== 'active' && (
                         <Button
-                          variant="destructive"
                           size="sm"
-                          onClick={() => handleCancelSubscription(sub.id)}
+                          onClick={() => handleAction(sub.id, 'activate')}
+                          disabled={processing === sub.id}
                         >
-                          취소
+                          <RefreshCw className="w-4 h-4 mr-1" /> 활성화
+                        </Button>
+                      )}
+                      {sub.status === 'active' && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleAction(sub.id, 'suspend')}
+                          disabled={processing === sub.id}
+                        >
+                          <Ban className="w-4 h-4 mr-1" /> 정지
+                        </Button>
+                      )}
+                      {sub.status !== 'cancelled' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleAction(sub.id, 'cancel')}
+                          disabled={processing === sub.id}
+                        >
+                          <XCircle className="w-4 h-4 mr-1" /> 해지
+                        </Button>
+                      )}
+                      {sub.has_billing_key && sub.status === 'active' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                          onClick={() => handleAction(sub.id, 'charge')}
+                          disabled={processing === sub.id}
+                        >
+                          <CreditCard className="w-4 h-4 mr-1" /> 수동 결제
                         </Button>
                       )}
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">시작일</p>
-                      <p className="font-medium">
-                        {new Date(sub.startDate).toLocaleDateString('ko-KR')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">종료일</p>
-                      <p className="font-medium">
-                        {sub.endDate
-                          ? new Date(sub.endDate).toLocaleDateString('ko-KR')
-                          : '무기한'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">자동 갱신</p>
-                      <p className="font-medium">{sub.autoRenew ? '활성' : '비활성'}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">생성일</p>
-                      <p className="font-medium">
-                        {sub.createdAt
-                          ? new Date(sub.createdAt).toLocaleDateString('ko-KR')
-                          : '-'}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       </main>
-
-      {/* 구독 생성 모달 */}
-      {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>구독 생성</CardTitle>
-                  <CardDescription>기관에 새로운 구독을 할당합니다.</CardDescription>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowCreateModal(false)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">기관 선택</label>
-                <select
-                  className="w-full border border-gray-300 rounded-md p-2"
-                  value={selectedInstitutionId}
-                  onChange={(e) => setSelectedInstitutionId(e.target.value)}
-                >
-                  <option value="">-- 기관 선택 --</option>
-                  {institutions
-                    .filter((inst) => inst.status === 'ACTIVE')
-                    .map((inst) => (
-                      <option key={inst.id} value={inst.id}>
-                        {inst.name} ({inst.businessRegistrationNumber})
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">요금제 선택</label>
-                <select
-                  className="w-full border border-gray-300 rounded-md p-2"
-                  value={selectedPlanId}
-                  onChange={(e) => setSelectedPlanId(e.target.value)}
-                >
-                  <option value="">-- 요금제 선택 --</option>
-                  {plans
-                    .filter((plan) => plan.isActive)
-                    .map((plan) => (
-                      <option key={plan.id} value={plan.id}>
-                        {plan.name} ({plan.code}) - {plan.monthlyPrice.toLocaleString()}원/월
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="autoRenew"
-                  checked={autoRenew}
-                  onChange={(e) => setAutoRenew(e.target.checked)}
-                  className="w-4 h-4"
-                />
-                <label htmlFor="autoRenew" className="text-sm font-medium">
-                  자동 갱신 활성화
-                </label>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setShowCreateModal(false)}>
-                  취소
-                </Button>
-                <Button onClick={handleCreateSubscription}>생성</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </PageContainer>
   );
 }

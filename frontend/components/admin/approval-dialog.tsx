@@ -23,9 +23,9 @@ interface ApprovalDialogProps {
   open: boolean;
   onClose: () => void;
   institution: {
-    id: string;
+    id: string | number;
     name: string;
-    businessRegistrationNo: string;
+    business_number?: string;
   };
   onSuccess: () => void;
 }
@@ -42,21 +42,8 @@ export function ApprovalDialog({
   const handleApprove = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3012/backend/api/v1'}/admin/institutions/${institution.id}/approve`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to approve institution');
-      }
+      const { railsClient } = await import('@/lib/rails-client');
+      await railsClient.post(`/admin/institutions/${institution.id}/approve`);
 
       toast({
         title: '승인 완료',
@@ -95,10 +82,12 @@ export function ApprovalDialog({
             <p className="text-sm text-gray-600">회원사명</p>
             <p className="font-medium">{institution.name}</p>
           </div>
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600">사업자등록번호</p>
-            <p className="font-medium">{institution.businessRegistrationNo}</p>
-          </div>
+          {institution.business_number && (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600">사업자등록번호</p>
+              <p className="font-medium">{institution.business_number}</p>
+            </div>
+          )}
 
           <div className="bg-blue-50 p-4 rounded-lg">
             <p className="text-sm text-blue-900">

@@ -1,48 +1,34 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { User, Lock, Info } from 'lucide-react';
-import { apiClient, User as UserType } from '@/lib/api';
+import { useAuth } from '@/contexts/auth-context';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default function AdminSettings() {
-  const router = useRouter();
-  const [user, setUser] = useState<UserType | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // 폼 상태
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [name, setName] = useState(user?.name ?? '');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await apiClient.getCurrentUser();
-        setUser(userData);
-        setEmail(userData.email);
-        setName(userData.name);
-      } catch (error) {
-        router.push('/admin/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUser();
-  }, [router]);
+    if (user) {
+      setEmail(user.email);
+      setName(user.name);
+    }
+  }, [user]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +38,13 @@ export default function AdminSettings() {
     setMessage(null);
 
     try {
-      const updates: any = {};
+      const updates: Record<string, string> = {};
       if (email !== user.email) updates.email = email;
       if (name !== user.name) updates.name = name;
 
       if (Object.keys(updates).length > 0) {
-        const updatedUser = await apiClient.updateUser(user.id, updates);
-        setUser(updatedUser);
+        const { railsClient } = await import('@/lib/rails-client');
+        await railsClient.patch(`/admin/users/${user.id}`, updates);
         setMessage({ type: 'success', text: '프로필이 성공적으로 업데이트되었습니다.' });
       }
     } catch (error: any) {
@@ -86,9 +72,9 @@ export default function AdminSettings() {
     setMessage(null);
 
     try {
-      await apiClient.updateUser(user.id, { password: newPassword });
+      const { railsClient } = await import('@/lib/rails-client');
+      await railsClient.patch(`/admin/users/${user.id}`, { password: newPassword });
       setMessage({ type: 'success', text: '비밀번호가 성공적으로 변경되었습니다.' });
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
@@ -111,7 +97,7 @@ export default function AdminSettings() {
       <AdminHeader
         title="계정 설정"
         subtitle="프로필 및 비밀번호 관리"
-        user={user}
+        user={user as any}
         showBackButton={true}
         backHref="/admin/dashboard"
       />

@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { apiClient } from '@/lib/api';
+import { useAuth } from '@/contexts/auth-context';
 import { Truck, User, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@test.com');
-  const [password, setPassword] = useState('admin123');
+  const { login } = useAuth();
+  const [email, setEmail] = useState('admin@pickup.kr');
+  const [password, setPassword] = useState('Admin1234!');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -24,7 +25,7 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      await apiClient.login({ email, password });
+      await login(email, password);
       router.push('/admin/dashboard');
     } catch (err: any) {
       setError(err.message || '로그인에 실패했습니다.');

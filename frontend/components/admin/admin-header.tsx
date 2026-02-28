@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, LogOut } from 'lucide-react';
-import { apiClient, User } from '@/lib/api';
+import { User } from '@/contexts/auth-context';
 import { NotificationBell } from './notification-bell';
 
 interface AdminHeaderProps {
@@ -18,7 +18,7 @@ export function AdminHeader({ title, subtitle, user, showBackButton, backHref = 
   const router = useRouter();
 
   const handleLogout = () => {
-    apiClient.logout();
+    localStorage.removeItem('rails_access_token');
     router.push('/admin/login');
   };
 

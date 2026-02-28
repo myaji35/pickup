@@ -1,34 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Settings, Building2, Truck, BarChart3, Route, Package, CreditCard } from 'lucide-react';
-import { apiClient, User } from '@/lib/api';
+import { useAuth } from '@/contexts/auth-context';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await apiClient.getCurrentUser();
-        setUser(userData);
-      } catch (error) {
-        // 인증 실패 시 로그인 페이지로 리다이렉트
-        router.push('/admin/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUser();
-  }, [router]);
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
