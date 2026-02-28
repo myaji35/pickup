@@ -128,6 +128,70 @@ function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
 }
 
 /* ────────────────────────────────────────────────
+   컴포넌트: Hero KPI 바 (countUp 애니메이션)
+──────────────────────────────────────────────── */
+interface HeroKpiItem {
+  target: number;
+  suffix: string;
+  label: string;
+  isFloat?: boolean;
+  duration?: number;
+}
+
+function HeroKpiBar() {
+  const kpis: HeroKpiItem[] = [
+    { target: 230, suffix: '+', label: '운행 기관', duration: 1400 },
+    { target: 12, suffix: '만+', label: '누적 탑승', duration: 1200 },
+    { target: 99.2, suffix: '%', label: '정시율', isFloat: true, duration: 1600 },
+  ];
+
+  return (
+    <div
+      className="inline-flex gap-8 md:gap-12 px-6 py-3 rounded-xl backdrop-blur-md border"
+      style={{
+        background: 'rgba(15,23,42,0.75)',
+        borderColor: 'rgba(34,211,238,0.15)',
+      }}
+    >
+      {kpis.map(({ target, suffix, label, isFloat, duration }) => (
+        <HeroKpiItem
+          key={label}
+          target={target}
+          suffix={suffix}
+          label={label}
+          isFloat={isFloat}
+          duration={duration}
+        />
+      ))}
+    </div>
+  );
+}
+
+function HeroKpiItem({
+  target,
+  suffix,
+  label,
+  isFloat = false,
+  duration = 1500,
+}: HeroKpiItem) {
+  const { ref, count } = useCounter(target, duration);
+  return (
+    <div className="text-center">
+      <p
+        className="text-xl md:text-2xl font-bold"
+        style={{ color: '#22d3ee' }}
+      >
+        <span ref={ref}>
+          {isFloat ? count.toFixed(1) : Math.round(count)}
+        </span>
+        {suffix}
+      </p>
+      <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────────────
    컴포넌트: Chart (스크롤 진입 시 애니메이션)
 ──────────────────────────────────────────────── */
 function AnimatedChart({ bars }: { bars: number[] }) {
@@ -336,35 +400,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/* KPI 카운터 — 하단 바 */}
+        {/* KPI 카운터 — 하단 바 (countUp 애니메이션) */}
         <div
           className="absolute bottom-10 left-0 right-0 z-10 animate-fade-in-up"
           style={{ animationDelay: '0.7s' }}
         >
           <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div
-              className="inline-flex gap-8 md:gap-12 px-6 py-3 rounded-xl backdrop-blur-md border"
-              style={{
-                background: 'rgba(15,23,42,0.75)',
-                borderColor: 'rgba(34,211,238,0.15)',
-              }}
-            >
-              {[
-                { value: '230+', label: '운행 기관' },
-                { value: '12만+', label: '누적 탑승' },
-                { value: '99.2%', label: '정시율' },
-              ].map(({ value, label }) => (
-                <div key={label} className="text-center">
-                  <p
-                    className="text-xl md:text-2xl font-bold"
-                    style={{ color: '#22d3ee' }}
-                  >
-                    {value}
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">{label}</p>
-                </div>
-              ))}
-            </div>
+            <HeroKpiBar />
           </div>
         </div>
 
