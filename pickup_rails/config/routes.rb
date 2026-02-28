@@ -107,6 +107,14 @@ Rails.application.routes.draw do
           member do
             get :check_ins, to: 'trips#check_ins'
           end
+
+          # 동승자 원터치 승하차 (Admin Portal)
+          resources :companion_check_ins, only: [:index] do
+            member do
+              post :board
+              post :alight
+            end
+          end
         end
 
         # BI 대시보드 집계

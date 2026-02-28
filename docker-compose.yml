@@ -1,0 +1,86 @@
+# Pickup MaaS — Docker Compose (Production)
+# 사용법:
+#   cp .env.production.example .env.production
+#   # .env.production 값 채우기
+#   docker compose --env-file .env.production up -d
+
+services:
+
+  # ── Rails API ─────────────────────────────────────────────────
+  api:
+    image: ghcr.io/myaji35/pickup_api:latest
+    build:
+      context: ./pickup_rails
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    environment:
+      RAILS_ENV: production
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      RAILS_LOG_TO_STDOUT: "true"
+      SOLID_QUEUE_IN_PUMA: "true"
+      # FCM
+      FCM_PROJECT_ID: ${FCM_PROJECT_ID:-}
+      FCM_SERVICE_ACCOUNT_JSON: ${FCM_SERVICE_ACCOUNT_JSON:-}
+      # VRP 마이크로서비스
+      VRP_SERVICE_URL: ${VRP_SERVICE_URL:-http://vrp:8001}
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY:-}
+      # 토스페이먼츠
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY:-}
+      TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY:-}
+    volumes:
+      - api_storage:/rails/storage
+      - api_logs:/rails/log
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ── Next.js Admin Portal ──────────────────────────────────────
+  web:
+    image: ghcr.io/myaji35/pickup_web:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+      args:
+        NEXT_PUBLIC_RAILS_API_URL: ${NEXT_PUBLIC_RAILS_API_URL:-http://pickup-api.158.247.235.31.nip.io/api/v1}
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_RAILS_API_URL: ${NEXT_PUBLIC_RAILS_API_URL:-http://pickup-api.158.247.235.31.nip.io/api/v1}
+      NEXT_PUBLIC_ENV: production
+      NEXT_OUTPUT: standalone
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # ── VRP 마이크로서비스 (Python FastAPI) ────────────────────────
+  vrp:
+    image: ghcr.io/myaji35/pickup_vrp:latest
+    build:
+      context: ./vrp_service
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      KAKAO_REST_API_KEY: ${KAKAO_REST_API_KEY:-}
+    profiles:
+      - vrp
+
+volumes:
+  api_storage:
+    driver: local
+  api_logs:
+    driver: local

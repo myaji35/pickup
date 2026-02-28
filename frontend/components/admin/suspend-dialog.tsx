@@ -56,7 +56,7 @@ export function SuspendDialog({
     try {
       const { railsClient } = await import('@/lib/rails-client');
       await railsClient.post(`/admin/institutions/${institution.id}/suspend`, {
-        suspension_reason: suspensionReason,
+        reason: suspensionReason,
       });
 
       toast({

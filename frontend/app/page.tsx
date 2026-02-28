@@ -335,7 +335,7 @@ export default function Home() {
               className="animate-fade-in-up text-4xl md:text-6xl font-bold tracking-tight leading-tight mb-5"
               style={{ animationDelay: '0.2s' }}
             >
-              <span className="text-white">기관의 이동을</span>
+              <span className="text-white">차량의 이동을</span>
               <br />
               <span
                 className="bg-clip-text text-transparent"

@@ -71,6 +71,7 @@ module Api
             name: user.name,
             role: user.role,
             institution_id: user.institution_id,
+            institution_name: user.institution&.name,
             created_at: user.created_at
           }
         end

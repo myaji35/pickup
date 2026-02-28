@@ -51,16 +51,13 @@ export default function CompanionCheckinPage() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // 체크인 목록 로드
+  // 체크인 목록 로드 (Admin Portal 전용 API)
   const loadCheckIns = useCallback(async () => {
     try {
       const data = await railsClient.get<CheckInItem[]>(
-        `/driver/trips/${tripId}/check_ins`
+        `/institutions/trips/${tripId}/companion_check_ins`
       );
-      // boarding_order 오름차순 정렬
-      setCheckIns(
-        data.sort((a, b) => (a.boarding_order ?? 9999) - (b.boarding_order ?? 9999))
-      );
+      setCheckIns(data);
     } catch (e) {
       showToast('체크인 목록을 불러오지 못했습니다.', false);
     } finally {
@@ -76,7 +73,7 @@ export default function CompanionCheckinPage() {
   const handleBoard = async (checkInId: number, passengerName: string) => {
     setLoadingId(checkInId);
     try {
-      await railsClient.post(`/driver/check_ins/${checkInId}/board`);
+      await railsClient.post(`/institutions/trips/${tripId}/companion_check_ins/${checkInId}/board`);
       setCheckIns((prev) =>
         prev.map((c) => (c.id === checkInId ? { ...c, status: 'boarded' } : c))
       );
@@ -92,7 +89,7 @@ export default function CompanionCheckinPage() {
   const handleAlight = async (checkInId: number, passengerName: string) => {
     setLoadingId(checkInId);
     try {
-      await railsClient.post(`/driver/check_ins/${checkInId}/alight`);
+      await railsClient.post(`/institutions/trips/${tripId}/companion_check_ins/${checkInId}/alight`);
       setCheckIns((prev) =>
         prev.map((c) => (c.id === checkInId ? { ...c, status: 'alighted' } : c))
       );
