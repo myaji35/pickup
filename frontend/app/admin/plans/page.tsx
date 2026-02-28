@@ -23,7 +23,7 @@ interface Plan {
 }
 
 export default function PlansPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -39,8 +39,8 @@ export default function PlansPage() {
   });
 
   useEffect(() => {
-    if (!authLoading) loadPlans();
-  }, [authLoading]);
+    loadPlans();
+  }, []);
 
   const loadPlans = async () => {
     try {

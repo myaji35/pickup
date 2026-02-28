@@ -19,12 +19,11 @@ interface AdminStats {
 }
 
 export default function StatisticsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (authLoading) return;
     const loadStats = async () => {
       try {
         const { railsClient } = await import('@/lib/rails-client');
@@ -37,7 +36,7 @@ export default function StatisticsPage() {
       }
     };
     loadStats();
-  }, [authLoading]);
+  }, []);
 
   if (loading) {
     return (

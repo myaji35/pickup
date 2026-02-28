@@ -30,7 +30,7 @@ const ROLE_LABELS: Record<string, { label: string; className: string }> = {
 };
 
 export default function UsersPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -38,8 +38,8 @@ export default function UsersPage() {
   const [processing, setProcessing] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!authLoading) loadUsers();
-  }, [authLoading, roleFilter]);
+    loadUsers();
+  }, [roleFilter]);
 
   const loadUsers = async () => {
     try {

@@ -27,15 +27,15 @@ interface Subscription {
 }
 
 export default function SubscriptionsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
-    if (!authLoading) loadSubscriptions();
-  }, [authLoading, statusFilter]);
+    loadSubscriptions();
+  }, [statusFilter]);
 
   const loadSubscriptions = async () => {
     try {

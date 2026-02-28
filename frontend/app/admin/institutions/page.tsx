@@ -26,13 +26,13 @@ interface Institution {
 
 export default function InstitutionsPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
 
   const [pendingInstitutions, setPendingInstitutions] = useState<Institution[]>([]);
   const [allInstitutions, setAllInstitutions] = useState<Institution[]>([]);
-  const [selectedTab, setSelectedTab] = useState<'pending' | 'all'>('pending');
+  const [selectedTab, setSelectedTab] = useState<'pending' | 'all'>('all');
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showSuspendModal, setShowSuspendModal] = useState(false);
@@ -40,8 +40,8 @@ export default function InstitutionsPage() {
   const [reason, setReason] = useState('');
 
   useEffect(() => {
-    if (!authLoading) loadInstitutions();
-  }, [authLoading]);
+    loadInstitutions();
+  }, []);
 
   const loadInstitutions = async () => {
     setLoading(true);
