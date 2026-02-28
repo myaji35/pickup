@@ -2,7 +2,6 @@ module Api
   module V1
     module Institutions
       class ExpenseReceiptsController < ApplicationController
-        before_action :authenticate_request!
         before_action :require_institution_admin!
 
         # GET /api/v1/institutions/expense_receipts
@@ -95,6 +94,10 @@ module Api
         end
 
         private
+
+        def current_institution
+          current_user.institution
+        end
 
         def find_receipt
           ExpenseReceipt.joins(:vehicle)

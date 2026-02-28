@@ -3,6 +3,8 @@ module Api
     module Institutions
       # RiskReportsController — 기관 어드민용 보험 리스크 리포트 API
       class RiskReportsController < ApplicationController
+        before_action :require_institution_admin!
+
         # GET /api/v1/institutions/risk_reports/current
         # 현재 달 리스크 지수 즉시 산출
         def current
@@ -49,6 +51,10 @@ module Api
         end
 
         private
+
+        def current_institution
+          current_user.institution
+        end
 
         def parse_month(str)
           return nil if str.blank?

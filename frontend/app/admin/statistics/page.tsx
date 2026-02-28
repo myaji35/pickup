@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/auth-context';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { Building2, Truck, Users, TrendingUp } from 'lucide-react';
+import { Building2, Bus, Users, TrendingUp } from 'lucide-react';
 
 interface AdminStats {
   total_institutions: number;
@@ -85,7 +85,7 @@ export default function StatisticsPage() {
                     <div className="text-2xl font-bold">{stats?.total_vehicles ?? 0}</div>
                     <p className="text-xs text-green-600 mt-1">등록 차량</p>
                   </div>
-                  <Truck className="w-8 h-8 text-indigo-600 opacity-50" />
+                  <Bus className="w-8 h-8 text-indigo-600 opacity-50" />
                 </div>
               </CardContent>
             </Card>

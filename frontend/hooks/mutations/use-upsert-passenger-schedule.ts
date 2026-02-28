@@ -1,32 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { PassengerSchedule, UpsertPassengerScheduleRequest } from '@/types/passenger-schedule';
+import { railsClient } from '@/lib/rails-client';
 
-/**
- * T362: useUpsertPassengerSchedule Mutation Hook
- * 승객 스케줄 생성/수정 훅
- */
+interface UpsertPassengerScheduleRequest {
+  [key: string]: unknown;
+}
 
-async function upsertPassengerSchedule(
-  passengerId: string,
-  data: UpsertPassengerScheduleRequest
-): Promise<PassengerSchedule> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/passengers/${passengerId}/schedule`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to upsert passenger schedule');
-  }
-
-  return response.json();
+interface PassengerSchedule {
+  id: number;
+  [key: string]: unknown;
 }
 
 export function useUpsertPassengerSchedule() {
@@ -34,11 +15,9 @@ export function useUpsertPassengerSchedule() {
 
   return useMutation({
     mutationFn: ({ passengerId, data }: { passengerId: string; data: UpsertPassengerScheduleRequest }) =>
-      upsertPassengerSchedule(passengerId, data),
-    onSuccess: (_, variables) => {
-      // Invalidate passenger queries to refresh data
+      railsClient.patch<PassengerSchedule>(`/institutions/passengers/${passengerId}`, data),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['passengers'] });
-      queryClient.invalidateQueries({ queryKey: ['passenger', variables.passengerId] });
     },
   });
 }

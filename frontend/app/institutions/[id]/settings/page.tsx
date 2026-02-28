@@ -246,7 +246,7 @@ export default function InstitutionSettingsPage() {
 
   useEffect(() => {
     if (institution) {
-      setSelectedTypeId(institution.institutionTypeId);
+      setSelectedTypeId(institution.institutionTypeId ?? null);
     }
   }, [institution]);
 
@@ -261,7 +261,7 @@ export default function InstitutionSettingsPage() {
   const handleConfirmChange = async () => {
     if (!institution) return;
     await updateInstitution.mutateAsync({
-      id: institution.id,
+      id: String(institution.id),
       data: { institutionTypeId: selectedTypeId },
     });
     setShowConfirmDialog(false);

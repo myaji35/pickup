@@ -1,57 +1,22 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-
-/**
- * T260: useDisconnectVehicleFromGroup mutation hook
- * 차량의 그룹 연결을 해제하는 mutation
- */
+import { railsClient } from '@/lib/rails-client';
 
 interface DisconnectVehicleFromGroupParams {
   vehicleId: string;
-}
-
-interface Vehicle {
-  id: string;
-  lastFourDigits: string;
-  passengerCapacity: number;
-  institutionId: string;
-  currentGroupId: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-async function disconnectVehicleFromGroup(params: DisconnectVehicleFromGroupParams): Promise<Vehicle> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/vehicles/${params.vehicleId}/disconnect-group`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to disconnect vehicle from group');
-  }
-
-  const data = await response.json();
-  return data.data;
+  groupId?: string;  // roster id
 }
 
 export function useDisconnectVehicleFromGroup() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: disconnectVehicleFromGroup,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-      queryClient.invalidateQueries({ queryKey: ['vehicle', variables.vehicleId] });
-      toast.success('Vehicle disconnected from group successfully');
+    mutationFn: ({ groupId }: DisconnectVehicleFromGroupParams) => {
+      if (!groupId) throw new Error('groupId is required');
+      return railsClient.patch(`/institutions/rosters/${groupId}`, { vehicle_id: null });
     },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to disconnect vehicle from group');
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+      queryClient.invalidateQueries({ queryKey: ['passengerGroups'] });
     },
   });
 }

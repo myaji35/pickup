@@ -1,10 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-
-/**
- * T293: useBulkUploadPassengers mutation hook
- * CSV 파일로 승객을 일괄 등록하는 mutation
- */
 
 interface BulkUploadParams {
   file: File;
@@ -12,38 +6,39 @@ interface BulkUploadParams {
   skipDuplicates?: boolean;
 }
 
-interface BulkUploadRowError {
-  row: number;
-  field: string;
-  message: string;
-  value?: string;
-}
-
 interface BulkUploadResult {
   created: number;
   skipped: number;
-  errors: BulkUploadRowError[];
+  errors: Array<{ row: number; field: string; message: string; value?: string }>;
   totalProcessed: number;
 }
 
 async function bulkUploadPassengers(params: BulkUploadParams): Promise<BulkUploadResult> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('rails_access_token') : null;
+  const base = process.env.NEXT_PUBLIC_RAILS_API_URL || 'http://localhost:3001/api/v1';
+
   const formData = new FormData();
   formData.append('file', params.file);
-  formData.append('institutionId', params.institutionId);
-  formData.append('skipDuplicates', params.skipDuplicates !== false ? 'true' : 'false');
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/passengers/bulk-upload`, {
+  const response = await fetch(`${base}/institutions/passengers/bulk_import`, {
     method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: formData,
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to upload CSV file');
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error?.message || `HTTP ${response.status}`);
   }
 
-  const data = await response.json();
-  return data.data || data;
+  const json = await response.json();
+  const data = json.data || json;
+  return {
+    created: data.imported ?? data.created ?? 0,
+    skipped: data.skipped ?? 0,
+    errors:  data.errors ?? [],
+    totalProcessed: (data.imported ?? 0) + (data.skipped ?? 0) + (data.errors?.length ?? 0),
+  };
 }
 
 export function useBulkUploadPassengers() {
@@ -51,23 +46,8 @@ export function useBulkUploadPassengers() {
 
   return useMutation({
     mutationFn: bulkUploadPassengers,
-    onSuccess: (result, variables) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['passengers', variables.institutionId] });
-
-      if (result.errors.length > 0) {
-        toast.warning(
-          `${result.created} passengers created, but ${result.errors.length} errors occurred.`
-        );
-      } else if (result.skipped > 0) {
-        toast.success(
-          `${result.created} passengers created successfully. ${result.skipped} duplicates skipped.`
-        );
-      } else {
-        toast.success(`${result.created} passengers created successfully!`);
-      }
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to upload CSV file');
     },
   });
 }

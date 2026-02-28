@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Building2, Truck, BarChart3, Route, Package, CreditCard } from 'lucide-react';
+import { Settings, Building2, Bus, BarChart3, Route, Package, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 import { PageContainer } from '@/components/admin/page-container';
 import { AdminHeader } from '@/components/admin/admin-header';
@@ -90,7 +90,7 @@ export default function AdminDashboard() {
             <Card className="hover:shadow-lg transition-shadow cursor-not-allowed opacity-50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-emerald-600" />
+                  <Bus className="w-5 h-5 text-emerald-600" />
                   차량 모니터링
                 </CardTitle>
                 <CardDescription>

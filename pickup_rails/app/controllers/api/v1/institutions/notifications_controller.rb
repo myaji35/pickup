@@ -33,6 +33,10 @@ module Api
 
         private
 
+        def current_institution
+          current_user.institution
+        end
+
         def log_json(log)
           {
             id:                log.id,

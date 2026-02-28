@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { railsClient } from '@/lib/rails-client';
 import { Passenger } from '@/types/passenger';
 
 async function fetchPassengers(
@@ -10,21 +11,13 @@ async function fetchPassengers(
     assignmentStatus?: 'assigned' | 'unassigned';
   },
 ): Promise<Passenger[]> {
-  const params = new URLSearchParams({ institutionId });
-  if (filters?.shuttleType) params.append('shuttleType', filters.shuttleType);
-  if (filters?.search) params.append('search', filters.search);
-  if (filters?.groupId) params.append('groupId', filters.groupId);
-  if (filters?.assignmentStatus) params.append('assignmentStatus', filters.assignmentStatus);
+  const params: Record<string, string> = {};
+  if (filters?.shuttleType) params.shuttle_type = filters.shuttleType;
+  if (filters?.search) params.search = filters.search;
+  if (filters?.groupId) params.group_id = filters.groupId;
+  if (filters?.assignmentStatus) params.assignment_status = filters.assignmentStatus;
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/passengers?${params.toString()}`
-  );
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch passengers');
-  }
-
-  return response.json();
+  return railsClient.get<Passenger[]>('/institutions/passengers', params);
 }
 
 export function usePassengers(

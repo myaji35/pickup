@@ -12,7 +12,7 @@ import {
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  Truck,
+  Bus,
   Receipt,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -109,7 +109,7 @@ export function AdminSidebar({ collapsed, onToggle }: SidebarProps) {
         {/* Logo & Brand */}
         <div className="flex items-center gap-3 p-4 border-b border-slate-800">
           <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Truck className="w-6 h-6" />
+            <Bus className="w-6 h-6" />
           </div>
           {!collapsed && (
             <span className="text-lg font-semibold">Pickup Admin</span>

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/auth-context';
-import { Truck, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { Bus, User, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
           {/* Logo */}
           <div className="flex items-center gap-3 mb-4 lg:mb-8">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Truck className="w-6 h-6 text-white" />
+              <Bus className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold">Pickup MaaS</span>
           </div>

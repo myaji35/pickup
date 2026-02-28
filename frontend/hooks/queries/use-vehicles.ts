@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
+import { railsClient } from '@/lib/rails-client';
 import { Vehicle } from '@/types/vehicle';
 
 /**
@@ -13,8 +13,7 @@ export function useVehicles(institutionId: string | undefined) {
       if (!institutionId) {
         throw new Error('Institution ID is required');
       }
-
-      return apiClient.get<Vehicle[]>('/vehicles', { institutionId });
+      return railsClient.get<Vehicle[]>('/institutions/vehicles');
     },
     enabled: !!institutionId,
   });
@@ -31,8 +30,7 @@ export function useVehicle(vehicleId: string | undefined) {
       if (!vehicleId) {
         throw new Error('Vehicle ID is required');
       }
-
-      return apiClient.get<Vehicle>(`/vehicles/${vehicleId}`);
+      return railsClient.get<Vehicle>(`/institutions/vehicles/${vehicleId}`);
     },
     enabled: !!vehicleId,
   });
