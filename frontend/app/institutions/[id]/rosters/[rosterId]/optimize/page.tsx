@@ -653,7 +653,7 @@ function PassengerNode({
             <button
               onClick={onRemove}
               disabled={isRemoving}
-              className="opacity-0 group-hover/node:opacity-100 p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-all disabled:opacity-50"
+              className="p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-all disabled:opacity-50"
               aria-label="탑승자 제거"
             >
               <X className="w-3.5 h-3.5" strokeWidth={2} />
