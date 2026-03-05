@@ -153,9 +153,11 @@ module Api
               capacity:     roster.vehicle.capacity
             },
             passengers_count:   roster.passengers.count,
-            departure_address:  roster.departure_address,
-            departure_time:     roster.departure_time,
-            created_at:         roster.created_at
+            departure_address:    roster.departure_address,
+            departure_time:       roster.departure_time,
+            last_optimized_at:    roster.last_optimized_at,
+            optimized_distance_m: roster.optimized_distance_m,
+            created_at:           roster.created_at
           }
         end
 

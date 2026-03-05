@@ -108,6 +108,10 @@ module Api
 
         private
 
+        def current_institution
+          current_user.institution
+        end
+
         def set_vehicle
           @vehicle = current_institution.vehicles.find(params[:vehicle_id])
         rescue ActiveRecord::RecordNotFound
