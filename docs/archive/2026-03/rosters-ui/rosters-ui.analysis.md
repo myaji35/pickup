@@ -1,7 +1,7 @@
-# [Check] rosters-ui Gap 분석
+# [Check] rosters-ui Gap 분석 (v2 — 수동 순서 편집 포함)
 
 **분석일**: 2026-03-05
-**Match Rate**: 98%
+**Match Rate**: 100%
 **빌드 상태**: ✅ 통과 (0 에러)
 **타입 체크**: ✅ 통과 (0 에러)
 
@@ -21,20 +21,31 @@
 | 8 | 승객별 ETA 뱃지 (+N분) | `etaMin` prop | ✅ |
 | 9 | 절감 효과 배너 | `savings` 계산 | ✅ |
 | 10 | 경로 최적화 확정 적용 | `applyMutation` | ✅ |
-| 11 | layout.tsx 레거시 주석 정리 | passenger-groups → rosters | ✅ (수정) |
-| 12 | 빌드 0 에러 | next build | ✅ |
+| 11 | **수동 탑승 순서 편집 (드래그&드롭)** | `SortablePassengerNode` (@dnd-kit) | ✅ |
+| 12 | **순서 저장 API** | `PATCH /rosters/:id/reorder_passengers` | ✅ |
+| 13 | **boarding_order 정렬 반환** | `roster_detail_json` Arel.sql ORDER | ✅ |
+| 14 | AI 최적화 중 순서 편집 버튼 숨김 | `!optimizedResult` 조건 | ✅ |
+
+---
+
+## API 검증 결과
+
+| Endpoint | Status | 비고 |
+|----------|--------|------|
+| GET /institutions/rosters | 200 ✅ | 주차별 목록 |
+| GET /institutions/rosters/:id | 200 ✅ | boarding_order ASC 정렬 |
+| PATCH /institutions/rosters/:id/reorder_passengers | 200 ✅ | 순서 일치 확인 |
+| POST /institutions/rosters/:id/optimize | 200 ✅ | VRP 최적화 |
 
 ---
 
 ## Gap 목록
 
-| Gap | 중요도 | 내용 | 처리 |
-|-----|-------|------|------|
-| layout.tsx 주석 레거시 | Low | `passenger-groups` 참조 잔존 | ✅ 즉시 수정 |
+Gap 없음 — 모든 요구사항 구현 완료.
 
 ---
 
 ## 결론
 
-Match Rate **98%** — 목표 기준(90%) 초과 달성.
+Match Rate **100%** — 수동 순서 편집 기능 추가로 완전 구현.
 `/pdca report rosters-ui` 로 완료 보고서 작성 가능.
