@@ -4,16 +4,19 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { railsClient } from '@/lib/rails-client';
-import { Loader2, Route, Calendar, Users, ChevronRight, Zap } from 'lucide-react';
+import { Loader2, Route, Calendar, Users, ChevronRight, Zap, Clock, MapPin } from 'lucide-react';
 
 interface Roster {
   id: number;
-  name: string;
-  week_start: string;
-  week_end: string;
-  passenger_count: number;
+  week_start_date: string;
+  shuttle_type: string;
+  vehicle: { id: number; plate_last4: string; plate_number: string; capacity: number };
+  passengers_count: number;
+  departure_address: string | null;
+  departure_time: string | null;
   last_optimized_at: string | null;
-  optimized_distance_km: number | null;
+  optimized_distance_m: number | null;
+  created_at: string;
 }
 
 /**
@@ -86,16 +89,35 @@ export default function RostersPage() {
                       <Route className="w-4 h-4 text-[#00A1E0]" strokeWidth={2} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#16325C]">{roster.name}</p>
-                      <div className="flex items-center gap-3 mt-0.5">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-[#16325C]">
+                          {roster.vehicle.plate_number}
+                          <span className="ml-2 text-xs font-normal text-gray-500">
+                            {roster.shuttle_type === 'morning' ? '등원' : '하원'}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                         <span className="flex items-center gap-1 text-xs text-gray-500">
                           <Calendar className="w-3 h-3" strokeWidth={2} />
-                          {roster.week_start} ~ {roster.week_end}
+                          {roster.week_start_date} 주
                         </span>
                         <span className="flex items-center gap-1 text-xs text-gray-500">
                           <Users className="w-3 h-3" strokeWidth={2} />
-                          {roster.passenger_count}명
+                          {roster.passengers_count}명
                         </span>
+                        {roster.departure_time && (
+                          <span className="flex items-center gap-1 text-xs text-blue-600 font-medium">
+                            <Clock className="w-3 h-3" strokeWidth={2} />
+                            {roster.departure_time} 출발
+                          </span>
+                        )}
+                        {roster.departure_address && (
+                          <span className="flex items-center gap-1 text-xs text-gray-500">
+                            <MapPin className="w-3 h-3" strokeWidth={2} />
+                            {roster.departure_address}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

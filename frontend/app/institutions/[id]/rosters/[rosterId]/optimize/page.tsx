@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   useRoutePreview,
   useOptimizeRoute,
@@ -12,6 +13,7 @@ import {
   OptimizedPassenger,
   RoutePreviewPassenger,
 } from '@/types/route-optimization';
+import { railsClient } from '@/lib/rails-client';
 import {
   Loader2,
   Zap,
@@ -24,6 +26,8 @@ import {
   TrendingDown,
   ChevronLeft,
   AlertCircle,
+  Edit2,
+  Save,
 } from 'lucide-react';
 
 /**
@@ -41,8 +45,33 @@ export default function RouteOptimizePage() {
   const institutionId = params.id as string;
   const rosterId = Number(params.rosterId);
 
+  const qc = useQueryClient();
+
   // 현재 경로 미리보기
   const { data: preview, isLoading: isLoadingPreview } = useRoutePreview(rosterId);
+
+  // Roster 상세 (출발지/시간)
+  const { data: roster } = useQuery({
+    queryKey: ['roster', rosterId],
+    queryFn: () => railsClient.get<any>(`/institutions/rosters/${rosterId}`),
+    enabled: !!rosterId,
+  });
+
+  // 출발지/시간 편집 상태
+  const [editingDeparture, setEditingDeparture] = useState(false);
+  const [deptAddress, setDeptAddress] = useState('');
+  const [deptTime, setDeptTime] = useState('');
+
+  const saveDepartureMutation = useMutation({
+    mutationFn: () => railsClient.patch(`/institutions/rosters/${rosterId}`, {
+      roster: { departure_address: deptAddress, departure_time: deptTime }
+    }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['roster', rosterId] });
+      qc.invalidateQueries({ queryKey: ['rosters'] });
+      setEditingDeparture(false);
+    },
+  });
 
   // 최적화 결과 (로컬 상태)
   const [optimizedResult, setOptimizedResult] = useState<OptimizationResult | null>(null);
@@ -125,6 +154,83 @@ export default function RouteOptimizePage() {
             Roster #{rosterId} — Google OR-Tools VRP 솔버
           </p>
         </div>
+      </div>
+
+      {/* ─── 출발지 / 출발시간 설정 ─────────────────────────────── */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-sm font-semibold text-[#16325C] flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-[#00A1E0]" strokeWidth={2} />
+            출발지 &amp; 출발시간
+          </p>
+          {!editingDeparture ? (
+            <button
+              onClick={() => {
+                setDeptAddress(roster?.departure_address ?? '');
+                setDeptTime(roster?.departure_time ?? '');
+                setEditingDeparture(true);
+              }}
+              className="flex items-center gap-1 text-xs text-[#00A1E0] hover:underline"
+            >
+              <Edit2 className="w-3 h-3" strokeWidth={2} />
+              편집
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEditingDeparture(false)}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >취소</button>
+              <button
+                onClick={() => saveDepartureMutation.mutate()}
+                disabled={saveDepartureMutation.isPending}
+                className="flex items-center gap-1 text-xs bg-[#00A1E0] text-white px-2 py-1 rounded hover:bg-[#0081B3] disabled:opacity-50"
+              >
+                {saveDepartureMutation.isPending
+                  ? <Loader2 className="w-3 h-3 animate-spin" />
+                  : <Save className="w-3 h-3" strokeWidth={2} />}
+                저장
+              </button>
+            </div>
+          )}
+        </div>
+
+        {editingDeparture ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">출발 주소</label>
+              <input
+                type="text"
+                value={deptAddress}
+                onChange={e => setDeptAddress(e.target.value)}
+                placeholder="예: 서울시 마포구 기관 주소"
+                className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">출발 시간 (HH:MM)</label>
+              <input
+                type="time"
+                value={deptTime}
+                onChange={e => setDeptTime(e.target.value)}
+                className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center gap-6 text-sm">
+            <span className="flex items-center gap-2 text-gray-700">
+              <MapPin className="w-4 h-4 text-gray-400" strokeWidth={2} />
+              {roster?.departure_address ?? <span className="text-gray-400 italic">출발지 미설정</span>}
+            </span>
+            <span className="flex items-center gap-2 text-gray-700">
+              <Clock className="w-4 h-4 text-gray-400" strokeWidth={2} />
+              {roster?.departure_time
+                ? <span className="font-semibold text-[#00A1E0]">{roster.departure_time} 출발</span>
+                : <span className="text-gray-400 italic">출발시간 미설정</span>}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 에러 메시지 */}
