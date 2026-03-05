@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * Institution Layout — 기관 관리 포털 공통 레이아웃
- * vehicles / passengers / passenger-groups / settings / safety 공통 사이드바
+ * vehicles / passengers / rosters / settings / safety 공통 사이드바
  */
 
 export default function InstitutionLayout({

@@ -5,8 +5,8 @@
     "platform": "claude",
     "level": "Enterprise"
   },
-  "currentFeature": "migrate",
-  "currentPhase": "archived",
+  "currentFeature": "rosters-ui",
+  "currentPhase": "check",
   "lastArchived": "migrate",
-  "lastMatchRate": 95
+  "lastMatchRate": 98
 }
