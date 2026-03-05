@@ -6,7 +6,7 @@
     "level": "Enterprise"
   },
   "currentFeature": "migrate",
-  "currentPhase": "completed",
-  "lastArchived": "landing-page",
+  "currentPhase": "archived",
+  "lastArchived": "migrate",
   "lastMatchRate": 95
 }

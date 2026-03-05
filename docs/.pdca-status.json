@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-02-27T21:17:23.284Z",
+  "lastUpdated": "2026-03-05T08:20:20.882Z",
   "activeFeatures": [
     "migrate",
     "pickup_rails",
@@ -65,7 +65,18 @@
     "clova_ocr_service.rb",
     "trips",
     "[tripId]",
-    "settlements"
+    "settlements",
+    "login",
+    "dashboard",
+    "pending",
+    "statistics",
+    "plans",
+    "routes",
+    "users",
+    "admin-portal-migration",
+    "landing",
+    "mutations",
+    "migrate — Gap 분석"
   ],
   "primaryFeature": "migrate",
   "features": {
@@ -91,9 +102,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:33:37.392Z",
-        "lastUpdated": "2026-02-27T21:03:30.596Z"
+        "lastUpdated": "2026-03-05T07:52:28.050Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/vehicle.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/models/institution.rb"
     },
     "initializers": {
       "phase": "do",
@@ -104,7 +115,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:34:33.936Z",
-        "lastUpdated": "2026-02-27T21:17:05.956Z"
+        "lastUpdated": "2026-02-28T04:01:40.146Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/initializers/cors.rb"
     },
@@ -143,7 +154,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:25.980Z",
-        "lastUpdated": "2026-02-27T19:03:56.403Z"
+        "lastUpdated": "2026-02-28T20:04:59.736Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/admin/sidebar.tsx"
     },
@@ -156,9 +167,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:34.844Z",
-        "lastUpdated": "2026-02-27T21:01:57.480Z"
+        "lastUpdated": "2026-03-05T08:12:31.461Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/trips_controller.rb"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/institutions/rosters_controller.rb"
     },
     "driver": {
       "phase": "do",
@@ -169,7 +180,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:35:54.403Z",
-        "lastUpdated": "2026-02-27T20:15:22.210Z"
+        "lastUpdated": "2026-03-05T07:56:53.841Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/controllers/api/v1/driver/coaching_controller.rb"
     },
@@ -182,7 +193,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:36:12.046Z",
-        "lastUpdated": "2026-02-27T21:01:42.281Z"
+        "lastUpdated": "2026-02-28T03:28:56.633Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/config/routes.rb"
     },
@@ -221,9 +232,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:42:14.652Z",
-        "lastUpdated": "2026-02-27T17:53:36.370Z"
+        "lastUpdated": "2026-02-28T19:52:17.611Z"
       },
-      "lastFile": "/tmp/update_location.py"
+      "lastFile": "/tmp/admin_login.py"
     },
     "application_cable": {
       "phase": "do",
@@ -299,9 +310,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T17:57:32.191Z",
-        "lastUpdated": "2026-02-27T19:51:50.438Z"
+        "lastUpdated": "2026-03-05T07:40:37.869Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/passenger-app/src/contexts/AuthContext.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/contexts/auth-context.tsx"
     },
     "screens": {
       "phase": "do",
@@ -390,9 +401,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:49:32.344Z",
-        "lastUpdated": "2026-02-27T21:17:23.284Z"
+        "lastUpdated": "2026-02-28T19:50:35.887Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/next.config.js"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/page.tsx"
     },
     "queries": {
       "phase": "do",
@@ -403,9 +414,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:50:06.466Z",
-        "lastUpdated": "2026-02-27T19:38:44.380Z"
+        "lastUpdated": "2026-03-05T07:59:32.679Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/hooks/queries/use-garages.ts"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/hooks/queries/use-vehicles.ts"
     },
     "safety": {
       "phase": "do",
@@ -455,9 +466,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:54:58.261Z",
-        "lastUpdated": "2026-02-27T21:03:44.252Z"
+        "lastUpdated": "2026-03-05T07:58:16.099Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/layout.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/page.tsx"
     },
     "toss_payments_service.rb": {
       "phase": "do",
@@ -520,9 +531,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T19:03:47.644Z",
-        "lastUpdated": "2026-02-27T19:03:47.644Z"
+        "lastUpdated": "2026-02-28T04:39:27.047Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/(admin)/admin/subscriptions/page.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/subscriptions/page.tsx"
     },
     "solver": {
       "phase": "do",
@@ -572,7 +583,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T19:13:09.390Z",
-        "lastUpdated": "2026-02-27T19:13:09.390Z"
+        "lastUpdated": "2026-03-05T08:13:10.657Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/rosters/page.tsx"
     },
@@ -585,7 +596,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T19:14:09.808Z",
-        "lastUpdated": "2026-02-27T19:14:09.808Z"
+        "lastUpdated": "2026-03-05T08:13:55.067Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/rosters/[rosterId]/optimize/page.tsx"
     },
@@ -663,7 +674,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T19:36:21.770Z",
-        "lastUpdated": "2026-02-27T20:11:06.961Z"
+        "lastUpdated": "2026-03-05T07:57:08.525Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/insurance_safety_report_service.rb"
     },
@@ -767,7 +778,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T20:10:46.545Z",
-        "lastUpdated": "2026-02-27T20:10:46.545Z"
+        "lastUpdated": "2026-03-05T07:57:32.182Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/risk_index_calculator_service.rb"
     },
@@ -780,7 +791,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T20:12:36.058Z",
-        "lastUpdated": "2026-02-27T20:12:36.058Z"
+        "lastUpdated": "2026-03-05T08:02:12.153Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/risk-report/page.tsx"
     },
@@ -793,7 +804,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T20:14:40.864Z",
-        "lastUpdated": "2026-02-27T20:14:40.864Z"
+        "lastUpdated": "2026-03-05T07:56:34.978Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/pickup_rails/app/services/driver_coaching_service.rb"
     },
@@ -819,7 +830,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T20:31:36.107Z",
-        "lastUpdated": "2026-02-27T20:33:56.608Z"
+        "lastUpdated": "2026-02-28T20:05:59.949Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/settings/page.tsx"
     },
@@ -832,7 +843,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T20:32:11.320Z",
-        "lastUpdated": "2026-02-27T20:34:07.785Z"
+        "lastUpdated": "2026-02-28T03:29:36.476Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/trips/[tripId]/companion-checkin/page.tsx"
     },
@@ -845,9 +856,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T20:34:40.059Z",
-        "lastUpdated": "2026-02-27T20:34:57.522Z"
+        "lastUpdated": "2026-02-27T23:36:17.896Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/ui/switch.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/ui/toaster.tsx"
     },
     "clova_ocr_service.rb": {
       "phase": "do",
@@ -871,7 +882,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T21:04:20.168Z",
-        "lastUpdated": "2026-02-27T21:08:10.484Z"
+        "lastUpdated": "2026-03-05T08:00:14.177Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/trips/page.tsx"
     },
@@ -884,7 +895,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T21:04:57.856Z",
-        "lastUpdated": "2026-02-27T21:08:14.142Z"
+        "lastUpdated": "2026-03-05T08:00:31.873Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/trips/[tripId]/page.tsx"
     },
@@ -897,9 +908,154 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T21:06:19.594Z",
-        "lastUpdated": "2026-02-27T21:08:06.812Z"
+        "lastUpdated": "2026-03-05T08:00:48.830Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/settlements/page.tsx"
+    },
+    "login": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:00:19.790Z",
+        "lastUpdated": "2026-03-05T07:40:57.710Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/login/page.tsx"
+    },
+    "dashboard": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:02:51.835Z",
+        "lastUpdated": "2026-02-28T04:02:51.835Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/dashboard/page.tsx"
+    },
+    "pending": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:05:48.710Z",
+        "lastUpdated": "2026-02-28T04:10:10.438Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/institutions/pending/page.tsx"
+    },
+    "statistics": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:13:35.016Z",
+        "lastUpdated": "2026-02-28T04:39:18.128Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/statistics/page.tsx"
+    },
+    "plans": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:15:35.799Z",
+        "lastUpdated": "2026-02-28T04:39:32.628Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/plans/page.tsx"
+    },
+    "routes": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:18:21.169Z",
+        "lastUpdated": "2026-02-28T04:18:21.169Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/routes/page.tsx"
+    },
+    "users": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:29:42.103Z",
+        "lastUpdated": "2026-02-28T04:39:22.934Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/admin/users/page.tsx"
+    },
+    "admin-portal-migration": {
+      "phase": "act",
+      "phaseNumber": 5,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T04:54:33.934Z",
+        "lastUpdated": "2026-02-28T04:54:33.935Z"
+      },
+      "previousPhase": "check",
+      "autoAdvanced": true
+    },
+    "landing": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T14:27:39.138Z",
+        "lastUpdated": "2026-02-28T19:21:13.112Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/components/landing/ControlCanvas.tsx"
+    },
+    "mutations": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-28T20:02:18.141Z",
+        "lastUpdated": "2026-02-28T20:02:31.564Z"
+      },
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/hooks/mutations/use-update-passenger.ts"
+    },
+    "migrate — Gap 분석": {
+      "phase": "act",
+      "phaseNumber": 5,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-05T08:20:20.881Z",
+        "lastUpdated": "2026-03-05T08:20:20.882Z"
+      },
+      "previousPhase": "check",
+      "autoAdvanced": true
     }
   },
   "pipeline": {
@@ -910,7 +1066,7 @@
   "session": {
     "startedAt": "2026-02-27T17:24:38.804Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-02-27T21:17:23.284Z"
+    "lastActivity": "2026-03-05T08:20:20.882Z"
   },
   "history": [
     {
@@ -2940,6 +3096,918 @@
       "feature": "frontend",
       "phase": "do",
       "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T22:47:12.927Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T23:34:59.704Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T23:35:07.612Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T23:35:21.758Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T23:35:53.848Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T23:36:04.068Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T23:36:17.896Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T03:28:50.272Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T03:28:56.633Z",
+      "feature": "config",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T03:29:28.554Z",
+      "feature": "companion-checkin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T03:29:32.790Z",
+      "feature": "companion-checkin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T03:29:36.476Z",
+      "feature": "companion-checkin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T03:59:27.946Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:00:10.184Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:00:19.790Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:00:24.637Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:01:40.146Z",
+      "feature": "initializers",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:02:51.835Z",
+      "feature": "dashboard",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:03:10.161Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:04:43.324Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:04:48.845Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:04.916Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:09.049Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:17.665Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:22.660Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:26.809Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:31.000Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:36.960Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:48.710Z",
+      "feature": "pending",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:54.211Z",
+      "feature": "pending",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:05:57.784Z",
+      "feature": "pending",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:01.011Z",
+      "feature": "pending",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:18.486Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:24.803Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:35.572Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:40.835Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:45.211Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:06:50.215Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:09:17.537Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:09:49.368Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:09:53.356Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:09:57.977Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:10:03.240Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:10:07.298Z",
+      "feature": "pending",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:10:10.438Z",
+      "feature": "pending",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:10:14.127Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:10:18.296Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:10:21.490Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:11:42.812Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:11:48.663Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:11:53.202Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:12:27.460Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:12:44.810Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:12:53.162Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:12:58.374Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:13:35.016Z",
+      "feature": "statistics",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:14:34.270Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:14:47.793Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:15:35.799Z",
+      "feature": "plans",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:16:13.994Z",
+      "feature": "subscriptions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:17:02.099Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:17:57.087Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:18:21.169Z",
+      "feature": "routes",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:28:38.872Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:28:46.502Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:28:50.520Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:28:53.513Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:29:06.804Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:29:12.418Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:29:16.593Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:29:42.103Z",
+      "feature": "users",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:30:33.253Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:38:54.297Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:38:59.341Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:39:18.128Z",
+      "feature": "statistics",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:39:22.934Z",
+      "feature": "users",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:39:27.047Z",
+      "feature": "subscriptions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:39:32.628Z",
+      "feature": "plans",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:39:39.850Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:46:05.703Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:51:22.548Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:51:25.066Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T04:54:33.935Z",
+      "feature": "admin-portal-migration",
+      "phase": "act",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T05:02:03.987Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T05:07:21.031Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T14:27:39.138Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T14:27:45.070Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T14:28:30.602Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T14:28:43.478Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:21:13.112Z",
+      "feature": "landing",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:21:26.776Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:21:33.989Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:48:12.147Z",
+      "feature": "tmp",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:48:38.477Z",
+      "feature": "tmp",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:50:35.887Z",
+      "feature": "frontend",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T19:52:17.611Z",
+      "feature": "tmp",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:15.577Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:25.613Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:28.597Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:32.911Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:35.823Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:39.747Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:00:42.974Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:01:02.853Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:01:08.423Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:01:26.029Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:02:07.642Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:02:18.141Z",
+      "feature": "mutations",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:02:22.447Z",
+      "feature": "mutations",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:02:27.549Z",
+      "feature": "mutations",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:02:31.564Z",
+      "feature": "mutations",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:04:52.762Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:04:59.736Z",
+      "feature": "admin",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:05:25.406Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:05:37.383Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:05:56.443Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-28T20:05:59.949Z",
+      "feature": "settings",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:36:52.508Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:40:29.783Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:40:34.477Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:40:37.870Z",
+      "feature": "contexts",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:40:57.710Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:52:27.022Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:52:28.050Z",
+      "feature": "pickup_rails",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:53:52.426Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:55:11.848Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:55:54.736Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:56:25.801Z",
+      "feature": "risk_index_calculator_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:56:34.978Z",
+      "feature": "driver_coaching_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:56:43.337Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:56:46.590Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:56:53.841Z",
+      "feature": "driver",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:57:00.931Z",
+      "feature": "insurance_safety_report_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:57:08.525Z",
+      "feature": "insurance_safety_report_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:57:21.575Z",
+      "feature": "risk_index_calculator_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:57:32.182Z",
+      "feature": "risk_index_calculator_service.rb",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:58:16.099Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T07:59:32.679Z",
+      "feature": "queries",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:00:14.177Z",
+      "feature": "trips",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:00:31.873Z",
+      "feature": "[tripId]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:00:40.890Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:00:45.027Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:00:48.830Z",
+      "feature": "settlements",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:02:12.153Z",
+      "feature": "risk-report",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:12:27.038Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:12:31.461Z",
+      "feature": "institutions",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:13:02.132Z",
+      "feature": "rosters",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:13:10.657Z",
+      "feature": "rosters",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:13:30.202Z",
+      "feature": "optimize",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:13:39.294Z",
+      "feature": "optimize",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:13:55.067Z",
+      "feature": "optimize",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:20:20.882Z",
+      "feature": "migrate — Gap 분석",
+      "phase": "act",
+      "action": "updated"
     }
   ],
   "notification-settings": {
@@ -2949,5 +4017,11 @@
     "startedAt": "2026-02-28T00:00:00Z",
     "archivedAt": "2026-02-28T00:00:00Z",
     "archivedTo": "docs/archive/2026-02/notification-settings/"
+  },
+  "migrate": {
+    "phase": "archived",
+    "matchRate": 95,
+    "archivedAt": "2026-03-05T00:00:00Z",
+    "archivedTo": "docs/archive/2026-03/migrate/"
   }
 }
