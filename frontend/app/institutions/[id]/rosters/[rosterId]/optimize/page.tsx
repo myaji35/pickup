@@ -485,7 +485,6 @@ export default function RouteOptimizePage() {
           currentIds={currentPassengers.map(p => p.id)}
           onAdd={(id) => addPassengerMutation.mutate(id)}
           isAdding={addPassengerMutation.isPending}
-          addingId={addPassengerMutation.variables as number | undefined}
         />
       )}
 
@@ -667,70 +666,60 @@ function PassengerNode({
 
 // ─── 승객 추가 패널 ──────────────────────────────────────────
 function AddPassengerPanel({
-  allPassengers, currentIds, onAdd, isAdding, addingId,
+  allPassengers, currentIds, onAdd, isAdding,
 }: {
   allPassengers: any[];
   currentIds: number[];
   onAdd: (id: number) => void;
   isAdding: boolean;
-  addingId?: number;
 }) {
-  const [search, setSearch] = useState('');
-  const available = allPassengers.filter(
-    p => p.is_active && !currentIds.includes(p.id) &&
-      (search === '' || p.name.includes(search) || (p.pickup_address ?? '').includes(search))
-  );
+  const [selectedId, setSelectedId] = useState<number | ''>('');
+  const available = allPassengers
+    .filter(p => p.is_active && !currentIds.includes(p.id))
+    .sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+
+  const selected = available.find(p => p.id === selectedId);
+
+  const handleAdd = () => {
+    if (!selectedId) return;
+    onAdd(selectedId as number);
+    setSelectedId('');
+  };
 
   return (
     <div className="bg-white rounded-xl border border-[#00A1E0]/30 shadow-sm overflow-hidden">
       <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
         <UserPlus className="w-4 h-4 text-[#00A1E0]" strokeWidth={2} />
         <p className="text-sm font-semibold text-[#16325C]">탑승자 추가</p>
-        <span className="text-xs text-gray-400 ml-1">— 미배정 활성 승객 목록</span>
       </div>
 
-      {/* 검색 */}
-      <div className="px-4 pt-3 pb-2">
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="이름 또는 주소로 검색"
-          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30"
-        />
-      </div>
-
-      {/* 목록 */}
-      <div className="max-h-52 overflow-y-auto divide-y divide-gray-50">
-        {available.length === 0 ? (
-          <p className="text-xs text-gray-400 text-center py-6">
-            {allPassengers.length === 0 ? '승객 목록 로딩 중...' : '추가 가능한 승객이 없습니다'}
-          </p>
-        ) : (
-          available.map(p => (
-            <div key={p.id} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-[#16325C]">{p.name}</p>
-                {p.pickup_address && (
-                  <p className="text-xs text-gray-400 truncate flex items-center gap-1 mt-0.5">
-                    <MapPin className="w-3 h-3 shrink-0" strokeWidth={2} />
-                    {p.pickup_address}
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => onAdd(p.id)}
-                disabled={isAdding && addingId === p.id}
-                className="flex-shrink-0 ml-3 flex items-center gap-1 text-xs bg-[#00A1E0] text-white px-3 py-1.5 rounded-lg hover:bg-[#0081B3] disabled:opacity-50 transition-colors"
-              >
-                {isAdding && addingId === p.id
-                  ? <Loader2 className="w-3 h-3 animate-spin" />
-                  : <UserPlus className="w-3 h-3" strokeWidth={2} />}
-                추가
-              </button>
-            </div>
-          ))
-        )}
+      <div className="px-4 py-3 flex items-center gap-3">
+        <select
+          value={selectedId}
+          onChange={e => setSelectedId(e.target.value === '' ? '' : Number(e.target.value))}
+          className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30 bg-white"
+        >
+          <option value="">
+            {available.length === 0
+              ? allPassengers.length === 0 ? '로딩 중...' : '추가 가능한 승객 없음'
+              : '승객 선택 (가나다순)'}
+          </option>
+          {available.map(p => (
+            <option key={p.id} value={p.id}>
+              {p.name}{p.pickup_address ? ` — ${p.pickup_address}` : ''}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={handleAdd}
+          disabled={!selectedId || isAdding}
+          className="flex-shrink-0 flex items-center gap-1 text-xs bg-[#00A1E0] text-white px-3 py-2 rounded-lg hover:bg-[#0081B3] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          {isAdding
+            ? <Loader2 className="w-3 h-3 animate-spin" />
+            : <UserPlus className="w-3 h-3" strokeWidth={2} />}
+          추가
+        </button>
       </div>
     </div>
   );
