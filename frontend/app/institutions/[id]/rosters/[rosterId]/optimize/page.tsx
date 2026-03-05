@@ -35,7 +35,7 @@ import {
   Loader2, Zap, CheckCircle2, MapPin, ArrowDown,
   Clock, TrendingDown, ChevronLeft, AlertCircle,
   Edit2, Save, Car, Flag, Users, Route,
-  CheckCircle, Circle, GripVertical,
+  CheckCircle, Circle, GripVertical, X, UserPlus, ChevronDown,
 } from 'lucide-react';
 
 /**
@@ -114,6 +114,38 @@ export default function RouteOptimizePage() {
     if (!manualOrder) return;
     reorderMutation.mutate(manualOrder.map(p => p.id));
   };
+
+  // 탑승자 추가/삭제
+  const [showAddPanel, setShowAddPanel] = useState(false);
+
+  const addPassengerMutation = useMutation({
+    mutationFn: (passengerId: number) =>
+      railsClient.post(`/institutions/rosters/${rosterId}/add_passenger`, {
+        passenger_id: passengerId,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['route-preview', rosterId] });
+      qc.invalidateQueries({ queryKey: ['rosters'] });
+    },
+  });
+
+  const removePassengerMutation = useMutation({
+    mutationFn: (passengerId: number) =>
+      railsClient.delete(`/institutions/rosters/${rosterId}/remove_passenger/${passengerId}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['route-preview', rosterId] });
+      qc.invalidateQueries({ queryKey: ['rosters'] });
+      setManualOrder(null);
+      setIsEditingOrder(false);
+    },
+  });
+
+  // 기관 전체 승객 목록 (추가 패널용)
+  const { data: allPassengers } = useQuery({
+    queryKey: ['passengers', institutionId],
+    queryFn: () => railsClient.get<any[]>('/institutions/passengers'),
+    enabled: showAddPanel,
+  });
 
   // 최적화
   const [optimizedResult, setOptimizedResult] = useState<OptimizationResult | null>(null);
@@ -324,6 +356,20 @@ export default function RouteOptimizePage() {
                 )}
               </div>
             )}
+            {/* 승객 추가 버튼 */}
+            {!optimizedResult && !isEditingOrder && (
+              <button
+                onClick={() => setShowAddPanel(v => !v)}
+                className={`flex items-center gap-1 text-xs border px-2.5 py-1 rounded-lg transition-colors ${
+                  showAddPanel
+                    ? 'bg-[#00A1E0] text-white border-[#00A1E0]'
+                    : 'text-gray-500 hover:text-[#00A1E0] border-gray-200 hover:border-[#00A1E0]'
+                }`}
+              >
+                <UserPlus className="w-3.5 h-3.5" strokeWidth={2} />
+                승객 추가
+              </button>
+            )}
             {/* 수동 순서 편집 버튼 — AI 최적화 중이 아닐 때만 표시 */}
             {!optimizedResult && !isEditingOrder && currentPassengers.length > 1 && (
               <button
@@ -411,6 +457,8 @@ export default function RouteOptimizePage() {
                     address={p.pickup_address}
                     etaMin={arrMin}
                     isOptimized={!!optimizedResult}
+                    onRemove={!optimizedResult ? () => removePassengerMutation.mutate(p.id) : undefined}
+                    isRemoving={removePassengerMutation.isPending && removePassengerMutation.variables === p.id}
                   />
                 );
               })
@@ -429,6 +477,17 @@ export default function RouteOptimizePage() {
           </div>
         </div>
       </div>
+
+      {/* ─── 승객 추가 패널 ─────────────────────────────────────── */}
+      {showAddPanel && !optimizedResult && (
+        <AddPassengerPanel
+          allPassengers={allPassengers ?? []}
+          currentIds={currentPassengers.map(p => p.id)}
+          onAdd={(id) => addPassengerMutation.mutate(id)}
+          isAdding={addPassengerMutation.isPending}
+          addingId={addPassengerMutation.variables as number | undefined}
+        />
+      )}
 
       {/* ─── 에러 메시지 ────────────────────────────────────────── */}
       {(optimizeMutation.error || applyMutation.error) && (
@@ -544,16 +603,18 @@ function FlowNode({
 
 // ─── 플로우 노드: 승객 픽업 ────────────────────────────────────
 function PassengerNode({
-  order, name, address, etaMin, isOptimized,
+  order, name, address, etaMin, isOptimized, onRemove, isRemoving,
 }: {
   order: number;
   name: string;
   address: string | null;
   etaMin: number | null;
   isOptimized: boolean;
+  onRemove?: () => void;
+  isRemoving?: boolean;
 }) {
   return (
-    <div className="flex items-stretch gap-0">
+    <div className="flex items-stretch gap-0 group/node">
       {/* 타임라인 */}
       <div className="flex flex-col items-center w-10 flex-shrink-0">
         <div className="w-0.5 bg-gray-200 h-2 flex-shrink-0" />
@@ -562,7 +623,7 @@ function PassengerNode({
             ? 'bg-[#00A1E0]/10 text-[#00A1E0] ring-1 ring-[#00A1E0]/30'
             : 'bg-gray-100 text-gray-600'
         }`}>
-          {order}
+          {isRemoving ? <Loader2 className="w-3 h-3 animate-spin" /> : order}
         </div>
         <div className="w-0.5 bg-gray-200 flex-1 my-1" />
       </div>
@@ -578,8 +639,8 @@ function PassengerNode({
             </p>
           )}
         </div>
-        {etaMin !== null && (
-          <div className="flex-shrink-0 text-right">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {etaMin !== null && (
             <span className={`text-xs px-2 py-0.5 rounded-full ${
               isOptimized
                 ? 'bg-[#00A1E0]/10 text-[#00A1E0] font-medium'
@@ -587,7 +648,88 @@ function PassengerNode({
             }`}>
               +{etaMin}분
             </span>
-          </div>
+          )}
+          {onRemove && (
+            <button
+              onClick={onRemove}
+              disabled={isRemoving}
+              className="opacity-0 group-hover/node:opacity-100 p-1 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-all disabled:opacity-50"
+              aria-label="탑승자 제거"
+            >
+              <X className="w-3.5 h-3.5" strokeWidth={2} />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── 승객 추가 패널 ──────────────────────────────────────────
+function AddPassengerPanel({
+  allPassengers, currentIds, onAdd, isAdding, addingId,
+}: {
+  allPassengers: any[];
+  currentIds: number[];
+  onAdd: (id: number) => void;
+  isAdding: boolean;
+  addingId?: number;
+}) {
+  const [search, setSearch] = useState('');
+  const available = allPassengers.filter(
+    p => p.is_active && !currentIds.includes(p.id) &&
+      (search === '' || p.name.includes(search) || (p.pickup_address ?? '').includes(search))
+  );
+
+  return (
+    <div className="bg-white rounded-xl border border-[#00A1E0]/30 shadow-sm overflow-hidden">
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+        <UserPlus className="w-4 h-4 text-[#00A1E0]" strokeWidth={2} />
+        <p className="text-sm font-semibold text-[#16325C]">탑승자 추가</p>
+        <span className="text-xs text-gray-400 ml-1">— 미배정 활성 승객 목록</span>
+      </div>
+
+      {/* 검색 */}
+      <div className="px-4 pt-3 pb-2">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="이름 또는 주소로 검색"
+          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30"
+        />
+      </div>
+
+      {/* 목록 */}
+      <div className="max-h-52 overflow-y-auto divide-y divide-gray-50">
+        {available.length === 0 ? (
+          <p className="text-xs text-gray-400 text-center py-6">
+            {allPassengers.length === 0 ? '승객 목록 로딩 중...' : '추가 가능한 승객이 없습니다'}
+          </p>
+        ) : (
+          available.map(p => (
+            <div key={p.id} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-[#16325C]">{p.name}</p>
+                {p.pickup_address && (
+                  <p className="text-xs text-gray-400 truncate flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3 h-3 shrink-0" strokeWidth={2} />
+                    {p.pickup_address}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => onAdd(p.id)}
+                disabled={isAdding && addingId === p.id}
+                className="flex-shrink-0 ml-3 flex items-center gap-1 text-xs bg-[#00A1E0] text-white px-3 py-1.5 rounded-lg hover:bg-[#0081B3] disabled:opacity-50 transition-colors"
+              >
+                {isAdding && addingId === p.id
+                  ? <Loader2 className="w-3 h-3 animate-spin" />
+                  : <UserPlus className="w-3 h-3" strokeWidth={2} />}
+                추가
+              </button>
+            </div>
+          ))
         )}
       </div>
     </div>
