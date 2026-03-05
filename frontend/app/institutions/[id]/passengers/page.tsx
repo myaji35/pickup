@@ -205,19 +205,18 @@ export default function PassengersPage() {
               />
             </FormField>
 
-            {/* 좌동 버튼 */}
-            <div className="flex items-end pb-0.5">
-              <button
-                type="button"
-                onClick={() => setForm(f => ({ ...f, dropoff_address: f.pickup_address }))}
-                className="flex items-center gap-1 text-xs text-[#00A1E0] border border-[#00A1E0]/40 px-3 py-2 rounded-lg hover:bg-[#00A1E0]/5 transition-colors w-full justify-center"
-              >
-                <span className="font-medium">좌동</span>
-                <span className="text-gray-400">(픽업주소 복사)</span>
-              </button>
-            </div>
-
-            <FormField label="하차 주소" icon={<MapPin className="w-3.5 h-3.5" />} className="sm:col-span-2">
+            <FormField label={
+              <span className="flex items-center gap-1">
+                하차 주소
+                <button
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, dropoff_address: f.pickup_address }))}
+                  className="text-[10px] text-[#00A1E0] border border-[#00A1E0]/40 px-1 rounded hover:bg-[#00A1E0]/5 transition-colors leading-tight"
+                >
+                  좌동
+                </button>
+              </span>
+            } icon={<MapPin className="w-3.5 h-3.5" />}>
               <input
                 type="text"
                 value={form.dropoff_address}
@@ -369,7 +368,7 @@ export default function PassengersPage() {
 function FormField({
   label, icon, children, className = '',
 }: {
-  label: string;
+  label: React.ReactNode;
   icon: React.ReactNode;
   children: React.ReactNode;
   className?: string;
