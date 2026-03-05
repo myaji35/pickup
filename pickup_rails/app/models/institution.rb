@@ -13,6 +13,7 @@ class Institution < ApplicationRecord
   has_many :vehicles, dependent: :destroy
   has_many :passengers, dependent: :destroy
   has_many :rosters, dependent: :destroy
+  has_many :trips, through: :rosters
   has_many :subscriptions, dependent: :destroy
   has_many :payment_records, dependent: :destroy
   has_many :invoices, dependent: :destroy

@@ -128,11 +128,11 @@ export default function RiskReportPage() {
 
     try {
       const [riskData, trendData] = await Promise.all([
-        railsClient.get<RiskData>('/institutions/risk_reports/current'),
-        railsClient.get<{ trend: TrendPoint[] }>('/institutions/risk_reports/trend', { months: 6 }),
+        railsClient.getRaw<RiskData>('/institutions/risk_reports/current'),
+        railsClient.getRaw<{ trend: TrendPoint[] }>('/institutions/risk_reports/trend', { months: 6 }),
       ]);
       setCurrentRisk(riskData);
-      setTrend(trendData.trend);
+      setTrend(trendData.trend ?? []);
     } catch (e) {
       console.error('리스크 데이터 로드 실패:', e);
     } finally {

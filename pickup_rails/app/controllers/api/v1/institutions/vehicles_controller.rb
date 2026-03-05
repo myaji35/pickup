@@ -3,12 +3,11 @@ module Api
     module Institutions
       class VehiclesController < ApplicationController
         before_action :require_institution_admin!
-        before_action :set_vehicle, only: [:show, :update, :destroy, :assign_driver]
+        before_action :set_vehicle, only: [:show, :update, :destroy]
 
         # GET /api/v1/institutions/vehicles
         def index
           vehicles = current_institution.vehicles
-                                        .includes(:users)
                                         .order(created_at: :desc)
                                         .page(params[:page]).per(20)
           render_success(vehicles.map { |v| vehicle_json(v) }, meta: pagination_meta(vehicles))

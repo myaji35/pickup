@@ -53,9 +53,12 @@ class InsuranceSafetyReportService
 
   def scoped_drivers(trips)
     driver_ids = trips.pluck(:driver_id).uniq.compact
+    start_w = @month_start.to_date.cweek
+    end_w   = @month_end.to_date.cweek
+    year    = @month_start.to_date.year
     DriverSafetyScore
       .where(driver_id: driver_ids)
-      .where(period_start: @month_start..@month_end)
+      .where(period_year: year, period_week: start_w..end_w)
       .includes(:driver)
   end
 
@@ -66,7 +69,7 @@ class InsuranceSafetyReportService
 
   def calculate_risk_index(drivers)
     return "N/A" if drivers.empty?
-    avg = drivers.average(:overall_score).to_f
+    avg = drivers.average(:total_score).to_f
     case avg
     when 90..100 then "LOW"
     when 70...90 then "MEDIUM"
@@ -77,14 +80,14 @@ class InsuranceSafetyReportService
 
   def calculate_discount_rate(drivers)
     return 0.0 if drivers.empty?
-    avg = drivers.average(:overall_score).to_f
+    avg = drivers.average(:total_score).to_f
     # 안전점수 기준 최대 15% 할인
     [((avg - 50.0) / 50.0 * 15.0).round(1), 0.0].max
   end
 
   def avg_safety_score(drivers)
     return nil if drivers.empty?
-    drivers.average(:overall_score).to_f.round(1)
+    drivers.average(:total_score).to_f.round(1)
   end
 
   def driver_reports(drivers, events)
@@ -92,7 +95,7 @@ class InsuranceSafetyReportService
       driver_events = events.select { |e| e.trip&.driver_id == score.driver_id }
       {
         driver_id:      score.driver_id,           # 익명 식별자 (이름 미포함)
-        safety_score:   score.overall_score,
+        safety_score:   score.total_score,
         grade:          score.grade,
         event_summary: {
           harsh_acceleration: driver_events.count { |e| e.event_type == "harsh_acceleration" },

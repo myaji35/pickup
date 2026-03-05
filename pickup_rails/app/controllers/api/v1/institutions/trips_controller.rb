@@ -2,7 +2,6 @@ module Api
   module V1
     module Institutions
       class TripsController < ApplicationController
-        before_action :authenticate_request!
         before_action :require_institution_admin!
 
         # GET /api/v1/institutions/trips
@@ -47,6 +46,10 @@ module Api
         end
 
         private
+
+        def current_institution
+          current_user.institution
+        end
 
         def find_trip
           Trip.joins(roster: :institution)

@@ -105,9 +105,9 @@ export default function SettlementsPage() {
   // Fetch vehicles
   const { data: vehiclesData } = useQuery({
     queryKey: ['vehicles', institutionId],
-    queryFn: () => railsClient.get<{ success: boolean; data: Vehicle[] }>('/institutions/vehicles'),
+    queryFn: () => railsClient.get<Vehicle[]>('/institutions/vehicles'),
   });
-  const vehicles: Vehicle[] = vehiclesData?.data ?? [];
+  const vehicles: Vehicle[] = vehiclesData ?? [];
 
   // Fetch receipts
   const { data: receiptsData, isLoading: receiptsLoading } = useQuery({
@@ -116,17 +116,17 @@ export default function SettlementsPage() {
       const p: Record<string, string | number> = { month: `${year}-${String(month).padStart(2, '0')}` };
       if (filterVehicleId) p.vehicle_id = filterVehicleId;
       if (filterType) p.receipt_type = filterType;
-      return railsClient.get<{ success: boolean; data: ExpenseReceipt[] }>('/institutions/expense_receipts', p);
+      return railsClient.get<ExpenseReceipt[]>('/institutions/expense_receipts', p);
     },
   });
-  const receipts: ExpenseReceipt[] = receiptsData?.data ?? [];
+  const receipts: ExpenseReceipt[] = receiptsData ?? [];
 
   // Fetch settlements
   const { data: settlementsData, isLoading: settlementsLoading } = useQuery({
     queryKey: ['settlements', institutionId, year, month],
-    queryFn: () => railsClient.get<{ success: boolean; data: Settlement[] }>('/institutions/settlements', { year, month }),
+    queryFn: () => railsClient.get<Settlement[]>('/institutions/settlements', { year, month }),
   });
-  const settlements: Settlement[] = settlementsData?.data ?? [];
+  const settlements: Settlement[] = settlementsData ?? [];
 
   // Confirm receipt
   const confirmMutation = useMutation({

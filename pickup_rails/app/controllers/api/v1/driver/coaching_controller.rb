@@ -44,7 +44,7 @@ module Api
           # 현재 주 안전 점수
           current_score = DriverSafetyScore
             .where(driver: current_user)
-            .order(period_start: :desc)
+            .order(period_year: :desc, period_week: :desc)
             .first
 
           # 최근 주간 요약
@@ -63,9 +63,14 @@ module Api
 
           render json: {
             safety_score: current_score ? {
-              overall_score: current_score.overall_score,
-              grade:         current_score.grade,
-              period:        current_score.period_start.strftime('%Y-%m')
+              overall_score: current_score.total_score,
+              grade:         case current_score.total_score.to_f
+                             when 90..100 then 'A'
+                             when 80..89  then 'B'
+                             when 70..79  then 'C'
+                             else 'D'
+                             end,
+              period:        "#{current_score.period_year}-W#{current_score.period_week.to_s.rjust(2,'0')}"
             } : nil,
             event_stats_30d: event_stats,
             badge_count:     DriverBadge.where(driver: current_user).count,

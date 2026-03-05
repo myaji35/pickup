@@ -13,7 +13,16 @@ export function useVehicles(institutionId: string | undefined) {
       if (!institutionId) {
         throw new Error('Institution ID is required');
       }
-      return railsClient.get<Vehicle[]>('/institutions/vehicles');
+      const raw = await railsClient.get<any[]>('/institutions/vehicles');
+      return raw.map((v: any): Vehicle => ({
+        id: String(v.id),
+        lastFourDigits: v.plate_last4 ?? '',
+        passengerCapacity: v.capacity ?? 0,
+        institutionId: String(v.institution_id ?? ''),
+        currentGroupId: v.current_group_id ?? null,
+        createdAt: v.created_at ?? '',
+        updatedAt: v.updated_at ?? '',
+      }));
     },
     enabled: !!institutionId,
   });

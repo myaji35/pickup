@@ -67,11 +67,11 @@ export default function TripsPage() {
     queryFn: () => {
       const p: Record<string, string | number> = { month };
       if (status) p.status = status;
-      return railsClient.get<{ success: boolean; data: TripItem[] }>('/institutions/trips', p);
+      return railsClient.get<TripItem[]>('/institutions/trips', p);
     },
   });
 
-  const trips: TripItem[] = data?.data ?? [];
+  const trips: TripItem[] = data ?? [];
 
   const stats = {
     total: trips.length,

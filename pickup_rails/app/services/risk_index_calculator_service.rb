@@ -105,9 +105,15 @@ class RiskIndexCalculatorService
   def scoped_drivers(trips)
     driver_ids = trips.pluck(:driver_id).uniq.compact
     return DriverSafetyScore.none if driver_ids.empty?
+    # period_year/period_week 기반 필터: 기간 내 속하는 주차 포함
+    weeks = (@period_start.to_date..@period_end.to_date).each_slice(7).map(&:first).map { |d| [d.year, d.cweek] }
+    weeks << [@period_start.to_date.year, @period_start.to_date.cweek]
+    weeks << [@period_end.to_date.year,   @period_end.to_date.cweek]
+    weeks.uniq!
+    conditions = weeks.map { |y, w| "(period_year = #{y} AND period_week = #{w})" }.join(" OR ")
     DriverSafetyScore
       .where(driver_id: driver_ids)
-      .where(period_start: @period_start..@period_end)
+      .where(conditions)
   end
 
   def scoped_dtc(trips)
@@ -115,7 +121,7 @@ class RiskIndexCalculatorService
     return DtcReport.none if vehicle_ids.empty?
     DtcReport
       .where(vehicle_id: vehicle_ids)
-      .where(reported_at: @period_start..@period_end)
+      .where(created_at: @period_start..@period_end)
   end
 
   def scoped_predictions
@@ -133,7 +139,7 @@ class RiskIndexCalculatorService
     if drivers.empty?
       return { raw: 50, score: nil, label: '데이터 없음' }
     end
-    avg = drivers.average(:overall_score).to_f.round(1)
+    avg = drivers.average(:total_score).to_f.round(1)
     raw = (100.0 - avg).clamp(0, 100).round
     { raw: raw, score: avg, label: "평균 안전점수 #{avg}점 → 위험 기여 #{raw}" }
   end

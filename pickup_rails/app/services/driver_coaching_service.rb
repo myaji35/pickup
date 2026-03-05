@@ -144,8 +144,8 @@ class DriverCoachingService
     events      = DrivingEvent.where(trip_id: week_trips.pluck(:id))
 
     # 안전 점수 평균
-    score = DriverSafetyScore.where(driver: @driver, period_start: week_start..week_end)
-                             .average(:overall_score).to_f.round(1)
+    score = DriverSafetyScore.where(driver: @driver, period_year: week_start.year, period_week: week_start.cweek)
+                             .average(:total_score).to_f.round(1)
 
     brake_count    = events.where(event_type: 'harsh_braking').count
     speeding_count = events.where(event_type: 'speeding').count

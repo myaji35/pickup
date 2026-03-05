@@ -21,7 +21,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
   isSuperAdmin: boolean;
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const res = await fetch(`${RAILS_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -76,13 +76,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.ok) throw new Error(json.message || '로그인에 실패했습니다.');
     const { access_token, user: u } = json.data;
     localStorage.setItem('rails_access_token', access_token);
-    setUser({
+    const user: User = {
       id: u.id,
       email: u.email,
       name: u.name,
       role: u.role?.toUpperCase(),
       institutionId: u.institution_id ?? null,
-    });
+    };
+    setUser(user);
+    return user;
   };
 
   const logout = () => {

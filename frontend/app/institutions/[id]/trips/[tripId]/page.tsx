@@ -68,10 +68,10 @@ export default function TripDetailPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['trip', institutionId, tripId],
-    queryFn: () => railsClient.get<{ success: boolean; data: TripDetail }>(`/institutions/trips/${tripId}`),
+    queryFn: () => railsClient.get<TripDetail>(`/institutions/trips/${tripId}`),
   });
 
-  const trip: TripDetail | undefined = data?.data;
+  const trip: TripDetail | undefined = data;
 
   const formatDateTime = (iso: string | null) => {
     if (!iso) return '-';

@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [email, setEmail] = useState('admin@pickup.kr');
-  const [password, setPassword] = useState('Admin1234!');
+  const [password, setPassword] = useState('admin123');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -25,8 +25,14 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      await login(email, password);
-      router.push('/admin/dashboard');
+      const user = await login(email, password);
+      if (user.role === 'SUPER_ADMIN') {
+        router.push('/admin/dashboard');
+      } else if (user.role === 'INSTITUTION_ADMIN' && user.institutionId) {
+        router.push(`/institutions/${user.institutionId}/analytics`);
+      } else {
+        router.push('/admin/dashboard');
+      }
     } catch (err: any) {
       setError(err.message || '로그인에 실패했습니다.');
     } finally {
