@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-05T08:20:20.882Z",
+  "lastUpdated": "2026-03-05T08:30:51.367Z",
   "activeFeatures": [
     "migrate",
     "pickup_rails",
@@ -466,9 +466,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T18:54:58.261Z",
-        "lastUpdated": "2026-03-05T07:58:16.099Z"
+        "lastUpdated": "2026-03-05T08:30:51.367Z"
       },
-      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/page.tsx"
+      "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/layout.tsx"
     },
     "toss_payments_service.rb": {
       "phase": "do",
@@ -583,7 +583,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T19:13:09.390Z",
-        "lastUpdated": "2026-03-05T08:13:10.657Z"
+        "lastUpdated": "2026-03-05T08:25:19.438Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/rosters/page.tsx"
     },
@@ -596,7 +596,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-02-27T19:14:09.808Z",
-        "lastUpdated": "2026-03-05T08:13:55.067Z"
+        "lastUpdated": "2026-03-05T08:26:33.996Z"
       },
       "lastFile": "/Volumes/E_SSD/02_GitHub.nosync/0007_pickup/frontend/app/institutions/[id]/rosters/[rosterId]/optimize/page.tsx"
     },
@@ -1066,7 +1066,7 @@
   "session": {
     "startedAt": "2026-02-27T17:24:38.804Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-05T08:20:20.882Z"
+    "lastActivity": "2026-03-05T08:30:51.367Z"
   },
   "history": [
     {
@@ -4008,6 +4008,30 @@
       "feature": "migrate — Gap 분석",
       "phase": "act",
       "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:24:17.092Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:25:19.438Z",
+      "feature": "rosters",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:26:33.996Z",
+      "feature": "optimize",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-05T08:30:51.367Z",
+      "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
     }
   ],
   "notification-settings": {
@@ -4023,5 +4047,11 @@
     "matchRate": 95,
     "archivedAt": "2026-03-05T00:00:00Z",
     "archivedTo": "docs/archive/2026-03/migrate/"
+  },
+  "rosters-ui": {
+    "phase": "archived",
+    "matchRate": 98,
+    "archivedAt": "2026-03-05T00:00:00Z",
+    "archivedTo": "docs/archive/2026-03/rosters-ui/"
   }
 }
