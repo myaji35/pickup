@@ -4,3 +4,4 @@
 |---------|-------|-----------|-------------|------|
 | migrate | completed | 95% | 2026-03-05 | docs/archive/2026-03/migrate/ |
 | rosters-ui | completed | 100% | 2026-03-05 | docs/archive/2026-03/rosters-ui/ |
+| rosters-ui (v3) | completed | 100% | 2026-03-05 | docs/archive/2026-03/rosters-ui/ |
