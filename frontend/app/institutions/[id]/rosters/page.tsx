@@ -28,12 +28,14 @@ interface Roster {
   departure_time: string | null;
   last_optimized_at: string | null;
   optimized_distance_m: number | null;
+  note: string | null;
   created_at: string;
 }
 
 const SHUTTLE_LABEL: Record<string, string> = {
   morning: '등원',
   evening: '하원',
+  other: '기타',
 };
 
 function getWeekLabel(dateStr: string) {
@@ -55,6 +57,7 @@ export default function RostersPage() {
   const [newWeek, setNewWeek] = useState('');
   const [newVehicleId, setNewVehicleId] = useState('');
   const [newShuttleType, setNewShuttleType] = useState('morning');
+  const [newNote, setNewNote] = useState('');
   const [newDepartureTime, setNewDepartureTime] = useState('07:30');
   const [newDepartureAddress, setNewDepartureAddress] = useState('');
 
@@ -83,6 +86,7 @@ export default function RostersPage() {
           shuttle_type: newShuttleType,
           departure_time: newDepartureTime,
           departure_address: newDepartureAddress,
+          note: newShuttleType === 'other' ? newNote : undefined,
         },
       }),
     onSuccess: () => {
@@ -91,6 +95,7 @@ export default function RostersPage() {
       setNewWeek('');
       setNewVehicleId('');
       setNewShuttleType('morning');
+      setNewNote('');
       setNewDepartureTime('07:30');
       setNewDepartureAddress('');
     },
@@ -163,13 +168,26 @@ export default function RostersPage() {
               <label className="text-xs text-gray-500 mb-1 block">운행 유형</label>
               <select
                 value={newShuttleType}
-                onChange={e => setNewShuttleType(e.target.value)}
+                onChange={e => { setNewShuttleType(e.target.value); setNewNote(''); }}
                 className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30"
               >
                 <option value="morning">등원</option>
                 <option value="evening">하원</option>
+                <option value="other">기타</option>
               </select>
             </div>
+            {newShuttleType === 'other' && (
+              <div className="sm:col-span-2">
+                <label className="text-xs text-gray-500 mb-1 block">기타 사유 *</label>
+                <input
+                  type="text"
+                  value={newNote}
+                  onChange={e => setNewNote(e.target.value)}
+                  placeholder="운행 사유를 입력하세요"
+                  className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#00A1E0]/30"
+                />
+              </div>
+            )}
             <div>
               <label className="text-xs text-gray-500 mb-1 block">출발시간</label>
               <input
@@ -193,7 +211,7 @@ export default function RostersPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => createMutation.mutate()}
-              disabled={createMutation.isPending || !newWeek || !newVehicleId}
+              disabled={createMutation.isPending || !newWeek || !newVehicleId || (newShuttleType === 'other' && !newNote.trim())}
               className="flex items-center gap-2 px-4 py-2 bg-[#00A1E0] text-white text-sm font-medium rounded-lg hover:bg-[#0081B3] disabled:opacity-50 transition-colors"
             >
               {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" strokeWidth={2} />}
@@ -311,8 +329,12 @@ function RosterCard({ roster, institutionId }: { roster: Roster; institutionId: 
       className="block"
     >
       <div className="bg-white rounded-xl border border-gray-200 hover:border-[#00A1E0] hover:shadow-md transition-all group">
-        {/* 상단 컬러 바: 등원=파란, 하원=오렌지 */}
-        <div className={`h-1 rounded-t-xl ${roster.shuttle_type === 'morning' ? 'bg-[#00A1E0]' : 'bg-orange-400'}`} />
+        {/* 상단 컬러 바: 등원=파란, 하원=오렌지, 기타=보라 */}
+        <div className={`h-1 rounded-t-xl ${
+          roster.shuttle_type === 'morning' ? 'bg-[#00A1E0]'
+          : roster.shuttle_type === 'evening' ? 'bg-orange-400'
+          : 'bg-purple-400'
+        }`} />
 
         <div className="p-4">
           <div className="flex items-start justify-between gap-3">
@@ -325,12 +347,15 @@ function RosterCard({ roster, institutionId }: { roster: Roster; institutionId: 
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-bold text-[#16325C]">{roster.vehicle.plate_number}</p>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                    roster.shuttle_type === 'morning'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'bg-orange-50 text-orange-700'
+                    roster.shuttle_type === 'morning' ? 'bg-blue-50 text-blue-700'
+                    : roster.shuttle_type === 'evening' ? 'bg-orange-50 text-orange-700'
+                    : 'bg-purple-50 text-purple-700'
                   }`}>
                     {SHUTTLE_LABEL[roster.shuttle_type] ?? roster.shuttle_type}
                   </span>
+                  {roster.shuttle_type === 'other' && roster.note && (
+                    <span className="text-xs text-gray-500 italic">— {roster.note}</span>
+                  )}
                   <span className="text-xs text-gray-400">({roster.vehicle.capacity}인승)</span>
                 </div>
 

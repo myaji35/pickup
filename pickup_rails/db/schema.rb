@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_05_081149) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_05_222129) do
   create_table "check_ins", force: :cascade do |t|
     t.datetime "alighted_at"
     t.datetime "boarded_at"
@@ -437,6 +437,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_05_081149) do
     t.string "distance_source"
     t.integer "institution_id", null: false
     t.datetime "last_optimized_at"
+    t.text "note"
     t.integer "optimized_distance_m"
     t.integer "optimized_duration_sec"
     t.integer "original_distance_m"

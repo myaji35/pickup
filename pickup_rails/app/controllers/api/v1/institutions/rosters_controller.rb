@@ -143,7 +143,7 @@ module Api
         end
 
         def roster_params
-          params.require(:roster).permit(:vehicle_id, :week_start_date, :shuttle_type, :departure_address, :departure_time)
+          params.require(:roster).permit(:vehicle_id, :week_start_date, :shuttle_type, :departure_address, :departure_time, :note)
         end
 
         def add_passengers_to_roster(roster, passenger_ids)
@@ -170,6 +170,7 @@ module Api
             departure_time:       roster.departure_time,
             last_optimized_at:    roster.last_optimized_at,
             optimized_distance_m: roster.optimized_distance_m,
+            note:                 roster.note,
             created_at:           roster.created_at
           }
         end

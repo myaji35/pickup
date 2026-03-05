@@ -2,7 +2,8 @@ class Roster < ApplicationRecord
   enum :shuttle_type, {
     morning: 0,
     evening: 1,
-    temporary: 2
+    temporary: 2,
+    other: 3
   }
 
   belongs_to :institution
