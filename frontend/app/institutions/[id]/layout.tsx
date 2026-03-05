@@ -52,9 +52,9 @@ export default function InstitutionLayout({
       icon: Users,
     },
     {
-      name: '탑승 그룹',
-      href: `/institutions/${institutionId}/passenger-groups`,
-      icon: UsersRound,
+      name: '운행 계획',
+      href: `/institutions/${institutionId}/rosters`,
+      icon: Route,
     },
     {
       name: '차량 관리',
@@ -65,11 +65,6 @@ export default function InstitutionLayout({
       name: 'BI 대시보드',
       href: `/institutions/${institutionId}/analytics`,
       icon: BarChart2,
-    },
-    {
-      name: '경로 최적화',
-      href: `/institutions/${institutionId}/rosters`,
-      icon: Route,
     },
     {
       name: '안전 대시보드',
