@@ -4,6 +4,23 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
   useRoutePreview,
   useOptimizeRoute,
   useApplyOptimization,
@@ -18,7 +35,7 @@ import {
   Loader2, Zap, CheckCircle2, MapPin, ArrowDown,
   Clock, TrendingDown, ChevronLeft, AlertCircle,
   Edit2, Save, Car, Flag, Users, Route,
-  CheckCircle, Circle,
+  CheckCircle, Circle, GripVertical,
 } from 'lucide-react';
 
 /**
@@ -61,6 +78,42 @@ export default function RouteOptimizePage() {
       setEditingDeparture(false);
     },
   });
+
+  // 수동 순서 편집
+  const [manualOrder, setManualOrder] = useState<RoutePreviewPassenger[] | null>(null);
+  const [isEditingOrder, setIsEditingOrder] = useState(false);
+
+  const reorderMutation = useMutation({
+    mutationFn: (passengerIds: number[]) =>
+      railsClient.patch(`/institutions/rosters/${rosterId}/reorder_passengers`, {
+        passenger_ids: passengerIds,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['route-preview', rosterId] });
+      qc.invalidateQueries({ queryKey: ['rosters'] });
+      setManualOrder(null);
+      setIsEditingOrder(false);
+    },
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const list = manualOrder ?? currentPassengers;
+    const oldIdx = list.findIndex(p => p.id === active.id);
+    const newIdx = list.findIndex(p => p.id === over.id);
+    setManualOrder(arrayMove(list, oldIdx, newIdx));
+  };
+
+  const handleSaveOrder = () => {
+    if (!manualOrder) return;
+    reorderMutation.mutate(manualOrder.map(p => p.id));
+  };
 
   // 최적화
   const [optimizedResult, setOptimizedResult] = useState<OptimizationResult | null>(null);
@@ -119,7 +172,9 @@ export default function RouteOptimizePage() {
 
   const currentPassengers: RoutePreviewPassenger[] = preview?.passengers ?? [];
   const displayPassengers: (RoutePreviewPassenger | OptimizedPassenger)[] =
-    optimizedResult ? optimizedResult.optimized_passengers : currentPassengers;
+    optimizedResult
+      ? optimizedResult.optimized_passengers
+      : (manualOrder ?? currentPassengers);
 
   return (
     <div className="p-6 space-y-6 max-w-4xl">
@@ -245,6 +300,11 @@ export default function RouteOptimizePage() {
                   — AI 최적화 적용됨
                 </span>
               )}
+              {isEditingOrder && !optimizedResult && (
+                <span className="ml-2 text-xs text-amber-600 font-normal">
+                  — 순서 편집 중
+                </span>
+              )}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -262,6 +322,39 @@ export default function RouteOptimizePage() {
                       : `${preview.total_distance_km} km`}
                   </span>
                 )}
+              </div>
+            )}
+            {/* 수동 순서 편집 버튼 — AI 최적화 중이 아닐 때만 표시 */}
+            {!optimizedResult && !isEditingOrder && currentPassengers.length > 1 && (
+              <button
+                onClick={() => {
+                  setManualOrder([...currentPassengers]);
+                  setIsEditingOrder(true);
+                }}
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#00A1E0] border border-gray-200 hover:border-[#00A1E0] px-2.5 py-1 rounded-lg transition-colors"
+              >
+                <GripVertical className="w-3.5 h-3.5" strokeWidth={2} />
+                순서 편집
+              </button>
+            )}
+            {isEditingOrder && !optimizedResult && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setManualOrder(null); setIsEditingOrder(false); }}
+                  className="text-xs text-gray-400 hover:text-gray-600"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleSaveOrder}
+                  disabled={reorderMutation.isPending || !manualOrder}
+                  className="flex items-center gap-1 text-xs bg-[#00A1E0] text-white px-3 py-1 rounded-lg hover:bg-[#0081B3] disabled:opacity-50 transition-colors"
+                >
+                  {reorderMutation.isPending
+                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                    : <Save className="w-3 h-3" strokeWidth={2} />}
+                  저장
+                </button>
               </div>
             )}
           </div>
@@ -282,7 +375,30 @@ export default function RouteOptimizePage() {
               <div className="ml-6 my-3 text-xs text-gray-400 italic">
                 승객이 없습니다. 승객 관리에서 추가해주세요.
               </div>
+            ) : isEditingOrder && !optimizedResult ? (
+              // ── 드래그&드롭 모드 ──
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={(manualOrder ?? currentPassengers).map(p => p.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {(manualOrder ?? currentPassengers).map((p, idx) => (
+                    <SortablePassengerNode
+                      key={p.id}
+                      id={p.id}
+                      order={idx + 1}
+                      name={p.name}
+                      address={p.pickup_address}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             ) : (
+              // ── 일반 표시 모드 ──
               displayPassengers.map((p, idx) => {
                 const order = 'boarding_order' in p ? (p.boarding_order ?? idx + 1) : idx + 1;
                 const arrSec = 'estimated_arrival_sec' in p ? p.estimated_arrival_sec : null;
@@ -483,4 +599,64 @@ function formatDuration(sec: number | null | undefined): string {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   return s > 0 ? `${m}분 ${s}초` : `${m}분`;
+}
+
+// ─── 드래그 가능한 승객 노드 ────────────────────────────────
+function SortablePassengerNode({
+  id, order, name, address,
+}: {
+  id: number;
+  order: number;
+  name: string;
+  address: string | null;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-stretch gap-0">
+      {/* 타임라인 */}
+      <div className="flex flex-col items-center w-10 flex-shrink-0">
+        <div className="w-0.5 bg-gray-200 h-2 flex-shrink-0" />
+        <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold bg-amber-50 text-amber-600 ring-1 ring-amber-300">
+          {order}
+        </div>
+        <div className="w-0.5 bg-gray-200 flex-1 my-1" />
+      </div>
+
+      {/* 내용 */}
+      <div className="pb-3 pt-1 pl-3 flex-1 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-[#16325C]">{name}</p>
+          {address && (
+            <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1 truncate">
+              <MapPin className="w-3 h-3 shrink-0" strokeWidth={2} />
+              {address}
+            </p>
+          )}
+        </div>
+        {/* 드래그 핸들 */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex-shrink-0 p-1.5 text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing touch-none"
+          aria-label="드래그하여 순서 변경"
+        >
+          <GripVertical className="w-4 h-4" strokeWidth={2} />
+        </button>
+      </div>
+    </div>
+  );
 }

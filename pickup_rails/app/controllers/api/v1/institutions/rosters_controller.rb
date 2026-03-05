@@ -3,7 +3,7 @@ module Api
     module Institutions
       class RostersController < ApplicationController
         before_action :require_institution_admin!
-        before_action :set_roster, only: [:show, :update, :destroy, :copy_from_previous, :add_passenger, :remove_passenger]
+        before_action :set_roster, only: [:show, :update, :destroy, :copy_from_previous, :add_passenger, :remove_passenger, :reorder_passengers]
 
         # GET /api/v1/institutions/rosters
         # params: week_start_date (YYYY-MM-DD), vehicle_id, shuttle_type
@@ -108,6 +108,19 @@ module Api
           render_error("승객을 찾을 수 없습니다", status: :not_found)
         end
 
+        # PATCH /api/v1/institutions/rosters/:id/reorder_passengers
+        # { passenger_ids: [id1, id2, id3, ...] } 순서대로 boarding_order 갱신
+        def reorder_passengers
+          ids = Array(params[:passenger_ids]).map(&:to_i)
+          return render_error("passenger_ids가 필요합니다") if ids.empty?
+
+          ids.each_with_index do |pid, idx|
+            @roster.roster_passengers.where(passenger_id: pid).update_all(boarding_order: idx + 1)
+          end
+
+          render_success(roster_detail_json(@roster.reload))
+        end
+
         # DELETE /api/v1/institutions/rosters/:id/passengers/:passenger_id  (승객 제거)
         def remove_passenger
           rp = @roster.roster_passengers.find_by(passenger_id: params[:passenger_id])
@@ -163,7 +176,10 @@ module Api
 
         def roster_detail_json(roster)
           roster_json(roster).merge(
-            passengers: roster.passengers.map do |p|
+            passengers: roster.passengers.joins(:roster_passengers)
+                              .where(roster_passengers: { roster_id: roster.id })
+                              .order(Arel.sql('roster_passengers.boarding_order ASC NULLS LAST'))
+                              .map do |p|
               {
                 id:              p.id,
                 name:            p.name,

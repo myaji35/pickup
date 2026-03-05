@@ -66,6 +66,7 @@ Rails.application.routes.draw do
             post   :copy_from_previous          # 이전 주 명단 복사
             post   :add_passenger               # 승객 추가
             delete "remove_passenger/:passenger_id", action: :remove_passenger  # 승객 제거
+            patch  :reorder_passengers          # 탑승자 순서 수동 변경
           end
         end
       end
